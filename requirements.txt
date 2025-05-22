@@ -1,0 +1,15 @@
+# Core dependencies
+pydantic
+geopy
+transformers
+torch
+spacy
+requests
+shap
+typer
+rich
+
+# Development dependencies
+black
+pylint
+# Add other LLM/UI dependencies as they are decided

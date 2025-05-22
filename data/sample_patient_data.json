@@ -1,0 +1,18 @@
+[
+  {
+    "patient_id": "PED001_STRUCT",
+    "chief_complaint": "Neonate, 5 days old, with increasing jaundice and poor feeding. Possible sepsis workup needed.",
+    "clinical_history": "Born at 38 weeks gestation, uncomplicated delivery. Breastfeeding.",
+    "vital_signs": {"temp_c": "37.9", "hr": "150", "rr": "55"},
+    "labs": {"bilirubin_total": "18 mg/dL"},
+    "current_location": {"latitude": 29.9500, "longitude": -95.5000} 
+  },
+  {
+    "patient_id": "PED002_STRUCT_PICU",
+    "chief_complaint": "2-year-old with difficulty breathing, wheezing, and high fever. Rapidly worsening.",
+    "clinical_history": "History of multiple hospitalizations for asthma. Last admission 2 months ago.",
+    "vital_signs": {"temp_c": "39.0", "hr": "160", "rr": "60", "o2_sat": "88%"},
+    "labs": {"wbc": "15.5"},
+    "current_location": {"latitude": 29.7800, "longitude": -95.6000}
+  }
+]

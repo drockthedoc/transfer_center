@@ -1,0 +1,7 @@
+Patient #1 (PICU candidate): 3-year-old male with acute respiratory distress. History of asthma, now with severe wheezing, tachypnea. RR 50, HR 140, O2 sats 85% on non-rebreather. Patient is tiring. Located at 123 Peartree Lane, Spring, TX. Needs immediate PICU evaluation. BP 90/60.
+
+Patient #2 (NICU candidate): 1-week-old premature infant (born 32 weeks) with apneic episodes and bradycardia. HR drops to 60. Currently on CPAP. Temp 36.0C. From North Austin Regional Clinic, 123 Wellness Rd, Austin, TX. Requires NICU Level III care.
+
+Patient #3 (General Peds): 5-year-old female with fever (39.5C) and sore throat for 2 days. Complaining of abdominal pain. Suspected strep throat or early appendicitis. Vitals stable. HR 110, RR 24, BP 100/65. Patient at home, 45 Teddy Bear Close, Katy, TX.
+
+Patient #4 (Complex, possible PICU): 2-month-old female with complex congenital heart defect, now presenting with poor feeding and cyanosis. O2 sats 70%. HR 170. History of cardiac surgery consult at TCH Main. Current location: Local ER at 789 Childrens Way, The Woodlands, TX. BP difficult to obtain.

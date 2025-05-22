@@ -1,0 +1,30 @@
+[
+  {
+    "temperature_celsius": 25.0, 
+    "wind_speed_kph": 10.0, 
+    "precipitation_mm_hr": 0.0, 
+    "visibility_km": 10.0, 
+    "adverse_conditions": []
+  },
+  {
+    "temperature_celsius": 18.0, 
+    "wind_speed_kph": 65.0, 
+    "precipitation_mm_hr": 5.0, 
+    "visibility_km": 1.0, 
+    "adverse_conditions": ["HIGH_WINDS", "FOG", "RAIN_SHOWERS"]
+  },
+  {
+    "temperature_celsius": 30.0, 
+    "wind_speed_kph": 20.0, 
+    "precipitation_mm_hr": 0.0, 
+    "visibility_km": 0.5, 
+    "adverse_conditions": ["FOG", "SMOKE_HAZE"]
+  },
+  {
+    "temperature_celsius": -5.0, 
+    "wind_speed_kph": 35.0, 
+    "precipitation_mm_hr": 0.0, 
+    "visibility_km": 8.0, 
+    "adverse_conditions": ["FREEZING_TEMPERATURES", "MODERATE_WINDS"]
+  }
+]

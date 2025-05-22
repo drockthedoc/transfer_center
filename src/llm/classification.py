@@ -169,3 +169,54 @@ def parse_patient_text(text: str) -> Dict:
 # Note: The above `convert_text_to_structured_patient_data` is conceptual and NOT part of the
 # current subtask's core implementation but serves as a thought exercise for future work.
 # The primary goal of this subtask is the enhancement of `parse_patient_text`.
+
+def determine_care_level(patient_data):
+    """
+    Determines the appropriate care level for a patient based on vital signs and clinical information.
+    
+    Args:
+        patient_data: PatientData object with patient information
+        
+    Returns:
+        String representing the care level ("General", "ICU", "NICU", etc.)
+    """
+    # Default care level
+    care_level = "General"
+    
+    # Extract vital signs
+    vital_signs = getattr(patient_data, "vital_signs", {})
+    
+    # Check for critical vital signs that would indicate ICU need
+    hr = vital_signs.get("hr", "")
+    if hr and hr.isdigit():
+        hr_val = int(hr)
+        if hr_val > 140 or hr_val < 50:  # Extreme heart rate
+            care_level = "ICU"
+    
+    rr = vital_signs.get("rr", "")
+    if rr and rr.isdigit():
+        rr_val = int(rr)
+        if rr_val > 30 or rr_val < 10:  # Extreme respiratory rate
+            care_level = "ICU"
+    
+    o2_sat = vital_signs.get("o2_sat", "")
+    if o2_sat and o2_sat.replace("%", "").isdigit():
+        o2_val = int(o2_sat.replace("%", ""))
+        if o2_val < 90:  # Low oxygen saturation
+            care_level = "ICU"
+    
+    # Check clinical history for ICU indicators
+    clinical_history = getattr(patient_data, "clinical_history", "").lower()
+    icu_keywords = ["sepsis", "respiratory failure", "cardiac arrest", "stroke", "head trauma", 
+                   "intubated", "ventilator", "shock", "unconscious", "multiple trauma"]
+    
+    for keyword in icu_keywords:
+        if keyword in clinical_history:
+            care_level = "ICU"
+            break
+    
+    # Check for NICU needs (neonates)
+    if "neonate" in clinical_history or "newborn" in clinical_history or "premature" in clinical_history:
+        care_level = "NICU"
+    
+    return care_level

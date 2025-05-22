@@ -1,7 +1,7 @@
 [
   {
     "campus_id": "TCH_MAIN_TMC",
-    "name": "Texas Children's Hospital - Main Campus (TMC)",
+    "name": "Texas Children's Hospital - Main Campus (MC)",
     "metro_area": "HOUSTON_METRO",
     "address": "6621 Fannin St, Houston, TX 77030",
     "location": {"latitude": 29.7096, "longitude": -95.3987},
@@ -54,8 +54,8 @@
     "campus_id": "TCH_NORTH_AUSTIN",
     "name": "Texas Children's Hospital - North Austin Campus (Representative)",
     "metro_area": "AUSTIN_METRO",
-    "address": "123 Childrens Way, Austin, TX 78759 (Fictional Address)",
-    "location": {"latitude": 30.4581, "longitude": -97.7946}, 
+    "address": "9835 N. Lake Creek Pkwy, Austin, TX 78717",
+    "location": {"latitude": 30.4743, "longitude": -97.7905}, 
     "exclusions": [
       {"criteria_id": "TCNA_EX01", "criteria_name": "No Highly Specialized Surgeries", "description": "Does not perform highly complex surgeries like neurosurgery or transplant; refers to larger centers.", "affected_keywords_in_complaint": ["brain tumor surgery", "liver transplant needed"], "affected_keywords_in_history": ["complex neuro case"]},
       {"criteria_id": "TCNA_EX02", "criteria_name": "NICU Level II/III (Limited Level IV capabilities)", "description": "Handles moderately premature infants; most critical neonates or those needing subspecialty surgery may be transferred.", "affected_keywords_in_complaint": ["extreme prematurity", "neonate_under_1kg"], "affected_keywords_in_history": ["23 week gestation"]}
@@ -66,5 +66,22 @@
       "nicu_beds_total": 20, "nicu_beds_available": 5
     },
     "helipads": [{"helipad_id": "TCH_NAUS_HELI", "name": "North Austin Helipad", "location": {"latitude": 30.4579, "longitude": -97.7944}}]
+  },
+  {
+    "campus_id": "TCH_PAVILION_WOMEN",
+    "name": "Texas Children's Hospital - Pavilion for Women",
+    "metro_area": "HOUSTON_METRO",
+    "address": "6651 Main Street, Houston, TX 77030",
+    "location": {"latitude": 29.7100, "longitude": -95.4000},
+    "exclusions": [
+      {"criteria_id": "TCHPW_EX01", "criteria_name": "Maternal and Women's Care Only", "description": "Primarily focuses on maternal, women's care, and neonatal services.", "affected_keywords_in_complaint": ["pediatric trauma", "pediatric surgery"], "affected_keywords_in_history": ["pediatric patient non-neonatal"]},
+      {"criteria_id": "TCHPW_EX02", "criteria_name": "Limited Pediatric Services", "description": "Limited pediatric services outside of neonatal and newborn care.", "affected_keywords_in_complaint": ["older child", "adolescent"], "affected_keywords_in_history": ["school-aged patient"]}
+    ],
+    "bed_census": {
+      "total_beds": 150, "available_beds": 30,
+      "icu_beds_total": 4, "icu_beds_available": 1,
+      "nicu_beds_total": 68, "nicu_beds_available": 15
+    },
+    "helipads": [{"helipad_id": "TCH_PW_HELI", "name": "Pavilion for Women Helipad", "location": {"latitude": 29.7102, "longitude": -95.4001}}]
   }
 ]

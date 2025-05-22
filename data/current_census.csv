@@ -1,0 +1,56 @@
+
+unit_id,unit_name,campus_id,unit_type,total_beds,available_beds,occupied_beds,unavailable_beds,occupancy_rate,expected_admissions,expected_transfers_in,expected_transfers_out,expected_discharges
+MC_ACUTE,Main Campus Acute Care,TCH_MAIN_TMC,general,281,22,244,1,87,20,8,1,31
+AB_7_SOUTH,AB 7 South,TCH_MAIN_TMC,general,8,6,1,0,12,1,0,0,0
+LT_CARDIOLOGY_22,LT Cardiology Inpatient 22,TCH_MAIN_TMC,general,15,0,14,0,93,0,1,0,2
+LT_CARDIOLOGY_23,LT Cardiology Inpatient 23,TCH_MAIN_TMC,general,28,0,26,0,92,0,2,0,3
+WT_GENERAL_MEDICINE,WT General Medicine,TCH_MAIN_TMC,general,22,0,22,0,100,2,0,0,3
+WT_HEMATOLOGY_ONCOLOGY,WT Hematology/Oncology,TCH_MAIN_TMC,general,32,5,26,0,81,1,0,0,2
+WT_HEMONC_7,WT Hematology/Oncology 7,TCH_MAIN_TMC,general,22,1,19,0,86,1,1,0,3
+WT_NEURO_SCIENCE_SURGERY,WT Neuroscience/Surgery,TCH_MAIN_TMC,general,35,2,29,0,82,10,0,1,3
+WT_PHMU,WT PHMU,TCH_MAIN_TMC,general,36,0,35,0,97,0,2,0,6
+WT_PUL_ADOL_ENDO,WT Pulmonary/Adolescent/Endocrinology,TCH_MAIN_TMC,general,36,2,34,0,94,0,0,0,3
+WT_REHABILITATION,WT Rehabilitation,TCH_MAIN_TMC,general,16,1,15,0,93,0,0,0,0
+WT_SURGERY_CARE,WT Surgery Care,TCH_MAIN_TMC,general,31,5,23,1,77,5,2,0,6
+WC_ACUTE,West Campus Acute Care,TCH_WEST_KATY,general,42,2,36,0,85,5,0,1,9
+WC_3_WEST,West Campus 3 West,TCH_WEST_KATY,general,24,1,21,0,87,3,0,1,7
+WC_4_WEST,West Campus 4 West,TCH_WEST_KATY,general,0,0,0,0,0,0,0,0,0
+WC_5_WEST,West Campus 5 West,TCH_WEST_KATY,general,18,1,15,0,83,2,0,0,2
+WL_ACUTE,Woodlands Acute Care,TCH_WOODLANDS,general,43,6,37,0,86,1,0,2,9
+WL_3,Woodlands 3,TCH_WOODLANDS,general,15,3,12,0,80,0,0,0,3
+WL_5,Woodlands 5,TCH_WOODLANDS,general,28,3,25,0,89,1,0,2,6
+AN_ACUTE,Austin Acute Care,TCH_NORTH_AUSTIN,general,17,3,14,0,82,0,0,0,2
+AN_WOMENS,Austin Women's Unit,TCH_NORTH_AUSTIN,general,8,1,7,0,87,0,0,0,4
+AN_LABOR_DELIVERY,Austin Labor & Delivery Unit,TCH_NORTH_AUSTIN,general,7,1,6,0,85,0,0,0,3
+AN_MBU,Austin Mother/Baby Unit,TCH_NORTH_AUSTIN,general,1,0,1,0,100,0,0,0,1
+AN_LDO_4,Austin LDO 4,TCH_NORTH_AUSTIN,general,0,0,0,0,0,0,0,0,0
+AN_NEWBORN_NURSERY,Austin Newborn Nursery,TCH_NORTH_AUSTIN,general,0,0,0,0,0,0,0,0,0
+AN_WOMENS_ASSESS,Austin Women's Assess,TCH_NORTH_AUSTIN,general,0,-1,1,0,0,0,0,0,1
+AN_PICU,Austin PICU,TCH_NORTH_AUSTIN,icu,7,0,6,0,85,1,0,1,1
+AN_NICU,Austin NICU,TCH_NORTH_AUSTIN,nicu,11,0,11,0,100,0,0,1,1
+LT_ACHD_24,LT Adult Congenital Heart Disease 24,TCH_MAIN_TMC,icu,10,2,7,0,70,1,0,0,1
+LT_CVICU_16,LT Cardiovascular ICU 16,TCH_MAIN_TMC,icu,12,0,12,0,100,0,0,2,0
+LT_CVICU_17,LT Cardiovascular ICU 17,TCH_MAIN_TMC,icu,24,2,22,0,91,1,0,2,0
+LT_CVICU_18,LT Cardiovascular ICU 18,TCH_MAIN_TMC,icu,10,0,10,0,100,0,0,0,0
+LT_PICU_10,LT Pediatric ICU 10,TCH_MAIN_TMC,icu,27,1,26,0,96,1,1,2,0
+LT_PICU_11,LT Pediatric ICU 11,TCH_MAIN_TMC,icu,10,0,10,0,100,0,0,1,0
+LT_PICU_12,LT Pediatric ICU 12,TCH_MAIN_TMC,icu,27,0,27,0,100,1,3,0,2
+LT_PICU_9,LT Pediatric ICU 9,TCH_MAIN_TMC,icu,27,0,26,0,96,4,0,4,0
+WT_BMT_UNIT,WT Bone Marrow Transplant Unit,TCH_MAIN_TMC,icu,12,0,12,0,100,1,0,0,0
+WT_CARDIOVASCULAR_ICU,WT Cardiovascular ICU,TCH_MAIN_TMC,icu,0,0,0,0,0,0,0,0,0
+WC_4_PICU,West Campus PICU,TCH_WEST_KATY,icu,15,1,13,0,86,1,0,0,1
+WL_PICU,Woodlands PICU,TCH_WOODLANDS,icu,12,0,12,0,100,1,0,1,0
+PW_PAVILION,Pavilion for Women,TCH_PAVILION_WOMEN,general,76,14,62,0,81,1,6,9,9
+PW_CCU_9,PW Critical Care Unit 9,TCH_PAVILION_WOMEN,icu,4,1,3,0,75,0,0,2,0
+PW_LABOR_DELIVERY,PW Labor & Delivery Unit,TCH_PAVILION_WOMEN,general,15,3,12,0,80,0,0,5,0
+PW_MBU_12,PW Mother/Baby Unit 12,TCH_PAVILION_WOMEN,general,18,6,12,0,66,0,2,0,3
+PW_MBU_14,PW Mother/Baby Unit 14,TCH_PAVILION_WOMEN,general,12,1,11,0,91,0,1,2,4
+PW_MBU_15,PW Mother/Baby Unit 15,TCH_PAVILION_WOMEN,general,6,1,5,0,83,0,0,0,1
+PW_MBU_15_NICU,PW MBU 15 NICU Complex Care,TCH_PAVILION_WOMEN,nicu,0,0,0,0,0,0,0,0,0
+PW_NICU_7,PW NICU 7,TCH_PAVILION_WOMEN,nicu,14,0,14,0,100,0,0,0,0
+PW_NICU_MAIN,PW NICU Main,TCH_PAVILION_WOMEN,nicu,54,15,39,0,72,0,0,3,0
+PW_PACU,PW Post-Anesthesia Care Unit,TCH_PAVILION_WOMEN,general,0,0,0,0,0,0,0,0,0
+PW_WOMENS_SPECIALTY,PW Women's Specialty,TCH_PAVILION_WOMEN,general,21,2,19,0,90,1,3,0,1
+WL_NICU,Woodlands NICU,TCH_WOODLANDS,nicu,15,2,13,0,86,0,0,0,0
+WT_NEWBORN_LEVEL_2,WT Newborn Center Level 2,TCH_MAIN_TMC,nicu,33,0,33,0,100,0,4,0,5
+WT_NEWBORN_LEVEL_3,WT Newborn Center Level 3,TCH_MAIN_TMC,nicu,68,1,66,0,97,1,0,1,1

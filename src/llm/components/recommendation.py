@@ -72,6 +72,7 @@ class RecommendationGenerator:
         specialty_assessment: Dict[str, Any],
         exclusion_evaluation: Optional[Dict[str, Any]] = None,
     ) -> Optional[Recommendation]:
+        """Detailed logging has been added to diagnose recommendation issues."""
         """
         Attempt to generate a recommendation using the LLM with JSON schema.
         
@@ -84,10 +85,22 @@ class RecommendationGenerator:
             Dictionary with recommendation or None if failed
         """
         try:
+            # Log input data for debugging
+            logger.info(f"===== RECOMMENDATION GENERATION INPUTS =====\n")
+            logger.info(f"EXTRACTED ENTITIES: {json.dumps(extracted_entities, indent=2)[:1000]}...\n")
+            logger.info(f"SPECIALTY ASSESSMENT: {json.dumps(specialty_assessment, indent=2)[:1000]}...\n")
+            if exclusion_evaluation:
+                logger.info(f"EXCLUSION EVALUATION: {json.dumps(exclusion_evaluation, indent=2)[:1000]}...\n")
+            else:
+                logger.info("EXCLUSION EVALUATION: None\n")
+                
             # Construct the prompt for recommendation generation
             prompt = self._build_recommendation_prompt(
                 extracted_entities, specialty_assessment, exclusion_evaluation
             )
+            
+            # Log the prompt for debugging
+            logger.info(f"===== RECOMMENDATION PROMPT =====\n{prompt[:1000]}...\n[truncated]")
             
             # Define JSON schema to enforce structure following LM Studio format
             json_schema = {
@@ -120,61 +133,101 @@ class RecommendationGenerator:
                                 "description": "The urgency level for this transfer based on patient stability"
                             },
                             "campus_scores": {
-                                "type": "object",
-                                "properties": {
-                                    "care_level_match": {"type": "number", "description": "Score 1-5 for appropriate care level match"},
-                                    "specialty_availability": {"type": "number", "description": "Score 1-5 for needed specialist availability"},
-                                    "capacity": {"type": "number", "description": "Score 1-5 for bed availability"},
-                                    "location": {"type": "number", "description": "Score 1-5 for proximity to patient's current location"},
-                                    "specific_resources": {"type": "number", "description": "Score 1-5 for required equipment/services"}, 
-                                    "total_score": {"type": "number", "description": "Sum of all scores (max 25)"}
-                                },
-                                "required": ["care_level_match", "specialty_availability", "capacity", "location", "specific_resources", "total_score"],
-                                "description": "Scoring breakdown for the recommended campus"
-                            },
-                            "excluded_campuses": {
                                 "type": "array",
                                 "items": {
                                     "type": "object",
                                     "properties": {
-                                        "name": {
-                                            "type": "string",
-                                            "description": "Name of the excluded campus"
-                                        },
-                                        "total_score": {
-                                            "type": "number",
-                                            "description": "Total score for this campus (should be lower than recommended campus)"
-                                        },
-                                        "reason": {
-                                            "type": "string",
-                                            "description": "Specific reason why this campus scored lower"
+                                        "name": {"type": "string"},
+                                        "found": {"type": "boolean"}
+                                    }
+                                },
+                                "description": "List of exclusion criteria checked and whether any were found"
+                            },
+                            "bed_availability": {
+                                "type": "object",
+                                "properties": {
+                                    "confirmed": {"type": "boolean"},
+                                    "details": {"type": "string"}
+                                },
+                                "description": "Confirmation of bed availability"
+                            },
+                            "traffic_report": {
+                                "type": "string",
+                                "description": "Current traffic conditions affecting transport"
+                            },
+                            "weather_report": {
+                                "type": "string",
+                                "description": "Current weather conditions affecting transport"
+                            },
+                            "addresses": {
+                                "type": "object",
+                                "properties": {
+                                    "origin": {"type": "string"},
+                                    "destination": {"type": "string"}
+                                },
+                                "description": "Street addresses for origin and destination"
+                            },
+                            "eta": {
+                                "type": "object",
+                                "properties": {
+                                    "minutes": {"type": "number"},
+                                    "transport_mode": {"type": "string"}
+                                },
+                                "description": "Estimated time of arrival in minutes and transport mode"
+                            },
+                            "required_specialties": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "description": "List of specialties needed for this patient"
+                            },
+                            "campus_scores": {
+                                "type": "object",
+                                "properties": {
+                                    "primary": {
+                                        "type": "object",
+                                        "properties": {
+                                            "care_level_match": {"type": "number"},
+                                            "specialty_availability": {"type": "number"},
+                                            "capacity": {"type": "number"},
+                                            "location": {"type": "number"},
+                                            "specific_resources": {"type": "number"}
                                         }
                                     },
-                                    "required": ["name", "total_score", "reason"]
+                                    "backup": {
+                                        "type": "object",
+                                        "properties": {
+                                            "care_level_match": {"type": "number"},
+                                            "specialty_availability": {"type": "number"},
+                                            "capacity": {"type": "number"},
+                                            "location": {"type": "number"},
+                                            "specific_resources": {"type": "number"}
+                                        }
+                                    }
                                 },
-                                "description": "Comparative analysis explaining why other campuses were excluded from consideration"
-                            },
-                            "specialty_services_needed": {
-                                "type": "array",
-                                "items": {"type": "string"},
-                                "description": "List of specific specialty services the patient needs at the receiving facility"
+                                "description": "Scores for primary and backup campuses on various criteria"
                             },
                             "transport_considerations": {
                                 "type": "array",
-                                "items": {"type": "string"},
-                                "description": "Important considerations for the transport team during transfer"
+                                "items": {
+                                    "type": "string"
+                                },
+                                "description": "Considerations for patient transport"
                             },
                             "required_resources": {
                                 "type": "array",
-                                "items": {"type": "string"},
-                                "description": "Specific resources needed at the receiving facility for this patient"
+                                "items": {
+                                    "type": "string"
+                                },
+                                "description": "List of resources needed for this patient"
                             },
                             "clinical_summary": {
                                 "type": "string",
                                 "description": "Concise summary of the patient's clinical condition and needs"
                             }
                         },
-                        "required": ["recommended_campus", "care_level", "confidence_score", "clinical_reasoning", "urgency", "campus_scores", "excluded_campuses"]
+                        "required": ["recommended_campus", "confidence_score", "care_level", "clinical_reasoning", "exclusions_checked", "bed_availability", "traffic_report", "weather_report", "addresses", "eta", "required_specialties", "campus_scores", "transport_considerations", "required_resources", "clinical_summary"]
                     }
                 }
             }
@@ -206,29 +259,52 @@ class RecommendationGenerator:
                     "```json\n"
                     "{"
                     "\n  \"recommended_campus\": \"Hospital campus name\","
-                    "\n  \"care_level\": \"general_floor\" | \"intermediate_care\" | \"picu\" | \"nicu\","
                     "\n  \"confidence_score\": number between 0-100,"
-                    "\n  \"clinical_reasoning\": \"Explanation of why this campus and care level are appropriate...\","
-                    "\n  \"urgency\": \"low\" | \"medium\" | \"high\" | \"critical\","
-                    "\n  \"campus_scores\": {"
-                    "\n    \"care_level_match\": number between 1-5,"
-                    "\n    \"specialty_availability\": number between 1-5,"
-                    "\n    \"capacity\": number between 1-5,"
-                    "\n    \"location\": number between 1-5,"
-                    "\n    \"specific_resources\": number between 1-5,"
-                    "\n    \"total_score\": sum of all scores (max 25)"
-                    "\n  },"
-                    "\n  \"excluded_campuses\": ["
-                    "\n    { \"name\": \"Campus name\", \"total_score\": number, \"reason\": \"Reason why this campus scored lower\" },"
+                    "\n  \"backup_campus\": \"Backup hospital campus name\","
+                    "\n  \"backup_confidence_score\": number between 0-100,"
+                    "\n  \"care_level\": \"general_floor\" | \"intermediate_care\" | \"picu\" | \"nicu\","
+                    "\n  \"clinical_reasoning\": \"Brief clinical justification...\","
+                    "\n  \"exclusions_checked\": ["
+                    "\n    { \"name\": \"Exclusion criterion name\", \"found\": boolean },"
                     "\n    ..."
                     "\n  ],"
-                    "\n  \"required_specialties\": [\"specialty1\", \"specialty2\", ...] (empty if no specialists needed),"
+                    "\n  \"bed_availability\": {"
+                    "\n    \"confirmed\": boolean,"
+                    "\n    \"details\": \"Bed availability details\""
+                    "\n  },"
+                    "\n  \"traffic_report\": \"Current traffic conditions\","
+                    "\n  \"weather_report\": \"Current weather conditions\","
+                    "\n  \"addresses\": {"
+                    "\n    \"origin\": \"Street address of current location\","
+                    "\n    \"destination\": \"Street address of destination\""
+                    "\n  },"
+                    "\n  \"eta\": {"
+                    "\n    \"minutes\": number,"
+                    "\n    \"transport_mode\": \"Transport mode\""
+                    "\n  },"
+                    "\n  \"required_specialties\": [\"specialty1\", \"specialty2\", ...],"
+                    "\n  \"campus_scores\": {"
+                    "\n    \"primary\": {"
+                    "\n      \"care_level_match\": number between 1-5,"
+                    "\n      \"specialty_availability\": number between 1-5,"
+                    "\n      \"capacity\": number between 1-5,"
+                    "\n      \"location\": number between 1-5,"
+                    "\n      \"specific_resources\": number between 1-5"
+                    "\n    },"
+                    "\n    \"backup\": {"
+                    "\n      \"care_level_match\": number between 1-5,"
+                    "\n      \"specialty_availability\": number between 1-5,"
+                    "\n      \"capacity\": number between 1-5,"
+                    "\n      \"location\": number between 1-5,"
+                    "\n      \"specific_resources\": number between 1-5"
+                    "\n    }"
+                    "\n  },"
                     "\n  \"transport_considerations\": [\"consideration1\", ...],"
                     "\n  \"required_resources\": [\"resource1\", ...],"
                     "\n  \"clinical_summary\": \"Concise summary...\""
                     "\n}"
                     "\n```\n"
-                    "Ensure your JSON conforms EXACTLY to this schema and is valid. Remember to only recommend specialty services when truly needed, and to use the minimum appropriate care level."
+                    "Ensure your JSON conforms EXACTLY to this schema and is valid."
                 )
                 
                 # Call the LLM with explicit JSON formatting instructions
@@ -250,52 +326,57 @@ class RecommendationGenerator:
             finish_reason = response.choices[0].finish_reason
             if finish_reason == "length":
                 logger.warning(f"LLM response was truncated (finish_reason={finish_reason})")
-            elif finish_reason != "stop":
-                logger.warning(f"Unexpected finish reason: {finish_reason}")
             
-            # Parse the response - may contain JSON but with content outside JSON blocks
+            # Try to parse the JSON response
             try:
-                # First try direct parsing
-                try:
-                    recommendation_json = json.loads(content)
-                    logger.info("Successfully parsed structured recommendation response directly")
-                except json.JSONDecodeError:
-                    # Use our robust parser for more complex responses
-                    logger.info("Direct parsing failed, using robust parser")
-                    recommendation_json = robust_json_parser(content)
-                    if not recommendation_json:
-                        logger.error("Robust JSON parsing also failed")
-                        raise ValueError("Failed to parse LLM response as JSON")
-                    logger.info("Successfully parsed JSON with robust parser")
+                recommendation_json = robust_json_parser.extract_and_parse_json(content)
                 
                 # Log the parsed structure
-                logger.info(f"Parsed recommendation response, keys: {list(recommendation_json.keys())}")
+                logger.info(f"===== RECOMMENDATION JSON RESPONSE =====\n{json.dumps(recommendation_json, indent=2)}\n")
                 
-                # Some models might still wrap the output, so handle that case
-                if "recommendation" not in recommendation_json and isinstance(recommendation_json, dict):
-                    # Some models might return a wrapper object when using schemas
-                    for key, value in recommendation_json.items():
-                        if isinstance(value, dict) and "recommendation" in value:
-                            logger.info(f"Found recommendation in nested field '{key}'")
-                            recommendation_json = value
-                            break
+                # Validate the response has required fields
+                required_fields = [
+                    "recommended_campus", "confidence_score", "backup_campus", "backup_confidence_score",
+                    "care_level", "exclusions_checked", "addresses", "eta"
+                ]
+                missing_fields = [field for field in required_fields if field not in recommendation_json]
+                
+                if missing_fields:
+                    logger.error(f"===== MISSING REQUIRED FIELDS IN RECOMMENDATION =====\n{missing_fields}")
+                    logger.error("Will attempt to generate recommendation anyway, but it may be incomplete")
+                
+                # Check if exclusions were found
+                if "exclusions_checked" in recommendation_json:
+                    found_exclusions = [ex["name"] for ex in recommendation_json["exclusions_checked"] if ex.get("found", False)]
+                    if found_exclusions:
+                        logger.warning(f"===== EXCLUSIONS FOUND =====\n{found_exclusions}")
+                
+                # Log proximity and backup information
+                if "addresses" in recommendation_json and "eta" in recommendation_json:
+                    logger.info(f"===== PROXIMITY DATA =====")
+                    logger.info(f"Origin: {recommendation_json['addresses'].get('origin', 'Unknown')}")
+                    logger.info(f"Destination: {recommendation_json['addresses'].get('destination', 'Unknown')}")
+                    logger.info(f"ETA: {recommendation_json['eta'].get('minutes', 'Unknown')} minutes via {recommendation_json['eta'].get('transport_mode', 'Unknown')}")
+                
+                # Log backup recommendation
+                if "backup_campus" in recommendation_json and "backup_confidence_score" in recommendation_json:
+                    logger.info(f"===== BACKUP RECOMMENDATION =====")
+                    logger.info(f"Backup Campus: {recommendation_json['backup_campus']}")
+                    logger.info(f"Backup Confidence: {recommendation_json['backup_confidence_score']}%")
+                
+                # Log care level justification
+                if "clinical_reasoning" in recommendation_json and "care_level" in recommendation_json:
+                    logger.info(f"===== CARE LEVEL JUSTIFICATION =====\n{recommendation_json['care_level']}: {recommendation_json['clinical_reasoning']}")
                 
                 # Convert the JSON response to a Recommendation object
                 recommendation_obj = self._convert_to_recommendation(recommendation_json)
+                logger.info(f"===== FINAL RECOMMENDATION OBJECT =====\n{recommendation_obj}\n")
                 return recommendation_obj
                 
-            except json.JSONDecodeError as e:
-                logger.error(f"JSON parsing failed despite schema: {str(e)}")
-                logger.warning("Falling back to robust parser")
-                recommendation_json = robust_json_parser(content)
-                
-                if recommendation_json and "recommendation" in recommendation_json:
-                    # Convert the JSON response to a Recommendation object
-                    recommendation_obj = self._convert_to_recommendation(recommendation_json)
-                    return recommendation_obj
-                else:
-                    logger.error("Failed to generate a valid recommendation with schema")
-                    return None
+            except (json.JSONDecodeError, ValueError, AttributeError) as e:
+                logger.error(f"===== JSON PARSING FAILED =====\n{str(e)}")
+                logger.error(f"Raw response content: {content[:500]}...")
+                return None
                 
         except Exception as e:
             logger.error(f"Error in LLM recommendation with schema: {str(e)}")
@@ -323,6 +404,52 @@ class RecommendationGenerator:
         essential_patient_info = self._extract_essential_patient_info(extracted_entities)
         essential_specialty_info = self._extract_essential_specialty_info(specialty_assessment)
         essential_exclusion_info = self._extract_essential_exclusion_info(exclusion_evaluation)
+        
+        # Extract scoring results if available
+        scoring_results_str = ""
+        if "scoring_results" in specialty_assessment:
+            scoring_results = specialty_assessment["scoring_results"]
+            scoring_results_str = "## SCORING RESULTS\n"
+            
+            # Add the scores section
+            if "scores" in scoring_results:
+                scoring_results_str += "### Clinical Scores:\n"
+                for score_name, score_data in scoring_results["scores"].items():
+                    if score_data != "N/A" and isinstance(score_data.get("score"), (int, float)):
+                        scoring_results_str += f"- {score_name.upper()}: {score_data['score']}\n"
+                        if "interpretation" in score_data:
+                            scoring_results_str += f"  Interpretation: {score_data['interpretation']}\n"
+            
+            # Add recommended care levels
+            if "recommended_care_levels" in scoring_results:
+                scoring_results_str += "\n### Recommended Care Levels (based on scores):\n"
+                scoring_results_str += ", ".join(scoring_results["recommended_care_levels"]) + "\n"
+            
+            # Add justifications
+            if "justifications" in scoring_results:
+                scoring_results_str += "\n### Score Justifications:\n"
+                for justification in scoring_results["justifications"]:
+                    scoring_results_str += f"- {justification}\n"
+        
+        # Include travel and weather data if available
+        travel_data_str = ""
+        if "travel_data" in extracted_entities:
+            travel_data = extracted_entities["travel_data"]
+            travel_data_str = "## TRAVEL & LOCATION DATA\n"
+            
+            if "road_traffic" in travel_data:
+                travel_data_str += f"Road Traffic: {travel_data['road_traffic']}\n"
+            
+            if "weather" in travel_data:
+                travel_data_str += f"Weather Conditions: {travel_data['weather']}\n"
+            
+            if "current_address" in travel_data:
+                travel_data_str += f"Current Location: {travel_data['current_address']}\n"
+            
+            if "distance_estimates" in travel_data:
+                travel_data_str += "\nDistance Estimates:\n"
+                for campus, estimate in travel_data["distance_estimates"].items():
+                    travel_data_str += f"- To {campus}: {estimate['distance']} miles, ETA: {estimate['eta']} minutes\n"
         
         # List available hospital campuses with their capabilities
         hospitals = [
@@ -396,7 +523,10 @@ class RecommendationGenerator:
                 hospitals_str += f"  - {capability}: {level}\n"
         
         return f"""
-You are a medical transfer coordinator tasked with recommending a hospital campus for pediatric patient transfer. Your job is to match patients with the appropriate level of care - not every patient needs the highest level of care or specialists.
+## RECOMMENDATION TASK
+You are a pediatric transfer coordinator making a recommendation for the optimal hospital campus 
+for a pediatric patient transfer. Using ONLY the information provided and your medical expertise, 
+generate a recommendation that balances clinical needs, bed availability, and geographic practicality.
 
 ## PATIENT INFORMATION
 {essential_patient_info}
@@ -404,8 +534,12 @@ You are a medical transfer coordinator tasked with recommending a hospital campu
 ## SPECIALTY NEEDS
 {essential_specialty_info}
 
+{scoring_results_str}
+
 ## EXCLUSION CRITERIA
 {essential_exclusion_info}
+
+{travel_data_str}
 
 ## AVAILABLE HOSPITAL CAMPUSES
 {hospitals_str}
@@ -424,12 +558,17 @@ Use this structured approach to determine required care level:
    - Mild respiratory support (e.g., nasal cannula oxygen)
    - Stable but requires closer observation
 
-3. PICU (Pediatric Intensive Care):
-   - Respiratory failure requiring ventilator or high-flow oxygen
-   - Hemodynamic instability requiring vasopressors
-   - Severe neurological compromise
-   - Multiple organ system involvement requiring intensive monitoring
-   - Post-major surgery requiring intensive monitoring
+3. PICU (Pediatric Intensive Care): [RESERVE FOR TRULY CRITICAL PATIENTS ONLY]
+   - MUST HAVE AT LEAST ONE OF THESE SPECIFIC INDICATIONS TO QUALIFY FOR PICU:
+     * Respiratory failure requiring ventilator support (non-invasive or invasive)
+     * Hemodynamic instability requiring vasopressors or continuous fluid resuscitation
+     * Severe neurological compromise (GCS < 8, status epilepticus, increasing ICP)
+     * Documented organ failure (not just risk of failure)
+     * Immediate post-op from major surgery with unstable vital signs
+     * Specific critical care interventions that cannot be provided on a regular floor
+   - IMPORTANT: PICU beds are a precious resource. Common conditions like bronchiolitis, 
+     Kawasaki disease without coronary involvement, DKA without altered mental status, 
+     or fever without instability do NOT automatically require PICU
 
 4. NICU (Neonatal Intensive Care):
    - Premature infants requiring intensive support
@@ -444,29 +583,70 @@ Only recommend specialists when truly needed:
    - Regional campuses have good coverage of common specialties
 
 ## CAMPUS SELECTION CRITERIA
-Score each campus on a scale of 1-5 for this specific patient:
-1. CARE LEVEL MATCH: Does the campus provide the appropriate level of care? (Not higher than needed)
-2. SPECIALTY AVAILABILITY: Are needed specialists available? (If specialists not needed, all campuses score 5)
-3. CAPACITY: Consider bed availability
-4. LOCATION: Proximity to patient's current location
-5. SPECIFIC RESOURCES: Special equipment or services required
+Score each campus on a scale of 1-5 for this specific patient with LOCATION GIVEN HIGHEST PRIORITY:
+
+1. LOCATION: [HIGHEST PRIORITY FACTOR] Proximity to patient's current location
+   - Score 5: Closest facility (<30 min transport time)
+   - Score 4: Moderately close (30-45 min transport time)
+   - Score 3: Further away (45-60 min transport time) 
+   - Score 2: Distant (60-90 min transport time)
+   - Score 1: Very distant (>90 min transport time)
+   - CRITICAL: When all other factors are equal, ALWAYS choose the closest facility
+
+2. CARE LEVEL MATCH: Does the campus provide the MINIMUM appropriate care level needed?
+   - IMPORTANT: Do NOT recommend higher level of care than needed (e.g., PICU when intermediate care would suffice)
+   - Regional campuses should be utilized for non-complex cases that meet their capabilities
+
+3. SPECIALTY AVAILABILITY: Are needed specialists available? 
+   - Only consider specialists that are TRULY REQUIRED for immediate care
+   - If specialists are not immediately needed, all campuses score 5
+
+4. CAPACITY: Consider bed availability (never recommend a facility with zero beds)
+
+5. SPECIFIC RESOURCES: Special equipment or services required for this specific case
 
 Follow this critical reasoning chain in detail:
 1. First analyze the patient's condition and determine MINIMUM appropriate care level needed
-2. Identify if specialists are truly required (not just potentially helpful)
-3. Score each campus using the criteria above
-4. Recommend the campus with the highest total score
-5. Explain why other campuses scored lower
-6. Assign an appropriate urgency level (low, medium, high, critical) based on patient stability
+   - Be conservative with PICU recommendations - only the sickest patients need PICU
+   - Base care level on objective clinical criteria, not just diagnosis
+
+2. Calculate distance/travel time to each campus from the patient's location
+   - This is a CRITICAL factor - proximity should be weighted heavily
+   - Explicitly compare travel times between campuses
+
+3. Identify if specialists are truly required for IMMEDIATE care (not just eventually helpful)
+   - Most common pediatric conditions can be managed without specialists
+
+4. Score each campus using the criteria above with LOCATION given highest priority
+   - Campus scores should reflect the actual travel times provided
+
+5. Recommend the campus with the best balance of proximity and appropriate care level
+   - Proximity should be the deciding factor when care level needs are met
+
+6. CRITICAL: Provide a SPECIFIC backup campus with detailed reasoning
+   - Explain why the backup was chosen over other options
+
+7. CRITICAL: For each campus not chosen, provide specific reasons why it was excluded
+   - ALWAYS explain why a closer campus was bypassed if a farther one was chosen
+   - Include specific distance/time comparisons in this justification
 
 Your recommendation must include:
 - A specific recommended hospital campus from the list above
-- Clear explanation of the minimum appropriate care level needed (avoid recommending higher levels than necessary)
-- The score breakdown for the recommended campus
-- Comparative analysis explaining why other campuses were excluded
-- Only recommend specialty services that are truly required
-- Important considerations for the transport team
-- Essential resources needed (not an exhaustive list of all possible resources)
+- A specific backup campus recommendation
+- Confidence score (percentage 0-100%) for both primary and backup recommendations
+- Care level needed (general_floor, intermediate_care, picu, or nicu)
+- Brief clinical justification for the recommendation
+- List of exclusions checked and whether any were found
+- Confirmation of bed availability
+- Current traffic conditions affecting transport
+- Current weather conditions affecting transport
+- Street addresses for origin and destination
+- Estimated time of arrival (ETA) in minutes and transport mode
+- List of specialties needed for this patient
+- Scores for primary and backup campuses on various criteria
+- Considerations for patient transport
+- List of resources needed for this patient
+- Concise summary of the patient's clinical condition and needs
 
 This recommendation will directly inform critical patient transfer decisions.
 """
@@ -558,8 +738,12 @@ This recommendation will directly inform critical patient transfer decisions.
         try:
             logger.info(f"Processing LLM recommendation: {json.dumps(recommendation_json, indent=2)[:1000]}...")
             
-            # Extract campus name
+            # Extract primary campus name
             campus_name = recommendation_json.get("recommended_campus", "No specific campus recommended")
+            
+            # Extract backup campus if available
+            backup_campus = recommendation_json.get("backup_campus", "No backup campus specified")
+            backup_confidence = float(recommendation_json.get("backup_confidence_score", 0.0))
             
             # Extract confidence score
             confidence = float(recommendation_json.get("confidence_score", 70.0))
@@ -583,6 +767,9 @@ This recommendation will directly inform critical patient transfer decisions.
             
             notes.append(f"Care Level: {care_level_display}")
             
+            # Add backup recommendation information
+            notes.append(f"\nBackup Recommendation: {backup_campus} (Confidence: {backup_confidence:.1f}%)")
+            
             # Add campus scoring if available
             if "campus_scores" in recommendation_json and recommendation_json["campus_scores"]:
                 scores = recommendation_json["campus_scores"]
@@ -603,12 +790,40 @@ This recommendation will directly inform critical patient transfer decisions.
                     except (ValueError, TypeError):
                         return 'N/A'
                 
-                # Format individual scores
-                notes.append(f"- Care Level Match: {format_score(scores.get('care_level_match'))}/5")
-                notes.append(f"- Specialty Availability: {format_score(scores.get('specialty_availability'))}/5")
-                notes.append(f"- Capacity: {format_score(scores.get('capacity'))}/5")
-                notes.append(f"- Location: {format_score(scores.get('location'))}/5")
-                notes.append(f"- Specific Resources: {format_score(scores.get('specific_resources'))}/5")
+                # Primary campus scores
+                if "primary" in scores:
+                    primary_scores = scores["primary"]
+                    notes.append("\nPrimary Campus Scores:")
+                    notes.append(f"- Care Level Match: {format_score(primary_scores.get('care_level_match'))}/5")
+                    notes.append(f"- Specialty Availability: {format_score(primary_scores.get('specialty_availability'))}/5")
+                    notes.append(f"- Capacity: {format_score(primary_scores.get('capacity'))}/5")
+                    notes.append(f"- Location: {format_score(primary_scores.get('location'))}/5")
+                    notes.append(f"- Specific Resources: {format_score(primary_scores.get('specific_resources'))}/5")
+                    
+                    # Calculate total score
+                    try:
+                        individual_scores = [
+                            format_score(primary_scores.get('care_level_match')),
+                            format_score(primary_scores.get('specialty_availability')),
+                            format_score(primary_scores.get('capacity')),
+                            format_score(primary_scores.get('location')),
+                            format_score(primary_scores.get('specific_resources'))
+                        ]
+                        if all(isinstance(s, int) for s in individual_scores):
+                            total_score = sum(individual_scores)
+                            notes.append(f"- Total Primary Score: {total_score}/25")
+                    except Exception as e:
+                        logger.error(f"Error calculating total score: {str(e)}")
+                
+                # Backup campus scores
+                if "backup" in scores:
+                    backup_scores = scores["backup"]
+                    notes.append("\nBackup Campus Scores:")
+                    notes.append(f"- Care Level Match: {format_score(backup_scores.get('care_level_match'))}/5")
+                    notes.append(f"- Specialty Availability: {format_score(backup_scores.get('specialty_availability'))}/5")
+                    notes.append(f"- Capacity: {format_score(backup_scores.get('capacity'))}/5")
+                    notes.append(f"- Location: {format_score(backup_scores.get('location'))}/5")
+                    notes.append(f"- Specific Resources: {format_score(backup_scores.get('specific_resources'))}/5")
                 
                 # Calculate total score properly
                 total_score = 'N/A'
@@ -634,6 +849,48 @@ This recommendation will directly inform critical patient transfer decisions.
                     notes.append("\nSpecialty Services Needed:")
                     notes.extend([f"- {service}" for service in specialties])
                 
+            # Add exclusion check information
+            if "exclusions_checked" in recommendation_json and recommendation_json["exclusions_checked"]:
+                exclusions = recommendation_json["exclusions_checked"]
+                notes.append("\nExclusion Criteria Checked:")
+                
+                for exclusion in exclusions:
+                    name = exclusion.get("name", "Unknown")
+                    found = exclusion.get("found", False)
+                    status = "FOUND - REQUIRES HUMAN REVIEW" if found else "Not Found"
+                    notes.append(f"- {name}: {status}")
+            
+            # Add travel data
+            if "addresses" in recommendation_json:
+                addresses = recommendation_json["addresses"]
+                notes.append("\nLocation Information:")
+                if "origin" in addresses:
+                    notes.append(f"- Origin Address: {addresses['origin']}")
+                if "destination" in addresses:
+                    notes.append(f"- Destination Address: {addresses['destination']}")
+            
+            # Add ETA information
+            if "eta" in recommendation_json:
+                eta = recommendation_json["eta"]
+                notes.append("\nEstimated Travel:")
+                if "minutes" in eta and "transport_mode" in eta:
+                    notes.append(f"- ETA: {eta['minutes']} minutes via {eta['transport_mode']}")
+            
+            # Add traffic and weather information
+            if "traffic_report" in recommendation_json:
+                notes.append(f"- Traffic Conditions: {recommendation_json['traffic_report']}")
+            if "weather_report" in recommendation_json:
+                notes.append(f"- Weather Conditions: {recommendation_json['weather_report']}")
+                
+            # Add bed availability confirmation
+            if "bed_availability" in recommendation_json:
+                bed_info = recommendation_json["bed_availability"]
+                confirmed = bed_info.get("confirmed", False)
+                details = bed_info.get("details", "No details provided")
+                status = "Confirmed" if confirmed else "NOT CONFIRMED - CHECK AVAILABILITY"
+                notes.append(f"\nBed Availability: {status}")
+                notes.append(f"- Details: {details}")
+            
             # Add transport considerations
             if "transport_considerations" in recommendation_json and recommendation_json["transport_considerations"]:
                 transport = recommendation_json["transport_considerations"]
@@ -703,19 +960,44 @@ This recommendation will directly inform critical patient transfer decisions.
                         if formatted_total is not None:
                             campus_entry["total_score"] = formatted_total
                             
-                        excluded_campuses.append(campus_entry)
-                        
-                if excluded_campuses:
-                    explainability_details["excluded_campuses"] = excluded_campuses
+            final_reason = reason
             
-            # Create and return the recommendation object
+            # Create an enhanced explainability_details dictionary with additional data
+            explainability_details = dict(recommendation_json)  # Copy original data
+            
+            # Add additional data to explainability details for display
+            explainability_details.update({
+                "recommended_campus_name": campus_name,
+                "backup_campus_name": backup_campus,
+                "backup_confidence_score": backup_confidence,
+                "proximity_analysis": {
+                    "distance_comparisons": True,  # Flag to indicate distance was considered
+                    "closer_options_bypassed": False  # Will be set to True if a farther campus was chosen
+                }
+            })
+            
+            # Check if we bypassed a closer option
+            if "addresses" in recommendation_json and "eta" in recommendation_json:
+                # This is a placeholder - we would need to compare actual distances
+                # But we want to ensure the data structure is available
+                closer_bypassed = False
+                closer_campus = ""
+                bypass_reason = ""
+                
+                explainability_details["proximity_analysis"].update({
+                    "closer_options_bypassed": closer_bypassed,
+                    "closer_campus": closer_campus,
+                    "bypass_reason": bypass_reason
+                })
+            
+            # Create and return the recommendation
             return Recommendation(
-                transfer_request_id="LLM_GENERATED",
-                recommended_campus_id=campus_name,  # Use the actual campus name as ID
+                transfer_request_id="llm_generated",  # This will be updated by the caller
+                recommended_campus_id=campus_name,
                 confidence_score=confidence,
-                reason=reason,
+                reason=final_reason,
                 notes=notes,
-                explainability_details=explainability_details
+                explainability_details=explainability_details,
             )
             
         except Exception as e:
@@ -727,7 +1009,7 @@ This recommendation will directly inform critical patient transfer decisions.
                 reason=f"Error processing recommendation: {str(e)}",
                 notes=["LLM processing error"],
             )
-    
+
     def _fallback_recommendation(
         self, 
         extracted_entities: Dict[str, Any],

@@ -16,6 +16,7 @@ from src.core.models import (
     TransportMode,
     WeatherData,
 )
+from src.core.scoring.score_processor import process_patient_scores
 from src.explainability.explainer import generate_simple_explanation
 from src.utils.travel_calculator import (
     Location,
@@ -72,10 +73,34 @@ def recommend_campus(
 
         # Filter campuses by bed availability
         care_levels = []
+        score_justifications = []
+        
+        # Check if human suggestions have care levels
         if human_suggestions and "care_levels" in human_suggestions:
             care_levels = human_suggestions["care_levels"]
-            print(f"Care levels requested: {care_levels}")
-
+            print(f"Care levels requested by human: {care_levels}")
+        else:
+            # Use scoring systems to determine care levels automatically
+            print("No human care level suggestions, using automatic scoring systems")
+            try:
+                # Process patient scores to determine care level
+                scoring_results = process_patient_scores(request.patient_data)
+                care_levels = scoring_results["recommended_care_levels"]
+                score_justifications = scoring_results["justifications"]
+                
+                print(f"Automatically determined care levels: {care_levels}")
+                print(f"Justifications: {score_justifications}")
+                
+                # Add scoring details to notes for transparency
+                for score_name, score_data in scoring_results["scores"].items():
+                    if score_data != "N/A" and isinstance(score_data.get("score"), (int, float)):
+                        print(f"{score_name.upper()} Score: {score_data['score']}")
+            except Exception as e:
+                print(f"Error using scoring systems: {str(e)}")
+                print("Defaulting to General care level")
+                care_levels = ["General"]
+                score_justifications = ["Default due to scoring error"]
+        
         campuses_with_beds = []
         for campus in eligible_campuses:
             print(f"Checking beds for {campus.name}")
@@ -179,8 +204,10 @@ def recommend_campus(
                 # Ground travel
                 if TransportMode.GROUND_AMBULANCE in available_transport_modes:
                     try:
+                        # Extract campus object properly from the dictionary data structure
+                        campus_obj = campus_data["campus"]
                         road_info = get_road_travel_info(
-                            sending_facility, campus.location
+                            sending_facility, campus_obj.location
                         )
                         if road_info and "duration_minutes" in road_info:
                             time_minutes = road_info["duration_minutes"]
@@ -195,7 +222,7 @@ def recommend_campus(
                 if TransportMode.AIR_AMBULANCE in available_transport_modes:
                     try:
                         air_info = get_air_travel_info(
-                            sending_facility, campus.location, current_weather
+                            sending_facility, campus_data["campus"].location, current_weather
                         )
                         if air_info and "duration_minutes" in air_info:
                             time_minutes = air_info["duration_minutes"]
@@ -213,7 +240,8 @@ def recommend_campus(
                     print(f"  Using fallback distance calculation for {campus.name}")
                     # Simple calculation based on coordinates
                     lat1, lon1 = sending_facility.latitude, sending_facility.longitude
-                    lat2, lon2 = campus.location.latitude, campus.location.longitude
+                    campus_obj = campus_data["campus"]
+                    lat2, lon2 = campus_obj.location.latitude, campus_obj.location.longitude
 
                     # Haversine formula
                     import math
@@ -456,7 +484,8 @@ def recommend_campus(
         if TransportMode.GROUND_AMBULANCE in available_transport_modes:
             try:
                 print(f"DEBUG: Calculating ground travel time to {campus.name}")
-                road_info = get_road_travel_info(sending_facility, campus.location)
+                campus_obj = campus["campus"] if isinstance(campus, dict) else campus
+                road_info = get_road_travel_info(sending_facility, campus_obj.location)
                 print(f"DEBUG: Ground travel info: {road_info}")
                 if road_info and "duration_minutes" in road_info:
                     travel_times[TransportMode.GROUND_AMBULANCE] = road_info[
@@ -473,8 +502,10 @@ def recommend_campus(
         if TransportMode.AIR_AMBULANCE in available_transport_modes:
             try:
                 print(f"DEBUG: Calculating air travel time to {campus.name}")
+                # Ensure we're getting the campus object correctly, whether it's directly a campus or inside a dict
+                campus_obj = campus["campus"] if isinstance(campus, dict) else campus
                 air_info = get_air_travel_info(
-                    sending_facility, campus.location, current_weather
+                    sending_facility, campus_obj.location, current_weather
                 )
                 print(f"DEBUG: Air travel info: {air_info}")
                 if air_info and "duration_minutes" in air_info:
@@ -542,14 +573,17 @@ def recommend_campus(
     # Prepare explanation notes
     notes = [
         f"Campus passed exclusion checks",
-        f"Bed type: {
-            best_option['bed_type']}, {
-            best_option['beds_available']} available",
-        f"Transport mode: {
-            best_option['transport_mode']}, travel time: {
-            best_option['travel_time_minutes']:.1f} minutes",
+        f"Bed type: {best_option['bed_type']}, {best_option['beds_available']} available",
+        f"Transport mode: {best_option['transport_mode']}, travel time: {best_option['travel_time_minutes']:.1f} minutes",
         f"Selected as closest eligible campus with available beds",
     ]
+    
+    # Include scoring justifications if automatic scoring was used
+    if 'score_justifications' in locals() and score_justifications:
+        notes.append("Automatic severity scoring results:")
+        for justification in score_justifications:
+            notes.append(f"  - {justification}")
+        print(f"Added {len(score_justifications)} scoring justifications to explanation notes")
 
     # Create explanation
     try:

@@ -27,12 +27,13 @@ class SpecialtyAssessor:
         self.client = client
         self.model = model
     
-    def assess_specialties(self, extracted_entities: Dict[str, Any]) -> Dict[str, Any]:
+    def assess_specialties(self, extracted_entities: Dict[str, Any], scoring_results: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
-        Assess specialty needs based on extracted clinical entities.
+        Assess specialty needs based on extracted clinical entities and scoring results.
         
         Args:
             extracted_entities: Dictionary of extracted clinical entities
+            scoring_results: Optional dictionary containing pediatric scoring system results
             
         Returns:
             Dictionary with specialty need assessment
@@ -40,14 +41,14 @@ class SpecialtyAssessor:
         logger.info("Running specialty assessment...")
         
         # Construct the prompt for specialty assessment
-        prompt = self._build_assessment_prompt(extracted_entities)
+        prompt = self._build_assessment_prompt(extracted_entities, scoring_results)
         
         try:
             # Call the LLM
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": "You are a pediatric medical specialist."},
+                    {"role": "system", "content": "You are a pediatric medical specialist with expertise in severity assessment and care level determination."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.1,  # Slight variation allowed
@@ -73,12 +74,13 @@ class SpecialtyAssessor:
             logger.error(f"Error during specialty assessment: {e}")
             return self._fallback_assessment(extracted_entities)
     
-    def _build_assessment_prompt(self, extracted_entities: Dict[str, Any]) -> str:
+    def _build_assessment_prompt(self, extracted_entities: Dict[str, Any], scoring_results: Optional[Dict[str, Any]] = None) -> str:
         """
         Build the prompt for specialty assessment.
         
         Args:
             extracted_entities: Dictionary of extracted clinical entities
+            scoring_results: Optional dictionary containing pediatric scoring system results
             
         Returns:
             Formatted prompt string
@@ -86,15 +88,32 @@ class SpecialtyAssessor:
         # Format the extracted entities as a clean string
         entities_str = json.dumps(extracted_entities, indent=2)
         
-        return f"""
-Based on the following extracted clinical information, assess which medical specialties would be required for this patient:
+        # Build the base prompt
+        prompt = f"""Based on the following extracted clinical information, assess which medical specialties would be required for this patient:
 
 {entities_str}
+"""
+        
+        # Add scoring results if available
+        if scoring_results and isinstance(scoring_results, dict):
+            # Format the scoring results nicely
+            scores_str = json.dumps(scoring_results, indent=2)
+            prompt += f"""
+
+The patient has been evaluated using the following pediatric scoring systems, which provide objective assessments of severity:
+
+{scores_str}
+
+These scores should be considered when determining appropriate care levels and specialties required.
+"""
+        
+        # Complete the prompt with output instructions
+        prompt += f"""
 
 Provide the following in JSON format:
 1. A list of required medical specialties ranked by importance (e.g., "Cardiology", "Pulmonology")
 2. Recommended level of care ("General", "ICU", "PICU", or "NICU")
-3. A brief clinical reasoning for each specialty and care level recommendation
+3. A brief clinical reasoning for each specialty and care level recommendation that references specific clinical findings and scoring results if available
 4. A list of medical conditions or diagnoses that can be inferred from the information
 
 JSON Output:
@@ -108,14 +127,16 @@ JSON Output:
     }}
   ],
   "recommended_care_level": "Care level",
-  "care_level_reasoning": "Explanation for care level recommendation",
+  "care_level_reasoning": "Explanation for care level recommendation that references scoring results if available",
   "potential_conditions": ["Condition 1", "Condition 2"],
-  "clinical_summary": "Brief summary of case and recommendations"
+  "clinical_summary": "Brief summary of case, severity scores, and recommendations"
 }}
 ```
 
 Respond only with the JSON output.
 """
+        
+        return prompt
 
     def _fallback_assessment(self, extracted_entities: Dict[str, Any]) -> Dict[str, Any]:
         """

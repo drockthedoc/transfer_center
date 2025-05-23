@@ -92,6 +92,61 @@ class TransferCenterMainWindow(QMainWindow):
         self._init_ui()
         self._load_config()
 
+    def _extract_basic_data(self, patient: PatientData, clinical_text: str):
+        """Extract basic patient data for scoring from clinical text using rule-based methods."""
+        import re
+        
+        # Initialize extracted data
+        extracted_data = {}
+        vital_signs = {}
+        
+        # Extract age using regex
+        age_match = re.search(r'(\d+)(?:\s*-|\s+)(?:year|yr|y)[s\s]*(?:old)?', clinical_text, re.IGNORECASE)
+        if age_match:
+            extracted_data["age_years"] = int(age_match.group(1))
+        
+        # Extract months for infants
+        months_match = re.search(r'(\d+)(?:\s*-|\s+)(?:month|mo|m)[s\s]*(?:old)?', clinical_text, re.IGNORECASE)
+        if months_match:
+            extracted_data["age_months"] = int(months_match.group(1))
+        
+        # Heart rate
+        hr_match = re.search(r'(?:HR|heart rate|pulse)[:\s]+(\d+)', clinical_text, re.IGNORECASE)
+        if hr_match:
+            vital_signs["heart_rate"] = int(hr_match.group(1))
+        
+        # Respiratory rate
+        rr_match = re.search(r'(?:RR|resp(?:iratory)? rate)[:\s]+(\d+)', clinical_text, re.IGNORECASE)
+        if rr_match:
+            vital_signs["respiratory_rate"] = int(rr_match.group(1))
+        
+        # Blood pressure
+        bp_match = re.search(r'(?:BP|blood pressure)[:\s]+(\d+)[/\\](\d+)', clinical_text, re.IGNORECASE)
+        if bp_match:
+            vital_signs["systolic_bp"] = int(bp_match.group(1))
+            vital_signs["diastolic_bp"] = int(bp_match.group(2))
+        
+        # Oxygen saturation
+        o2_match = re.search(r'(?:O2 sat|SpO2|oxygen saturation)[:\s]+(\d+)(?:\s*%)?', clinical_text, re.IGNORECASE)
+        if o2_match:
+            vital_signs["oxygen_saturation"] = int(o2_match.group(1))
+        
+        # Temperature
+        temp_match = re.search(r'(?:temp|temperature)[:\s]+(\d+\.?\d*)', clinical_text, re.IGNORECASE)
+        if temp_match:
+            vital_signs["temperature"] = float(temp_match.group(1))
+        
+        # Weight in kg
+        weight_match = re.search(r'(?:weight)[:\s]+(\d+\.?\d*)\s*(?:kg)', clinical_text, re.IGNORECASE)
+        if weight_match:
+            extracted_data["weight_kg"] = float(weight_match.group(1))
+        
+        # Add vital signs to extracted data
+        extracted_data["vital_signs"] = vital_signs
+        
+        # Update the patient's extracted_data
+        patient.extracted_data.update(extracted_data)
+    
     def _init_ui(self):
         """Initialize the user interface."""
         # Central widget and main layout
@@ -420,8 +475,30 @@ class TransferCenterMainWindow(QMainWindow):
                 self.llm_classifier.set_api_url(api_url)
                 self.llm_classifier.set_model(model)
                 
-                # Process text with LLM
-                extracted_data = self.llm_classifier.process_text(clinical_data)
+                # Create a temporary patient data object to calculate scores
+                temp_patient = PatientData(
+                    patient_id="TEMP_" + datetime.now().strftime('%Y%m%d%H%M%S'),
+                    clinical_text=clinical_data,
+                    extracted_data={},  # Will be populated by rule-based extraction
+                )
+                
+                # Extract basic information using rule-based methods for scoring
+                self._extract_basic_data(temp_patient, clinical_data)
+                
+                # Process patient scores using the scoring processor
+                try:
+                    from src.core.scoring.score_processor import process_patient_scores
+                    scoring_results = process_patient_scores(temp_patient)
+                    logger.info(f"Generated pediatric scores: {list(scoring_results['scores'].keys())}")
+                except Exception as score_error:
+                    logger.error(f"Error calculating pediatric scores: {str(score_error)}")
+                    scoring_results = None
+                
+                # Process text with LLM, including scoring results if available
+                extracted_data = self.llm_classifier.process_text(
+                    clinical_data, 
+                    scoring_results=scoring_results
+                )
                 
                 # Create a serializable copy of the extraction results
                 display_data = extracted_data.copy()
@@ -552,7 +629,7 @@ class TransferCenterMainWindow(QMainWindow):
             )
 
     def _display_recommendation(self, recommendation: Optional[Recommendation]):
-        """Display the recommendation results."""
+        """Display the comprehensive recommendation results with enhanced formatting."""
         if not recommendation:
             self.recommendation_widget.set_recommendation(
                 "<h3>No Recommendation Available</h3>"
@@ -561,104 +638,190 @@ class TransferCenterMainWindow(QMainWindow):
             )
             return
             
-        # Check if this is an LLM-generated recommendation by checking if the recommended_campus_id
-        # is one of the known hospital IDs or if it's a full hospital name
+        # Check if this is an LLM-generated recommendation
         known_campus_ids = set(h.campus_id for h in self.hospitals)
         is_llm_recommendation = recommendation.recommended_campus_id not in known_campus_ids
         
-        if is_llm_recommendation:
-            # Get campus name from explainability details if available
-            campus_name = "Unknown Campus"
-            if recommendation.explainability_details and "recommended_campus_name" in recommendation.explainability_details:
-                campus_name = recommendation.explainability_details["recommended_campus_name"]
-            else:
-                campus_name = recommendation.recommended_campus_id
-                
-            # Display LLM recommendation
-            recommendation_html = f"<h2>Recommendation: {campus_name}</h2>"
-            recommendation_html += f"<p><b>Confidence:</b> {recommendation.confidence_score:.1f}%</p>"
-            recommendation_html += f"<p><b>Reason:</b> {recommendation.reason}</p>"
-            
-            # Add considerations and key factors
-            if recommendation.explainability_details:
-                details = recommendation.explainability_details
-                
-                # Key factors
-                if "key_factors_for_recommendation" in details and details["key_factors_for_recommendation"]:
-                    recommendation_html += "<h3>Key Factors</h3><ul>"
-                    for factor in details["key_factors_for_recommendation"]:
-                        recommendation_html += f"<li>{factor}</li>"
-                    recommendation_html += "</ul>"
-                
-                # Excluded campuses and reasons
-                if "excluded_campuses" in details and details["excluded_campuses"]:
-                    recommendation_html += "<h3>Why Other Campuses Were Not Selected</h3><ul>"
-                    for campus in details["excluded_campuses"]:
-                        name = campus.get("name", "Unknown Campus")
-                        reason = campus.get("reason", "No reason provided")
-                        recommendation_html += f"<li><b>{name}:</b> {reason}</li>"
-                    recommendation_html += "</ul>"
-                
-                # Considerations/notes
-                if "other_considerations_from_notes" in details and details["other_considerations_from_notes"]:
-                    recommendation_html += "<h3>Considerations</h3><ul>"
-                    for note in details["other_considerations_from_notes"]:
-                        recommendation_html += f"<li>{note}</li>"
-                    recommendation_html += "</ul>"
-            
-            # Add notes if available
-            if recommendation.notes:
-                recommendation_html += "<h3>Required Resources</h3><ul>"
-                for note in recommendation.notes:
-                    recommendation_html += f"<li>{note}</li>"
-                recommendation_html += "</ul>"
-                
-        else:
-            # Find the recommended hospital (for traditional recommendations)
-            recommended_hospital = next(
-                (
-                    h
-                    for h in self.hospitals
-                    if h.campus_id == recommendation.recommended_campus_id
-                ),
-                None,
+        # Get the explainability details if available
+        details = recommendation.explainability_details or {}
+        
+        # Start building the HTML
+        recommendation_html = ""
+        
+        # === Check for exclusions first, as they need immediate attention ===
+        exclusions_found = False
+        if "exclusions_checked" in details:
+            for exclusion in details["exclusions_checked"]:
+                if exclusion.get("found", False):
+                    exclusions_found = True
+                    break
+        
+        # Display urgent alert if exclusions were found
+        if exclusions_found:
+            recommendation_html += (
+                "<div style='background-color: #ffeeee; border: 2px solid #ff0000; padding: 15px; margin-bottom: 20px;'>"
+                "<h2 style='color: #ff0000;'>⚠️ EXCLUSIONS FOUND - HUMAN REVIEW REQUIRED ⚠️</h2>"
+                "<p style='color: #ff0000; font-size: 16px;'>One or more exclusion criteria were triggered. Human review is required before proceeding.</p>"
+                "</div>"
             )
-            hospital_name = (
-                recommended_hospital.name
-                if recommended_hospital
-                else recommendation.recommended_campus_id
-            )
-    
-            # Display main recommendation
-            recommendation_html = f"<h2>Recommendation: {hospital_name}</h2>"
-            recommendation_html += f"<p><b>Confidence:</b> {recommendation.confidence_score:.1f}%</p>"
-            recommendation_html += f"<p><b>Reason:</b> {recommendation.reason}</p>"
-    
-            if recommended_hospital:
-                recommendation_html += "<h3>Hospital Details</h3>"
-                recommendation_html += f"<p><b>Location:</b> {recommended_hospital.address}</p>"
-                recommendation_html += "<p><b>Bed Availability:</b></p><ul>"
-                recommendation_html += (
-                    f"<li>General: {recommended_hospital.bed_census.available_beds}/"
-                    f"{recommended_hospital.bed_census.total_beds}</li>"
-                )
-                recommendation_html += (
-                    f"<li>ICU: {recommended_hospital.bed_census.icu_beds_available}/"
-                    f"{recommended_hospital.bed_census.icu_beds_total}</li>"
-                )
-                recommendation_html += (
-                    f"<li>NICU: {recommended_hospital.bed_census.nicu_beds_available}/"
-                    f"{recommended_hospital.bed_census.nicu_beds_total}</li>"
-                )
+        
+        # === Primary Recommendation ===
+        # Get campus name
+        primary_campus = recommendation.recommended_campus_id
+        if "recommended_campus" in details:
+            primary_campus = details["recommended_campus"]
+            
+        recommendation_html += f"<h2>Primary Recommendation: {primary_campus}</h2>"
+        
+        # Confidence score
+        confidence = recommendation.confidence_score
+        recommendation_html += f"<p><b>Confidence:</b> {confidence:.1f}%</p>"
+        
+        # === Backup Recommendation ===
+        if "backup_campus" in details and details["backup_campus"]:
+            backup_campus = details["backup_campus"]
+            backup_confidence = details.get("backup_confidence_score", 0)
+            recommendation_html += f"<h3>Backup Recommendation: {backup_campus}</h3>"
+            recommendation_html += f"<p><b>Backup Confidence:</b> {backup_confidence:.1f}%</p>"
+        
+        # === Care Level and Clinical Reasoning ===
+        care_level = details.get("care_level", "Unknown")
+        care_level_display = {
+            "general_floor": "General Pediatric Floor",
+            "intermediate_care": "Intermediate Care",
+            "picu": "PICU (Pediatric Intensive Care)",
+            "nicu": "NICU (Neonatal Intensive Care)"
+        }.get(care_level, care_level.upper())
+        
+        recommendation_html += f"<p><b>Recommended Care Level:</b> {care_level_display}</p>"
+        recommendation_html += f"<p><b>Clinical Reasoning:</b> {recommendation.reason}</p>"
+        
+        # === Exclusions Section ===
+        if "exclusions_checked" in details and details["exclusions_checked"]:
+            recommendation_html += "<h3>Exclusion Criteria Checked</h3><ul>"
+            for exclusion in details["exclusions_checked"]:
+                name = exclusion.get("name", "Unknown")
+                found = exclusion.get("found", False)
+                
+                if found:
+                    recommendation_html += f"<li style='color: #ff0000;'><b>{name}:</b> FOUND ⚠️</li>"
+                else:
+                    recommendation_html += f"<li><b>{name}:</b> Not Found ✓</li>"
+            recommendation_html += "</ul>"
+        
+        # === Bed Availability ===
+        if "bed_availability" in details:
+            bed_info = details["bed_availability"]
+            confirmed = bed_info.get("confirmed", False)
+            bed_details = bed_info.get("details", "No details available")
+            
+            status_color = "#008800" if confirmed else "#ff0000"
+            status_text = "✓ Confirmed" if confirmed else "❌ Not Confirmed"
+            
+            recommendation_html += f"<h3>Bed Availability</h3>"
+            recommendation_html += f"<p style='color: {status_color};'><b>{status_text}</b></p>"
+            recommendation_html += f"<p>{bed_details}</p>"
+        
+        # === Travel Information ===
+        recommendation_html += "<h3>Travel Information</h3>"
+        
+        # Traffic Report
+        if "traffic_report" in details:
+            recommendation_html += f"<p><b>Traffic Conditions:</b> {details['traffic_report']}</p>"
+        
+        # Weather Report
+        if "weather_report" in details:
+            recommendation_html += f"<p><b>Weather Conditions:</b> {details['weather_report']}</p>"
+        
+        # Addresses
+        if "addresses" in details:
+            addresses = details["addresses"]
+            origin = addresses.get("origin", "Unknown")
+            destination = addresses.get("destination", "Unknown")
+            
+            recommendation_html += f"<p><b>Origin Address:</b> {origin}</p>"
+            recommendation_html += f"<p><b>Destination Address:</b> {destination}</p>"
+        
+        # ETA
+        if "eta" in details:
+            eta_info = details["eta"]
+            minutes = eta_info.get("minutes", "Unknown")
+            transport_mode = eta_info.get("transport_mode", "Unknown")
+            
+            recommendation_html += f"<p><b>Estimated Travel Time:</b> {minutes} minutes via {transport_mode}</p>"
+        
+        # === Required Specialties ===
+        if "required_specialties" in details and details["required_specialties"]:
+            recommendation_html += "<h3>Required Specialties</h3><ul>"
+            for specialty in details["required_specialties"]:
+                recommendation_html += f"<li>{specialty}</li>"
+            recommendation_html += "</ul>"
+        
+        # === Campus Scores ===
+        if "campus_scores" in details:
+            scores = details["campus_scores"]
+            recommendation_html += "<h3>Campus Scoring</h3>"
+            
+            # Primary campus scores
+            if "primary" in scores:
+                primary_scores = scores["primary"]
+                recommendation_html += "<h4>Primary Recommendation Scores (1-5)</h4><ul>"
+                recommendation_html += f"<li><b>Care Level Match:</b> {primary_scores.get('care_level_match', 'N/A')}</li>"
+                recommendation_html += f"<li><b>Specialty Availability:</b> {primary_scores.get('specialty_availability', 'N/A')}</li>"
+                recommendation_html += f"<li><b>Capacity:</b> {primary_scores.get('capacity', 'N/A')}</li>"
+                recommendation_html += f"<li><b>Location:</b> {primary_scores.get('location', 'N/A')}</li>"
+                recommendation_html += f"<li><b>Specific Resources:</b> {primary_scores.get('specific_resources', 'N/A')}</li>"
+                
+                # Calculate total if all scores are present
+                total = 0
+                count = 0
+                for key in ['care_level_match', 'specialty_availability', 'capacity', 'location', 'specific_resources']:
+                    if key in primary_scores and isinstance(primary_scores[key], (int, float)):
+                        total += primary_scores[key]
+                        count += 1
+                
+                if count == 5:  # Only show total if all scores are present
+                    recommendation_html += f"<li><b>Total Score:</b> {total}/25</li>"
+                
                 recommendation_html += "</ul>"
-
-        # Display decision notes
+            
+            # Backup campus scores
+            if "backup" in scores:
+                backup_scores = scores["backup"]
+                recommendation_html += "<h4>Backup Recommendation Scores (1-5)</h4><ul>"
+                recommendation_html += f"<li><b>Care Level Match:</b> {backup_scores.get('care_level_match', 'N/A')}</li>"
+                recommendation_html += f"<li><b>Specialty Availability:</b> {backup_scores.get('specialty_availability', 'N/A')}</li>"
+                recommendation_html += f"<li><b>Capacity:</b> {backup_scores.get('capacity', 'N/A')}</li>"
+                recommendation_html += f"<li><b>Location:</b> {backup_scores.get('location', 'N/A')}</li>"
+                recommendation_html += f"<li><b>Specific Resources:</b> {backup_scores.get('specific_resources', 'N/A')}</li>"
+                recommendation_html += "</ul>"
+        
+        # === Transport Considerations ===
+        if "transport_considerations" in details and details["transport_considerations"]:
+            recommendation_html += "<h3>Transport Considerations</h3><ul>"
+            for consideration in details["transport_considerations"]:
+                recommendation_html += f"<li>{consideration}</li>"
+            recommendation_html += "</ul>"
+        
+        # === Required Resources ===
+        if "required_resources" in details and details["required_resources"]:
+            recommendation_html += "<h3>Required Resources</h3><ul>"
+            for resource in details["required_resources"]:
+                recommendation_html += f"<li>{resource}</li>"
+            recommendation_html += "</ul>"
+        
+        # === Clinical Summary ===
+        if "clinical_summary" in details:
+            recommendation_html += "<h3>Clinical Summary</h3>"
+            recommendation_html += f"<p>{details['clinical_summary']}</p>"
+        
+        # === Additional Notes ===
         if recommendation.notes:
-            recommendation_html += "<h3>Decision Notes</h3><ul>"
+            recommendation_html += "<h3>Additional Notes</h3><ul>"
             for note in recommendation.notes:
                 recommendation_html += f"<li>{note}</li>"
             recommendation_html += "</ul>"
-
+        
         # Set recommendation content
         self.recommendation_widget.set_recommendation(recommendation_html)
 

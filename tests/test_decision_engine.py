@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from src.core.decision_engine import recommend_campus
+from src.core.decision import recommend_campus
 from src.core.models import (
     BedCensus,
     CampusExclusion,

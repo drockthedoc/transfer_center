@@ -10,7 +10,7 @@ from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
-from src.core.decision_engine import recommend_campus
+from src.core.decision import recommend_campus
 from src.core.models import (
     HospitalCampus,
     Location,

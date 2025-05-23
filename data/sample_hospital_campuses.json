@@ -4,84 +4,267 @@
     "name": "Texas Children's Hospital - Main Campus (MC)",
     "metro_area": "HOUSTON_METRO",
     "address": "6621 Fannin St, Houston, TX 77030",
-    "location": {"latitude": 29.7096, "longitude": -95.3987},
+    "location": {
+      "latitude": 29.7096,
+      "longitude": -95.3987
+    },
     "exclusions": [
-      {"criteria_id": "TCHM_EX01", "criteria_name": "No Adult Primary Care", "description": "Primarily a pediatric facility. Adults only seen for specific congenital conditions or as parents.", "affected_keywords_in_complaint": ["adult physical", "routine checkup adult"], "affected_keywords_in_history": ["adult patient general care"]},
-      {"criteria_id": "TCHM_EX02", "criteria_name": "Limited Adult Specialized Services", "description": "Some adult specialized services (e.g., adult congenital heart) available, but not comprehensive adult care.", "affected_keywords_in_complaint": [], "affected_keywords_in_history": []}
+      {
+        "criteria_id": "TCHM_EX01",
+        "criteria_name": "No Adult Primary Care",
+        "description": "Primarily a pediatric facility. Adults only seen for specific congenital conditions or as parents.",
+        "affected_keywords_in_complaint": [
+          "adult physical",
+          "routine checkup adult"
+        ],
+        "affected_keywords_in_history": [
+          "adult patient general care"
+        ]
+      },
+      {
+        "criteria_id": "TCHM_EX02",
+        "criteria_name": "Limited Adult Specialized Services",
+        "description": "Some adult specialized services (e.g., adult congenital heart) available, but not comprehensive adult care.",
+        "affected_keywords_in_complaint": [],
+        "affected_keywords_in_history": []
+      }
     ],
     "bed_census": {
-      "total_beds": 973, "available_beds": 80,
-      "icu_beds_total": 120, "icu_beds_available": 15,
-      "nicu_beds_total": 150, "nicu_beds_available": 20
+      "total_beds": 1542,
+      "available_beds": 120,
+      "icu_beds_total": 279,
+      "icu_beds_available": 20,
+      "nicu_beds_total": 251,
+      "nicu_beds_available": 21
     },
-    "helipads": [{"helipad_id": "TCH_MAIN_HELI", "name": "Main Campus Helipad", "location": {"latitude": 29.7090, "longitude": -95.3985}}]
+    "helipads": [
+      {
+        "helipad_id": "TCH_MAIN_HELI",
+        "name": "Main Campus Helipad",
+        "location": {
+          "latitude": 29.709,
+          "longitude": -95.3985
+        }
+      }
+    ],
+    "specialized_units": {}
   },
   {
     "campus_id": "TCH_WOODLANDS",
     "name": "Texas Children's Hospital - The Woodlands",
     "metro_area": "HOUSTON_METRO",
     "address": "17600 I-45 South, The Woodlands, TX 77384",
-    "location": {"latitude": 30.1757, "longitude": -95.4629},
+    "location": {
+      "latitude": 30.1757,
+      "longitude": -95.4629
+    },
     "exclusions": [
-      {"criteria_id": "TCHW_EX01", "criteria_name": "No Solid Organ Transplant Surgery", "description": "Complex solid organ transplants (liver, kidney, heart, lung) primarily at TMC.", "affected_keywords_in_complaint": ["transplant surgery needed"], "affected_keywords_in_history": ["awaiting heart transplant"]},
-      {"criteria_id": "TCHW_EX02", "criteria_name": "Limited ECMO Capabilities", "description": "ECMO initiation may be limited or stabilized for transfer to TMC.", "affected_keywords_in_complaint": ["needs ecmo"], "affected_keywords_in_history": ["ecmo candidate"]}
+      {
+        "criteria_id": "TCHW_EX01",
+        "criteria_name": "No Solid Organ Transplant Surgery",
+        "description": "Complex solid organ transplants (liver, kidney, heart, lung) primarily at TMC.",
+        "affected_keywords_in_complaint": [
+          "transplant surgery needed"
+        ],
+        "affected_keywords_in_history": [
+          "awaiting heart transplant"
+        ]
+      },
+      {
+        "criteria_id": "TCHW_EX02",
+        "criteria_name": "Limited ECMO Capabilities",
+        "description": "ECMO initiation may be limited or stabilized for transfer to TMC.",
+        "affected_keywords_in_complaint": [
+          "needs ecmo"
+        ],
+        "affected_keywords_in_history": [
+          "ecmo candidate"
+        ]
+      }
     ],
     "bed_census": {
-      "total_beds": 200, "available_beds": 25,
-      "icu_beds_total": 30, "icu_beds_available": 5,
-      "nicu_beds_total": 40, "nicu_beds_available": 8 
+      "total_beds": 323,
+      "available_beds": 45,
+      "icu_beds_total": 42,
+      "icu_beds_available": 5,
+      "nicu_beds_total": 55,
+      "nicu_beds_available": 10
     },
-    "helipads": [{"helipad_id": "TCH_WOOD_HELI", "name": "Woodlands Campus Helipad", "location": {"latitude": 30.1755, "longitude": -95.4627}}]
+    "helipads": [
+      {
+        "helipad_id": "TCH_WOOD_HELI",
+        "name": "Woodlands Campus Helipad",
+        "location": {
+          "latitude": 30.1755,
+          "longitude": -95.4627
+        }
+      }
+    ],
+    "specialized_units": {}
   },
   {
     "campus_id": "TCH_WEST_KATY",
     "name": "Texas Children's Hospital - West Campus (Katy)",
     "metro_area": "HOUSTON_METRO",
     "address": "18200 Katy Fwy, Houston, TX 77094",
-    "location": {"latitude": 29.7850, "longitude": -95.7369},
+    "location": {
+      "latitude": 29.785,
+      "longitude": -95.7369
+    },
     "exclusions": [
-      {"criteria_id": "TCHWC_EX01", "criteria_name": "No Open-Heart Surgery", "description": "Complex cardiac surgeries, especially requiring bypass, are performed at TMC.", "affected_keywords_in_complaint": ["cardiac_surgery_complex", "open heart"], "affected_keywords_in_history": ["complex congenital heart defect surgery"]},
-      {"criteria_id": "TCHWC_EX02", "criteria_name": "NICU Level III (No Level IV)", "description": "Handles most neonatal cases but most extreme prematurity or complex surgical neonates may go to TMC.", "affected_keywords_in_complaint": ["neonate_under_1kg", "micropremie"], "affected_keywords_in_history": ["24 weeker neonate"]}
+      {
+        "criteria_id": "TCHWC_EX01",
+        "criteria_name": "No Open-Heart Surgery",
+        "description": "Complex cardiac surgeries, especially requiring bypass, are performed at TMC.",
+        "affected_keywords_in_complaint": [
+          "cardiac_surgery_complex",
+          "open heart"
+        ],
+        "affected_keywords_in_history": [
+          "complex congenital heart defect surgery"
+        ]
+      },
+      {
+        "criteria_id": "TCHWC_EX02",
+        "criteria_name": "NICU Level III (No Level IV)",
+        "description": "Handles most neonatal cases but most extreme prematurity or complex surgical neonates may go to TMC.",
+        "affected_keywords_in_complaint": [
+          "neonate_under_1kg",
+          "micropremie"
+        ],
+        "affected_keywords_in_history": [
+          "24 weeker neonate"
+        ]
+      }
     ],
     "bed_census": {
-      "total_beds": 150, "available_beds": 20,
-      "icu_beds_total": 22, "icu_beds_available": 4,
-      "nicu_beds_total": 30, "nicu_beds_available": 6
+      "total_beds": 246,
+      "available_beds": 27,
+      "icu_beds_total": 37,
+      "icu_beds_available": 5,
+      "nicu_beds_total": 30,
+      "nicu_beds_available": 6
     },
-    "helipads": [{"helipad_id": "TCH_WEST_HELI", "name": "West Campus Helipad", "location": {"latitude": 29.7848, "longitude": -95.7367}}]
+    "helipads": [
+      {
+        "helipad_id": "TCH_WEST_HELI",
+        "name": "West Campus Helipad",
+        "location": {
+          "latitude": 29.7848,
+          "longitude": -95.7367
+        }
+      }
+    ],
+    "specialized_units": {}
   },
   {
     "campus_id": "TCH_NORTH_AUSTIN",
     "name": "Texas Children's Hospital - North Austin Campus (Representative)",
     "metro_area": "AUSTIN_METRO",
     "address": "9835 N. Lake Creek Pkwy, Austin, TX 78717",
-    "location": {"latitude": 30.4743, "longitude": -97.7905}, 
+    "location": {
+      "latitude": 30.4743,
+      "longitude": -97.7905
+    },
     "exclusions": [
-      {"criteria_id": "TCNA_EX01", "criteria_name": "No Highly Specialized Surgeries", "description": "Does not perform highly complex surgeries like neurosurgery or transplant; refers to larger centers.", "affected_keywords_in_complaint": ["brain tumor surgery", "liver transplant needed"], "affected_keywords_in_history": ["complex neuro case"]},
-      {"criteria_id": "TCNA_EX02", "criteria_name": "NICU Level II/III (Limited Level IV capabilities)", "description": "Handles moderately premature infants; most critical neonates or those needing subspecialty surgery may be transferred.", "affected_keywords_in_complaint": ["extreme prematurity", "neonate_under_1kg"], "affected_keywords_in_history": ["23 week gestation"]}
+      {
+        "criteria_id": "TCNA_EX01",
+        "criteria_name": "No Highly Specialized Surgeries",
+        "description": "Does not perform highly complex surgeries like neurosurgery or transplant; refers to larger centers.",
+        "affected_keywords_in_complaint": [
+          "brain tumor surgery",
+          "liver transplant needed"
+        ],
+        "affected_keywords_in_history": [
+          "complex neuro case"
+        ]
+      },
+      {
+        "criteria_id": "TCNA_EX02",
+        "criteria_name": "NICU Level II/III (Limited Level IV capabilities)",
+        "description": "Handles moderately premature infants; most critical neonates or those needing subspecialty surgery may be transferred.",
+        "affected_keywords_in_complaint": [
+          "extreme prematurity",
+          "neonate_under_1kg"
+        ],
+        "affected_keywords_in_history": [
+          "23 week gestation"
+        ]
+      }
     ],
     "bed_census": {
-      "total_beds": 100, "available_beds": 15,
-      "icu_beds_total": 15, "icu_beds_available": 3,
-      "nicu_beds_total": 20, "nicu_beds_available": 5
+      "total_beds": 146,
+      "available_beds": 20,
+      "icu_beds_total": 22,
+      "icu_beds_available": 3,
+      "nicu_beds_total": 31,
+      "nicu_beds_available": 5
     },
-    "helipads": [{"helipad_id": "TCH_NAUS_HELI", "name": "North Austin Helipad", "location": {"latitude": 30.4579, "longitude": -97.7944}}]
+    "helipads": [
+      {
+        "helipad_id": "TCH_NAUS_HELI",
+        "name": "North Austin Helipad",
+        "location": {
+          "latitude": 30.4579,
+          "longitude": -97.7944
+        }
+      }
+    ],
+    "specialized_units": {}
   },
   {
     "campus_id": "TCH_PAVILION_WOMEN",
     "name": "Texas Children's Hospital - Pavilion for Women",
     "metro_area": "HOUSTON_METRO",
     "address": "6651 Main Street, Houston, TX 77030",
-    "location": {"latitude": 29.7100, "longitude": -95.4000},
+    "location": {
+      "latitude": 29.71,
+      "longitude": -95.4
+    },
     "exclusions": [
-      {"criteria_id": "TCHPW_EX01", "criteria_name": "Maternal and Women's Care Only", "description": "Primarily focuses on maternal, women's care, and neonatal services.", "affected_keywords_in_complaint": ["pediatric trauma", "pediatric surgery"], "affected_keywords_in_history": ["pediatric patient non-neonatal"]},
-      {"criteria_id": "TCHPW_EX02", "criteria_name": "Limited Pediatric Services", "description": "Limited pediatric services outside of neonatal and newborn care.", "affected_keywords_in_complaint": ["older child", "adolescent"], "affected_keywords_in_history": ["school-aged patient"]}
+      {
+        "criteria_id": "TCHPW_EX01",
+        "criteria_name": "Maternal and Women's Care Only",
+        "description": "Primarily focuses on maternal, women's care, and neonatal services.",
+        "affected_keywords_in_complaint": [
+          "pediatric trauma",
+          "pediatric surgery"
+        ],
+        "affected_keywords_in_history": [
+          "pediatric patient non-neonatal"
+        ]
+      },
+      {
+        "criteria_id": "TCHPW_EX02",
+        "criteria_name": "Limited Pediatric Services",
+        "description": "Limited pediatric services outside of neonatal and newborn care.",
+        "affected_keywords_in_complaint": [
+          "older child",
+          "adolescent"
+        ],
+        "affected_keywords_in_history": [
+          "school-aged patient"
+        ]
+      }
     ],
     "bed_census": {
-      "total_beds": 150, "available_beds": 30,
-      "icu_beds_total": 4, "icu_beds_available": 1,
-      "nicu_beds_total": 68, "nicu_beds_available": 15
+      "total_beds": 362,
+      "available_beds": 69,
+      "icu_beds_total": 8,
+      "icu_beds_available": 2,
+      "nicu_beds_total": 136,
+      "nicu_beds_available": 30
     },
-    "helipads": [{"helipad_id": "TCH_PW_HELI", "name": "Pavilion for Women Helipad", "location": {"latitude": 29.7102, "longitude": -95.4001}}]
+    "helipads": [
+      {
+        "helipad_id": "TCH_PW_HELI",
+        "name": "Pavilion for Women Helipad",
+        "location": {
+          "latitude": 29.7102,
+          "longitude": -95.4001
+        }
+      }
+    ],
+    "specialized_units": {}
   }
 ]

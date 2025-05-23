@@ -45,7 +45,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from src.core.decision_engine import recommend_campus
+from src.core.decision import recommend_campus
 from src.core.models import (
     HospitalCampus,
     Location,
@@ -57,8 +57,8 @@ from src.core.models import (
     WeatherData,
 )
 from src.gui.hospital_search import HospitalSearch
-from src.gui.llm_integration import LLMClassifier
-from src.gui.transport_time_estimator import TransportTimeEstimator
+from src.llm.llm_classifier_refactored import LLMClassifier
+from src.utils.transport.estimator import TransportTimeEstimator
 from src.utils.census_updater import update_census
 
 logger = logging.getLogger(__name__)

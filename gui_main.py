@@ -5,7 +5,7 @@ Texas Children's Hospital Transfer Center GUI Application
 This is the main entry point for the GUI application that allows interaction
 with the pediatric hospital transfer decision support system.
 """
-from src.gui.main_window import main
+from src.gui.main_window_refactored import main
 import os
 import sys
 

@@ -122,7 +122,7 @@ def recommend_campus(
         sys.stdout.flush()
 
         # Prepare origin location
-        sending_facility = request.sending_facility_location
+        sending_facility = request.sending_location or request.sending_facility_location
         print(f"Origin location: {sending_facility}")
 
         # Find closest campus

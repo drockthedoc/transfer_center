@@ -1,5 +1,7 @@
 import math
+
 from src.core.models import Location
+
 
 def calculate_distance(coord1: Location, coord2: Location) -> float:
     """
@@ -24,7 +26,10 @@ def calculate_distance(coord1: Location, coord2: Location) -> float:
     dlat = lat2_rad - lat1_rad
 
     # Haversine formula
-    a = math.sin(dlat / 2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2)**2
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
+    )
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     distance_km = R * c

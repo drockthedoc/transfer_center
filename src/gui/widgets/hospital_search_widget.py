@@ -82,7 +82,7 @@ class HospitalSearchWidget(QWidget):
 
         self.results_list.clear()
         results = self.hospital_search.search_hospitals(query)
-        
+
         for result in results:
             item = QListWidgetItem(f"{result['name']} - {result['address']}")
             item.setData(256, result)  # Store the full result data
@@ -100,15 +100,20 @@ class HospitalSearchWidget(QWidget):
                         # Format: {"location": {"lat": 123, "lng": 456}}
                         self.latitude_input.setText(str(result["location"]["lat"]))
                         self.longitude_input.setText(str(result["location"]["lng"]))
-                    elif "latitude" in result["location"] and "longitude" in result["location"]:
+                    elif (
+                        "latitude" in result["location"]
+                        and "longitude" in result["location"]
+                    ):
                         # Format: {"location": {"latitude": 123, "longitude": 456}}
                         self.latitude_input.setText(str(result["location"]["latitude"]))
-                        self.longitude_input.setText(str(result["location"]["longitude"]))
+                        self.longitude_input.setText(
+                            str(result["location"]["longitude"])
+                        )
             elif "latitude" in result and "longitude" in result:
                 # Direct coordinate format: {"latitude": 123, "longitude": 456}
                 self.latitude_input.setText(str(result["latitude"]))
                 self.longitude_input.setText(str(result["longitude"]))
-                
+
             # Emit the selected hospital data
             self.hospital_selected.emit(result)
 

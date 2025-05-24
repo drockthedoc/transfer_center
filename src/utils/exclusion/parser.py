@@ -10,13 +10,13 @@ import os
 from datetime import datetime
 from typing import Any, Dict
 
+from src.utils.exclusion.cleaners import clean_exclusion_data
 from src.utils.exclusion.constants import OUTPUT_FILE, PDF_FILES
 from src.utils.exclusion.extractors import extract_text_from_pdf
 from src.utils.exclusion.processors import (
     parse_austin_exclusions,
     parse_community_exclusions,
 )
-from src.utils.exclusion.cleaners import clean_exclusion_data
 
 # Set up logging
 logging.basicConfig(

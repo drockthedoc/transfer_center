@@ -74,7 +74,7 @@ def recommend_campus(
         # Filter campuses by bed availability
         care_levels = []
         score_justifications = []
-        
+
         # Check if human suggestions have care levels
         if human_suggestions and "care_levels" in human_suggestions:
             care_levels = human_suggestions["care_levels"]
@@ -87,20 +87,22 @@ def recommend_campus(
                 scoring_results = process_patient_scores(request.patient_data)
                 care_levels = scoring_results["recommended_care_levels"]
                 score_justifications = scoring_results["justifications"]
-                
+
                 print(f"Automatically determined care levels: {care_levels}")
                 print(f"Justifications: {score_justifications}")
-                
+
                 # Add scoring details to notes for transparency
                 for score_name, score_data in scoring_results["scores"].items():
-                    if score_data != "N/A" and isinstance(score_data.get("score"), (int, float)):
+                    if score_data != "N/A" and isinstance(
+                        score_data.get("score"), (int, float)
+                    ):
                         print(f"{score_name.upper()} Score: {score_data['score']}")
             except Exception as e:
                 print(f"Error using scoring systems: {str(e)}")
                 print("Defaulting to General care level")
                 care_levels = ["General"]
                 score_justifications = ["Default due to scoring error"]
-        
+
         campuses_with_beds = []
         for campus in eligible_campuses:
             print(f"Checking beds for {campus.name}")
@@ -222,7 +224,9 @@ def recommend_campus(
                 if TransportMode.AIR_AMBULANCE in available_transport_modes:
                     try:
                         air_info = get_air_travel_info(
-                            sending_facility, campus_data["campus"].location, current_weather
+                            sending_facility,
+                            campus_data["campus"].location,
+                            current_weather,
                         )
                         if air_info and "duration_minutes" in air_info:
                             time_minutes = air_info["duration_minutes"]
@@ -241,7 +245,10 @@ def recommend_campus(
                     # Simple calculation based on coordinates
                     lat1, lon1 = sending_facility.latitude, sending_facility.longitude
                     campus_obj = campus_data["campus"]
-                    lat2, lon2 = campus_obj.location.latitude, campus_obj.location.longitude
+                    lat2, lon2 = (
+                        campus_obj.location.latitude,
+                        campus_obj.location.longitude,
+                    )
 
                     # Haversine formula
                     import math
@@ -577,13 +584,15 @@ def recommend_campus(
         f"Transport mode: {best_option['transport_mode']}, travel time: {best_option['travel_time_minutes']:.1f} minutes",
         f"Selected as closest eligible campus with available beds",
     ]
-    
+
     # Include scoring justifications if automatic scoring was used
-    if 'score_justifications' in locals() and score_justifications:
+    if "score_justifications" in locals() and score_justifications:
         notes.append("Automatic severity scoring results:")
         for justification in score_justifications:
             notes.append(f"  - {justification}")
-        print(f"Added {len(score_justifications)} scoring justifications to explanation notes")
+        print(
+            f"Added {len(score_justifications)} scoring justifications to explanation notes"
+        )
 
     # Create explanation
     try:

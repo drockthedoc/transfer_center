@@ -12,10 +12,16 @@ various scenarios correctly, including:
 """
 
 import unittest
+
 from src.core.scoring.pediatric import (
-    calculate_pews, calculate_trap, calculate_cameo2, calculate_prism3,
-    calculate_queensland_non_trauma, calculate_queensland_trauma,
-    calculate_tps, calculate_chews
+    calculate_cameo2,
+    calculate_chews,
+    calculate_pews,
+    calculate_prism3,
+    calculate_queensland_non_trauma,
+    calculate_queensland_trauma,
+    calculate_tps,
+    calculate_trap,
 )
 
 
@@ -31,9 +37,9 @@ class TestPEWS(unittest.TestCase):
             oxygen_requirement="nasal cannula",
             heart_rate=130,
             capillary_refill=2.5,
-            behavior="irritable"
+            behavior="irritable",
         )
-        
+
         self.assertIsNotNone(result)
         self.assertIsInstance(result["score"], int)
         self.assertIsNotNone(result["interpretation"])
@@ -41,7 +47,7 @@ class TestPEWS(unittest.TestCase):
         self.assertIn("respiratory", result["subscores"])
         self.assertIn("cardiovascular", result["subscores"])
         self.assertIn("behavior", result["subscores"])
-        
+
     def test_missing_critical_data(self):
         """Test PEWS calculation with missing critical data"""
         result = calculate_pews(
@@ -51,13 +57,13 @@ class TestPEWS(unittest.TestCase):
             oxygen_requirement="none",
             heart_rate=120,
             capillary_refill=1.5,
-            behavior="playing"
+            behavior="playing",
         )
-        
+
         self.assertEqual(result["score"], "N/A")
         self.assertIn("missing_parameters", result)
         self.assertIn("respiratory_rate", result["missing_parameters"])
-        
+
     def test_missing_age(self):
         """Test PEWS calculation with missing age"""
         result = calculate_pews(
@@ -67,13 +73,13 @@ class TestPEWS(unittest.TestCase):
             oxygen_requirement="none",
             heart_rate=120,
             capillary_refill=1.5,
-            behavior="playing"
+            behavior="playing",
         )
-        
+
         self.assertEqual(result["score"], "N/A")
         self.assertIn("missing_parameters", result)
         self.assertIn("age_months", result["missing_parameters"])
-        
+
     def test_edge_case_high_values(self):
         """Test PEWS calculation with extremely high values"""
         result = calculate_pews(
@@ -83,12 +89,12 @@ class TestPEWS(unittest.TestCase):
             oxygen_requirement="ventilator",
             heart_rate=180,  # Very high
             capillary_refill=5,  # Delayed
-            behavior="unresponsive"
+            behavior="unresponsive",
         )
-        
+
         self.assertIsInstance(result["score"], int)
         self.assertGreaterEqual(result["score"], 6)  # Should be high-risk score
-        
+
     def test_edge_case_low_values(self):
         """Test PEWS calculation with extremely low values"""
         result = calculate_pews(
@@ -98,11 +104,13 @@ class TestPEWS(unittest.TestCase):
             oxygen_requirement="none",
             heart_rate=60,  # Very low
             capillary_refill=1,
-            behavior="playing"
+            behavior="playing",
         )
-        
+
         self.assertIsInstance(result["score"], int)
-        self.assertGreaterEqual(result["score"], 1)  # Should have at least some points for low vitals
+        self.assertGreaterEqual(
+            result["score"], 1
+        )  # Should have at least some points for low vitals
 
 
 class TestTRAP(unittest.TestCase):
@@ -121,9 +129,9 @@ class TestTRAP(unittest.TestCase):
             neuro_status="alert",
             gcs=15,
             access_difficulty="moderate",
-            age_months=36
+            age_months=36,
         )
-        
+
         self.assertIsNotNone(result)
         self.assertIsInstance(result["score"], int)
         self.assertIsNotNone(result["risk_level"])
@@ -132,7 +140,7 @@ class TestTRAP(unittest.TestCase):
         self.assertIn("hemodynamic", result["subscores"])
         self.assertIn("neurologic", result["subscores"])
         self.assertIn("access", result["subscores"])
-        
+
     def test_missing_domain(self):
         """Test TRAP calculation with a missing domain"""
         result = calculate_trap(
@@ -146,13 +154,13 @@ class TestTRAP(unittest.TestCase):
             neuro_status="alert",
             gcs=15,
             access_difficulty="easy",
-            age_months=36
+            age_months=36,
         )
-        
+
         self.assertEqual(result["score"], "N/A")
         self.assertIn("missing_parameters", result)
         self.assertIn("respiratory", result["missing_parameters"])
-        
+
     def test_minimal_data(self):
         """Test TRAP calculation with minimal data (one param per domain)"""
         result = calculate_trap(
@@ -166,13 +174,13 @@ class TestTRAP(unittest.TestCase):
             neuro_status="voice",  # Only neuro status for neurologic
             gcs=None,
             access_difficulty="difficult",
-            age_months=36
+            age_months=36,
         )
-        
+
         self.assertIsInstance(result["score"], int)
         self.assertIsNotNone(result["risk_level"])
         self.assertIsNotNone(result["transport_recommendation"])
-        
+
     def test_edge_case_critical(self):
         """Test TRAP calculation with critical values"""
         result = calculate_trap(
@@ -186,9 +194,9 @@ class TestTRAP(unittest.TestCase):
             neuro_status="unresponsive",
             gcs=None,
             access_difficulty="io",
-            age_months=36
+            age_months=36,
         )
-        
+
         self.assertIsInstance(result["score"], int)
         self.assertGreaterEqual(result["score"], 3)  # Should be high risk
         self.assertIn("Critical", result["risk_level"])
@@ -210,14 +218,14 @@ class TestCAMEO2(unittest.TestCase):
             medication_complexity="scheduled iv",
             nursing_dependency="moderate",
             care_requirements="moderate",
-            patient_factors="mild"
+            patient_factors="mild",
         )
-        
+
         self.assertIsNotNone(result)
         self.assertIsInstance(result["score"], int)
         self.assertIsNotNone(result["acuity_level"])
         self.assertIsNotNone(result["staffing_recommendation"])
-        
+
     def test_missing_critical_data(self):
         """Test CAMEO II calculation with missing critical data"""
         result = calculate_cameo2(
@@ -231,13 +239,13 @@ class TestCAMEO2(unittest.TestCase):
             medication_complexity="scheduled iv",
             nursing_dependency="moderate",
             care_requirements="moderate",
-            patient_factors="mild"
+            patient_factors="mild",
         )
-        
+
         self.assertEqual(result["score"], "N/A")
         self.assertIn("missing_parameters", result)
         self.assertIn("physiologic_instability", result["missing_parameters"])
-        
+
     def test_high_acuity(self):
         """Test CAMEO II calculation with high acuity values"""
         result = calculate_cameo2(
@@ -251,9 +259,9 @@ class TestCAMEO2(unittest.TestCase):
             medication_complexity="titrated drips",
             nursing_dependency="complete",
             care_requirements="severe",
-            patient_factors="critical"
+            patient_factors="critical",
         )
-        
+
         self.assertIsInstance(result["score"], int)
         self.assertGreaterEqual(result["score"], 25)  # Should be level 3-4
         self.assertIn("Level 4", result["acuity_level"])
@@ -265,35 +273,32 @@ class TestPRISM3(unittest.TestCase):
     def test_complete_data(self):
         """Test PRISM III calculation with complete data"""
         vitals = {
-            'systolic_bp': 80,
-            'heart_rate': 120,
-            'temperature': 36.5,
-            'gcs': 15,
-            'pupils': 'reactive'
+            "systolic_bp": 80,
+            "heart_rate": 120,
+            "temperature": 36.5,
+            "gcs": 15,
+            "pupils": "reactive",
         }
-        
+
         labs = {
-            'ph': 7.35,
-            'pco2': 40,
-            'po2': 95,
-            'bicarbonate': 22,
-            'glucose': 100,
-            'potassium': 4.0,
-            'creatinine': 0.5,
-            'bun': 12,
-            'wbc': 8.0,
-            'platelets': 250,
-            'pt': 12,
-            'ptt': 30
+            "ph": 7.35,
+            "pco2": 40,
+            "po2": 95,
+            "bicarbonate": 22,
+            "glucose": 100,
+            "potassium": 4.0,
+            "creatinine": 0.5,
+            "bun": 12,
+            "wbc": 8.0,
+            "platelets": 250,
+            "pt": 12,
+            "ptt": 30,
         }
-        
+
         result = calculate_prism3(
-            vitals=vitals,
-            labs=labs,
-            age_months=36,
-            ventilated=False
+            vitals=vitals, labs=labs, age_months=36, ventilated=False
         )
-        
+
         self.assertIsNotNone(result)
         self.assertIsInstance(result["score"], int)
         self.assertIsNotNone(result["interpretation"])
@@ -302,51 +307,45 @@ class TestPRISM3(unittest.TestCase):
         self.assertIn("acid_base", result["subscores"])
         self.assertIn("chemistry", result["subscores"])
         self.assertIn("hematologic", result["subscores"])
-        
+
     def test_missing_vitals_and_labs(self):
         """Test PRISM III calculation with missing vitals and labs"""
         result = calculate_prism3(
-            vitals=None,
-            labs=None,
-            age_months=36,
-            ventilated=False
+            vitals=None, labs=None, age_months=36, ventilated=False
         )
-        
+
         self.assertEqual(result["score"], "N/A")
         self.assertIn("missing_parameters", result)
-        
+
     def test_high_risk_values(self):
         """Test PRISM III calculation with high-risk values"""
         vitals = {
-            'systolic_bp': 50,  # Very low
-            'heart_rate': 180,  # Very high
-            'temperature': 32.0,  # Very low
-            'gcs': 7,  # Very low
-            'pupils': 'fixed and dilated'  # Critical
+            "systolic_bp": 50,  # Very low
+            "heart_rate": 180,  # Very high
+            "temperature": 32.0,  # Very low
+            "gcs": 7,  # Very low
+            "pupils": "fixed and dilated",  # Critical
         }
-        
+
         labs = {
-            'ph': 6.9,  # Critical
-            'pco2': 80,  # High
-            'po2': 50,  # Low
-            'bicarbonate': 10,  # Low
-            'glucose': 300,  # High
-            'potassium': 7.0,  # High
-            'creatinine': 2.0,  # High
-            'bun': 40,  # High
-            'wbc': 2.0,  # Low
-            'platelets': 40,  # Low
-            'pt': 25,  # High
-            'ptt': 60  # High
+            "ph": 6.9,  # Critical
+            "pco2": 80,  # High
+            "po2": 50,  # Low
+            "bicarbonate": 10,  # Low
+            "glucose": 300,  # High
+            "potassium": 7.0,  # High
+            "creatinine": 2.0,  # High
+            "bun": 40,  # High
+            "wbc": 2.0,  # Low
+            "platelets": 40,  # Low
+            "pt": 25,  # High
+            "ptt": 60,  # High
         }
-        
+
         result = calculate_prism3(
-            vitals=vitals,
-            labs=labs,
-            age_months=36,
-            ventilated=True
+            vitals=vitals, labs=labs, age_months=36, ventilated=True
         )
-        
+
         self.assertIsInstance(result["score"], int)
         self.assertGreaterEqual(result["score"], 30)  # Should be very high risk
         self.assertIn("Very high risk", result["interpretation"])
@@ -362,16 +361,16 @@ class TestQueensland(unittest.TestCase):
             HR=125,
             mental_status="alert",
             SpO2=95,
-            age_months=36  # 3-year-old
+            age_months=36,  # 3-year-old
         )
-        
+
         self.assertIsNotNone(result)
         self.assertIsInstance(result["score"], int)
         self.assertIsNotNone(result["risk_level"])
         self.assertIsNotNone(result["action"])
         self.assertIn("age_category", result)
         self.assertEqual(result["age_category"], "Toddler (1-4 years)")
-        
+
     def test_non_trauma_missing_data(self):
         """Test Queensland Non-Trauma calculation with missing data"""
         result = calculate_queensland_non_trauma(
@@ -379,13 +378,13 @@ class TestQueensland(unittest.TestCase):
             HR=125,
             mental_status="alert",
             SpO2=95,
-            age_months=36
+            age_months=36,
         )
-        
+
         self.assertEqual(result["score"], "N/A")
         self.assertIn("missing_parameters", result)
         self.assertIn("resp_rate", result["missing_parameters"])
-        
+
     def test_trauma_complete(self):
         """Test Queensland Trauma calculation with complete data"""
         result = calculate_queensland_trauma(
@@ -393,14 +392,14 @@ class TestQueensland(unittest.TestCase):
             consciousness="alert",
             airway="clear",
             breathing="normal",
-            circulation="normal"
+            circulation="normal",
         )
-        
+
         self.assertIsNotNone(result)
         self.assertIsInstance(result["score"], int)
         self.assertIsNotNone(result["risk_level"])
         self.assertIsNotNone(result["action"])
-        
+
     def test_trauma_missing_data(self):
         """Test Queensland Trauma calculation with missing data"""
         result = calculate_queensland_trauma(
@@ -408,13 +407,13 @@ class TestQueensland(unittest.TestCase):
             consciousness="voice",
             airway=None,  # Missing critical parameter
             breathing="distressed",
-            circulation="abnormal"
+            circulation="abnormal",
         )
-        
+
         self.assertEqual(result["score"], "N/A")
         self.assertIn("missing_parameters", result)
         self.assertIn("airway", result["missing_parameters"])
-        
+
     def test_trauma_high_risk(self):
         """Test Queensland Trauma calculation with high-risk values"""
         result = calculate_queensland_trauma(
@@ -422,9 +421,9 @@ class TestQueensland(unittest.TestCase):
             consciousness="unresponsive",
             airway="unmaintainable",
             breathing="absent",
-            circulation="decompensated"
+            circulation="decompensated",
         )
-        
+
         self.assertIsInstance(result["score"], int)
         self.assertGreaterEqual(result["score"], 12)  # Should be critical risk
         self.assertIn("Critical", result["risk_level"])
@@ -438,9 +437,9 @@ class TestTPS(unittest.TestCase):
         result = calculate_tps(
             respiratory_status="mild",
             circulation_status="stable",
-            neurologic_status="alert"
+            neurologic_status="alert",
         )
-        
+
         self.assertIsNotNone(result)
         self.assertIsInstance(result["score"], int)
         self.assertIsNotNone(result["risk_level"])
@@ -448,37 +447,35 @@ class TestTPS(unittest.TestCase):
         self.assertIn("respiratory", result["subscores"])
         self.assertIn("circulation", result["subscores"])
         self.assertIn("neurologic", result["subscores"])
-        
+
     def test_missing_all_data(self):
         """Test TPS calculation with all data missing"""
         result = calculate_tps(
-            respiratory_status=None,
-            circulation_status=None,
-            neurologic_status=None
+            respiratory_status=None, circulation_status=None, neurologic_status=None
         )
-        
+
         self.assertEqual(result["score"], "N/A")
         self.assertIn("missing_parameters", result)
-        
+
     def test_partial_data(self):
         """Test TPS calculation with partial data"""
         result = calculate_tps(
             respiratory_status="moderate",
             circulation_status=None,
-            neurologic_status=None
+            neurologic_status=None,
         )
-        
+
         self.assertIsInstance(result["score"], int)
         self.assertEqual(result["score"], 2)  # Should just have respiratory subscore
-        
+
     def test_critical_values(self):
         """Test TPS calculation with critical values"""
         result = calculate_tps(
             respiratory_status="severe",
             circulation_status="shock",
-            neurologic_status="unresponsive"
+            neurologic_status="unresponsive",
         )
-        
+
         self.assertIsInstance(result["score"], int)
         self.assertEqual(result["score"], 9)  # Maximum score
         self.assertIn("Critical", result["risk_level"])
@@ -497,15 +494,15 @@ class TestCHEWS(unittest.TestCase):
             capillary_refill=2,
             oxygen_therapy="nasal cannula",
             oxygen_saturation=95,
-            age_months=48  # 4-year-old
+            age_months=48,  # 4-year-old
         )
-        
+
         self.assertIsNotNone(result)
         self.assertIsInstance(result["score"], int)
         self.assertIsNotNone(result["alert_level"])
         self.assertIsNotNone(result["action"])
         self.assertIn("normal_ranges", result)
-        
+
     def test_missing_critical_data(self):
         """Test CHEWS calculation with missing critical data"""
         result = calculate_chews(
@@ -516,13 +513,13 @@ class TestCHEWS(unittest.TestCase):
             capillary_refill=2,
             oxygen_therapy="nasal cannula",
             oxygen_saturation=95,
-            age_months=48
+            age_months=48,
         )
-        
+
         self.assertEqual(result["score"], "N/A")
         self.assertIn("missing_parameters", result)
         self.assertIn("respiratory_rate", result["missing_parameters"])
-        
+
     def test_partial_data(self):
         """Test CHEWS calculation with partial but sufficient data"""
         result = calculate_chews(
@@ -533,12 +530,12 @@ class TestCHEWS(unittest.TestCase):
             capillary_refill=None,  # Non-critical parameter missing
             oxygen_therapy=None,  # Non-critical parameter missing
             oxygen_saturation=None,  # Non-critical parameter missing
-            age_months=48
+            age_months=48,
         )
-        
+
         self.assertIsInstance(result["score"], int)
         # Should still calculate with default/zero values for missing non-critical params
-        
+
     def test_critical_values(self):
         """Test CHEWS calculation with critical values"""
         result = calculate_chews(
@@ -549,13 +546,13 @@ class TestCHEWS(unittest.TestCase):
             capillary_refill=5,  # Delayed
             oxygen_therapy="ventilator",
             oxygen_saturation=80,  # Very low
-            age_months=48
+            age_months=48,
         )
-        
+
         self.assertIsInstance(result["score"], int)
         self.assertGreaterEqual(result["score"], 10)  # Should be critical alert
         self.assertIn("Critical", result["alert_level"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

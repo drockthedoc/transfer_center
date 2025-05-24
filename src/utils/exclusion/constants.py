@@ -8,7 +8,9 @@ parsing and categorizing exclusion criteria.
 import os
 
 # Paths
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+BASE_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 DATA_DIR = os.path.join(BASE_DIR, "data")
 OUTPUT_FILE = os.path.join(DATA_DIR, "exclusion_criteria.json")
 
@@ -26,7 +28,6 @@ DEPARTMENT_MAPPING = {
     "administrative": ["administrative", "admin", "general"],
     "nicu": ["nicu", "neonatal", "neonate", "infant", "newborn"],
     "picu": ["picu", "intensive care", "critical care"],
-    
     # Medical specialties
     "cardiology": ["cardiology", "cardiac", "heart", "cardiovascular"],
     "pulmonary": [
@@ -144,7 +145,6 @@ DEPARTMENT_MAPPING = {
         "catheter",
         "thrombolysis",
     ],
-    
     # Other
     "monitoring": ["monitoring", "telemetry", "continuous", "hourly"],
     "weight_restrictions": ["weight", "kg", "weighing"],

@@ -58,7 +58,7 @@ class LLMSettingsWidget(QWidget):
         # Add controls in a row
         model_layout = QHBoxLayout()
         model_layout.addWidget(self.model_input)
-        
+
         # Refresh models button
         self.refresh_button = QPushButton("Refresh")
         self.refresh_button.clicked.connect(self.refresh_models)
@@ -94,7 +94,7 @@ class LLMSettingsWidget(QWidget):
         current = self.model_input.currentText()
         self.model_input.clear()
         self.model_input.addItems(models)
-        
+
         # Try to restore the previous selection if it exists
         index = self.model_input.findText(current)
         if index >= 0:

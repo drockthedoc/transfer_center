@@ -3,7 +3,7 @@ line-length = 88
 target-version = ['py38', 'py39', 'py310', 'py311']
 
 [tool.pylint.main]
-jobs = -1 # Use all available cores
+jobs = 1 # Use 1 job to avoid issues
 disable = [
     "C0114", # missing-module-docstring
     "C0115", # missing-class-docstring

@@ -58,8 +58,8 @@ from src.core.models import (
 )
 from src.gui.hospital_search import HospitalSearch
 from src.llm.llm_classifier_refactored import LLMClassifier
-from src.utils.transport.estimator import TransportTimeEstimator
 from src.utils.census_updater import update_census
+from src.utils.transport.estimator import TransportTimeEstimator
 
 logger = logging.getLogger(__name__)
 

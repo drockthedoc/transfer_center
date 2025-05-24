@@ -5,7 +5,7 @@ This module contains functions for cleaning and standardizing the extracted excl
 """
 
 import re
-from typing import Dict, List, Any, Set
+from typing import Any, Dict, List, Set
 
 
 def clean_exclusion_data(result: Dict[str, Any]) -> None:
@@ -18,12 +18,29 @@ def clean_exclusion_data(result: Dict[str, Any]) -> None:
     """
     # Indicators of non-exclusion content
     non_exclusion_indicators = [
-        "please", "thank", "contact", "refer to", "see ", "available", "approved",
-        "accepted", "allowed", "permitted", "recommended", "guidelines", "policy",
-        "procedure", "inclusion", "criteria for", "criteria:", "note:",
-        "admission", "transfer", "instructions"
+        "please",
+        "thank",
+        "contact",
+        "refer to",
+        "see ",
+        "available",
+        "approved",
+        "accepted",
+        "allowed",
+        "permitted",
+        "recommended",
+        "guidelines",
+        "policy",
+        "procedure",
+        "inclusion",
+        "criteria for",
+        "criteria:",
+        "note:",
+        "admission",
+        "transfer",
+        "instructions",
     ]
-    
+
     # Patterns for names, headings, etc. to filter out
     name_patterns = [
         r"^Dr\.\s+[A-Z][a-z]+",
@@ -33,7 +50,7 @@ def clean_exclusion_data(result: Dict[str, Any]) -> None:
         r"^\d{1,2}/\d{1,2}/\d{2,4}",
         r"^(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}",
     ]
-    
+
     # Clean each department's exclusions
     departments_to_remove = []
     for dept, dept_data in result["departments"].items():
@@ -43,15 +60,17 @@ def clean_exclusion_data(result: Dict[str, Any]) -> None:
             item_lower = item.lower()
             if any(indicator in item_lower for indicator in non_exclusion_indicators):
                 continue
-                
+
             # Skip items matching name patterns
-            if any(re.search(pattern, item, re.IGNORECASE) for pattern in name_patterns):
+            if any(
+                re.search(pattern, item, re.IGNORECASE) for pattern in name_patterns
+            ):
                 continue
-                
+
             # Skip very short items (likely parsing artifacts)
             if len(item) < 10:
                 continue
-                
+
             # Skip number-only items or single letters (likely section markers)
             if (
                 re.match(r"^[\d\s]+$", item)

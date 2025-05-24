@@ -14,9 +14,9 @@ from typing import Any, Dict, List, Optional
 import openai
 
 from src.llm.components.entity_extraction import EntityExtractor
-from src.llm.components.specialty_assessment import SpecialtyAssessor
 from src.llm.components.exclusion_evaluation import ExclusionEvaluator
 from src.llm.components.recommendation import RecommendationGenerator
+from src.llm.components.specialty_assessment import SpecialtyAssessor
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -52,8 +52,10 @@ class LLMClassifier:
         elif self.available_models:
             self.model = self.available_models[0]
         else:
-            self.model = "fallback_model"  # This will likely fail but provides a default
-            
+            self.model = (
+                "fallback_model"  # This will likely fail but provides a default
+            )
+
         # Initialize components
         self._init_components()
 
@@ -63,7 +65,7 @@ class LLMClassifier:
             base_url=self.api_url,
             api_key="not-needed",  # LM Studio doesn't require an API key
         )
-    
+
     def _init_components(self):
         """Initialize the LLM processing components."""
         self.entity_extractor = EntityExtractor(self.client, self.model)
@@ -143,7 +145,10 @@ class LLMClassifier:
                         "role": "system",
                         "content": "You are a helpful assistant for a hospital transfer center.",
                     },
-                    {"role": "user", "content": "System test: Respond with 'Connection successful' if you can read this."},
+                    {
+                        "role": "user",
+                        "content": "System test: Respond with 'Connection successful' if you can read this.",
+                    },
                 ],
                 max_tokens=20,
                 temperature=0,
@@ -156,7 +161,10 @@ class LLMClassifier:
             if "connection successful" in response_text.lower():
                 return True, "Connection successful"
             else:
-                return True, f"Connection works but unexpected response: {response_text}"
+                return (
+                    True,
+                    f"Connection works but unexpected response: {response_text}",
+                )
 
         except Exception as e:
             logger.error(f"Connection test failed: {str(e)}")
@@ -168,7 +176,10 @@ class LLMClassifier:
             return False, error_msg
 
     def process_text(
-        self, text: str, human_suggestions: Optional[Dict] = None, scoring_results: Optional[Dict] = None
+        self,
+        text: str,
+        human_suggestions: Optional[Dict] = None,
+        scoring_results: Optional[Dict] = None,
     ) -> Dict[str, Any]:
         """
         Process clinical text to extract structured information using a multi-step prompting approach.
@@ -192,53 +203,66 @@ class LLMClassifier:
             # Ensure client and model are set up
             if not self.client or not self.model or self.model == "fallback_model":
                 logger.warning("LLM not properly configured, using fallback processing")
-                return self._fallback_process_text(text, human_suggestions, scoring_results)
+                return self._fallback_process_text(
+                    text, human_suggestions, scoring_results
+                )
 
             logger.info(f"Processing text with model: {self.model}")
-            
+
             # Step 1: Extract entities
             extracted_entities = self.entity_extractor.extract_entities(text)
             logger.info("Entity extraction complete")
-            
+
             # Step 2: Assess specialty needs
-            specialty_assessment = self.specialty_assessor.assess_specialties(extracted_entities, scoring_results)
+            specialty_assessment = self.specialty_assessor.assess_specialties(
+                extracted_entities, scoring_results
+            )
             logger.info("Specialty assessment complete")
-            
+
             # Include scoring results in the output if provided
             if scoring_results:
                 logger.info("Including pediatric scoring results in assessment")
                 specialty_assessment["scoring_results"] = scoring_results
-            
+
             # Step 3: Generate final recommendation
             # Note: We're skipping exclusion evaluation for simplicity in this example
-            final_recommendation = self.recommendation_generator.generate_recommendation(
-                extracted_entities, specialty_assessment
+            final_recommendation = (
+                self.recommendation_generator.generate_recommendation(
+                    extracted_entities, specialty_assessment
+                )
             )
-            logger.info(f"Final recommendation complete: {final_recommendation.recommended_campus_id} with confidence {final_recommendation.confidence_score}%")
-            
+            logger.info(
+                f"Final recommendation complete: {final_recommendation.recommended_campus_id} with confidence {final_recommendation.confidence_score}%"
+            )
+
             # Combine all results
             result = {
                 **extracted_entities,
                 "specialty_assessment": specialty_assessment,
                 "final_recommendation": final_recommendation,  # Store the Recommendation object directly
-                "note": "Generated by LLM"
+                "note": "Generated by LLM",
             }
-            
+
             # Incorporate human suggestions if provided
             if human_suggestions:
                 result["human_suggestions"] = human_suggestions
-                
+
             return result
-            
+
         except Exception as e:
             logger.error(f"Error processing text with LLM: {str(e)}")
             logger.error(traceback.format_exc())
-            logger.error("LLM processing failed and no fallback is allowed - propagating error")
+            logger.error(
+                "LLM processing failed and no fallback is allowed - propagating error"
+            )
             # No fallback - propagate the error upward
             raise e
 
     def _fallback_process_text(
-        self, text: str, human_suggestions: Optional[Dict] = None, scoring_results: Optional[Dict] = None
+        self,
+        text: str,
+        human_suggestions: Optional[Dict] = None,
+        scoring_results: Optional[Dict] = None,
     ) -> Dict[str, Any]:
         """
         Fallback method to process clinical text without an LLM using simpler rule-based extraction.
@@ -266,89 +290,135 @@ class LLMClassifier:
             "clinical_info": {
                 "chief_complaint": chief_complaint,
                 "summary": summary,
-                "vital_signs": vital_signs
+                "vital_signs": vital_signs,
             },
             "care_needs": {
                 "suggested_care_level": suggested_care_level,
-                "required_specialties": []
+                "required_specialties": [],
             },
-            "note": "Generated by rule-based fallback (no LLM connection)"
+            "note": "Generated by rule-based fallback (no LLM connection)",
         }
-        
+
         # Include scoring results if available
         if scoring_results:
             logger.info("Including pediatric scoring results in fallback assessment")
             result["scoring_results"] = scoring_results
-            
+
             # Use scoring results to inform care level if available and not already specified by human
-            if "recommended_care_levels" in scoring_results and not (human_suggestions and "care_level" in human_suggestions):
+            if "recommended_care_levels" in scoring_results and not (
+                human_suggestions and "care_level" in human_suggestions
+            ):
                 if scoring_results["recommended_care_levels"]:
-                    result["care_needs"]["suggested_care_level"] = scoring_results["recommended_care_levels"][0]
-                    result["care_needs"]["care_level_reasoning"] = "Based on pediatric scoring systems"
-                    
+                    result["care_needs"]["suggested_care_level"] = scoring_results[
+                        "recommended_care_levels"
+                    ][0]
+                    result["care_needs"][
+                        "care_level_reasoning"
+                    ] = "Based on pediatric scoring systems"
+
                     # Include justifications from scoring
                     if "justifications" in scoring_results:
-                        result["care_needs"]["score_justifications"] = scoring_results["justifications"]
+                        result["care_needs"]["score_justifications"] = scoring_results[
+                            "justifications"
+                        ]
 
         # Extract age using regex
-        age_match = re.search(r'(\d+)(?:\s*-|\s+)(?:year|yr|y)[s\s]*(?:old)?', text, re.IGNORECASE)
+        age_match = re.search(
+            r"(\d+)(?:\s*-|\s+)(?:year|yr|y)[s\s]*(?:old)?", text, re.IGNORECASE
+        )
         if age_match:
             result["demographics"]["age"] = int(age_match.group(1))
 
         # Extract gender
-        if re.search(r'\b(?:male|boy|man)\b', text, re.IGNORECASE):
+        if re.search(r"\b(?:male|boy|man)\b", text, re.IGNORECASE):
             result["demographics"]["gender"] = "male"
-        elif re.search(r'\b(?:female|girl|woman)\b', text, re.IGNORECASE):
+        elif re.search(r"\b(?:female|girl|woman)\b", text, re.IGNORECASE):
             result["demographics"]["gender"] = "female"
 
         # Extract vital signs
         vital_signs = {}
-        
+
         # Heart rate
-        hr_match = re.search(r'(?:HR|heart rate|pulse)[:\s]+(\d+)', text, re.IGNORECASE)
+        hr_match = re.search(r"(?:HR|heart rate|pulse)[:\s]+(\d+)", text, re.IGNORECASE)
         if hr_match:
             vital_signs["hr"] = hr_match.group(1)
-            
+
         # Respiratory rate
-        rr_match = re.search(r'(?:RR|resp(?:iratory)? rate)[:\s]+(\d+)', text, re.IGNORECASE)
+        rr_match = re.search(
+            r"(?:RR|resp(?:iratory)? rate)[:\s]+(\d+)", text, re.IGNORECASE
+        )
         if rr_match:
             vital_signs["rr"] = rr_match.group(1)
-            
+
         # Blood pressure
-        bp_match = re.search(r'(?:BP|blood pressure)[:\s]+(\d+)[/\\](\d+)', text, re.IGNORECASE)
+        bp_match = re.search(
+            r"(?:BP|blood pressure)[:\s]+(\d+)[/\\](\d+)", text, re.IGNORECASE
+        )
         if bp_match:
             vital_signs["bp"] = f"{bp_match.group(1)}/{bp_match.group(2)}"
-            
+
         # Temperature
-        temp_match = re.search(r'(?:temp|temperature)[:\s]+(\d+\.?\d*)', text, re.IGNORECASE)
+        temp_match = re.search(
+            r"(?:temp|temperature)[:\s]+(\d+\.?\d*)", text, re.IGNORECASE
+        )
         if temp_match:
             vital_signs["temp"] = temp_match.group(1)
-            
+
         # Oxygen saturation
-        o2_match = re.search(r'(?:O2|oxygen|sat|saturation)[:\s]+(\d+)(?:\s*%)?', text, re.IGNORECASE)
+        o2_match = re.search(
+            r"(?:O2|oxygen|sat|saturation)[:\s]+(\d+)(?:\s*%)?", text, re.IGNORECASE
+        )
         if o2_match:
             vital_signs["o2"] = f"{o2_match.group(1)}%"
-        
+
         result["vital_signs"] = vital_signs
 
         # Extract keywords from text
         keywords = []
         potential_conditions = []
-        
+
         # Look for key medical terms
         medical_terms = [
-            "respiratory distress", "cardiac", "heart", "pneumonia", "sepsis",
-            "seizure", "fever", "infection", "fracture", "trauma", "bleeding",
-            "asthma", "bronchiolitis", "diabetes", "DKA", "cancer", "injury",
-            "stroke", "neurological", "liver", "renal", "failure", "shock",
-            "anemia", "meningitis", "appendicitis", "vomiting", "dehydration",
-            "acute", "chronic", "critical", "ventilator", "monitor", "surgery"
+            "respiratory distress",
+            "cardiac",
+            "heart",
+            "pneumonia",
+            "sepsis",
+            "seizure",
+            "fever",
+            "infection",
+            "fracture",
+            "trauma",
+            "bleeding",
+            "asthma",
+            "bronchiolitis",
+            "diabetes",
+            "DKA",
+            "cancer",
+            "injury",
+            "stroke",
+            "neurological",
+            "liver",
+            "renal",
+            "failure",
+            "shock",
+            "anemia",
+            "meningitis",
+            "appendicitis",
+            "vomiting",
+            "dehydration",
+            "acute",
+            "chronic",
+            "critical",
+            "ventilator",
+            "monitor",
+            "surgery",
         ]
-        
+
         for term in medical_terms:
             if term.lower() in text.lower():
                 keywords.append(term)
-                
+
                 # Check for specific conditions
                 if term in ["pneumonia", "bronchiolitis", "asthma"]:
                     potential_conditions.append("Respiratory condition")
@@ -360,11 +430,11 @@ class LLMClassifier:
                     potential_conditions.append("Infectious condition")
                 elif term in ["trauma", "fracture", "injury", "bleeding"]:
                     potential_conditions.append("Trauma")
-                    
+
         # Remove duplicates
         keywords = list(set(keywords))
         potential_conditions = list(set(potential_conditions))
-        
+
         result["keywords"] = keywords + potential_conditions
 
         # Try to extract a summary
@@ -423,7 +493,7 @@ class LLMClassifier:
                 o2 = vital_signs.get("o2", "")
                 if o2 and o2.strip("%").isdigit() and int(o2.strip("%")) < 90:
                     suggested_care_level = "ICU"  # Low oxygen saturation
-        
+
         result["suggested_care_level"] = suggested_care_level
         result["chief_complaint"] = chief_complaint
         result["clinical_history"] = summary if summary else text[:200] + "..."

@@ -32,7 +32,8 @@ class PatientData(BaseModel):
     )
     # Original fields are now optional with defaults or can be derived from other fields
     chief_complaint: Optional[str] = Field(
-        default="", description="The patient's primary reason for seeking medical attention."
+        default="",
+        description="The patient's primary reason for seeking medical attention.",
     )
     clinical_history: Optional[str] = Field(
         default="", description="Relevant clinical history of the patient."
@@ -48,19 +49,22 @@ class PatientData(BaseModel):
     current_location: Optional[Location] = Field(
         default=None, description="Patient's current geographical location."
     )
-    
+
     # Fields actually used in the application
     clinical_text: str = Field(
         default="", description="Raw clinical text entered by the user."
     )
     extracted_data: Dict[str, Any] = Field(
-        default_factory=dict, description="Data extracted from clinical text by LLM or rule-based processing."
+        default_factory=dict,
+        description="Data extracted from clinical text by LLM or rule-based processing.",
     )
     care_needs: List[str] = Field(
-        default_factory=list, description="List of care needs identified for the patient."
+        default_factory=list,
+        description="List of care needs identified for the patient.",
     )
     care_level: str = Field(
-        default="General", description="Recommended care level (General, ICU, PICU, NICU, etc.)."
+        default="General",
+        description="Recommended care level (General, ICU, PICU, NICU, etc.).",
     )
 
 
@@ -92,24 +96,21 @@ class CampusExclusion(BaseModel):
         description="Minimum patient age (in years) for this exclusion to apply.",
     )
     max_age: Optional[int] = Field(
-        None,
-        description="Maximum patient age (in years) for this exclusion to apply."
+        None, description="Maximum patient age (in years) for this exclusion to apply."
     )
     min_weight: Optional[float] = Field(
-        None,
-        description="Minimum patient weight (in kg) for this exclusion to apply."
+        None, description="Minimum patient weight (in kg) for this exclusion to apply."
     )
     max_weight: Optional[float] = Field(
-        None,
-        description="Maximum patient weight (in kg) for this exclusion to apply."
+        None, description="Maximum patient weight (in kg) for this exclusion to apply."
     )
     excluded_care_levels: List[str] = Field(
         default_factory=list,
-        description="List of care levels excluded by this criterion."
+        description="List of care levels excluded by this criterion.",
     )
     excluded_conditions: List[str] = Field(
         default_factory=list,
-        description="List of medical conditions excluded by this criterion."
+        description="List of medical conditions excluded by this criterion.",
     )
 
 
@@ -184,8 +185,8 @@ class TransportMode(str, Enum):
 
     GROUND_AMBULANCE = "GROUND_AMBULANCE"
     AIR_AMBULANCE = "AIR_AMBULANCE"  # Generic air transport
-    HELICOPTER = "HELICOPTER"         # Specific helicopter transport
-    FIXED_WING = "FIXED_WING"        # Specific fixed-wing aircraft transport
+    HELICOPTER = "HELICOPTER"  # Specific helicopter transport
+    FIXED_WING = "FIXED_WING"  # Specific fixed-wing aircraft transport
 
 
 class WeatherData(BaseModel):
@@ -212,18 +213,26 @@ class WeatherData(BaseModel):
         default_factory=list,
         description="List of any adverse weather conditions (e.g., 'FOG', 'THUNDERSTORM').",
     )
-    
+
     class Config:
         # Allow getting the actual temperature regardless of which field was used
         @validator("temperature_celsius", pre=True, always=True)
         def set_temp_celsius(cls, v, values):
-            if v is None and "temperature_c" in values and values["temperature_c"] is not None:
+            if (
+                v is None
+                and "temperature_c" in values
+                and values["temperature_c"] is not None
+            ):
                 return values["temperature_c"]
             return v
-            
+
         @validator("temperature_c", pre=True, always=True)
         def set_temp_c(cls, v, values):
-            if v is None and "temperature_celsius" in values and values["temperature_celsius"] is not None:
+            if (
+                v is None
+                and "temperature_celsius" in values
+                and values["temperature_celsius"] is not None
+            ):
                 return values["temperature_celsius"]
             return v
 
@@ -242,7 +251,8 @@ class TransferRequest(BaseModel):
     )
     # Make these optional with default values to maintain backward compatibility
     sending_facility_name: Optional[str] = Field(
-        default="Unknown Facility", description="Name of the facility initiating the transfer."
+        default="Unknown Facility",
+        description="Name of the facility initiating the transfer.",
     )
     sending_facility_location: Optional[Location] = Field(
         default=None, description="Geographical location of the sending facility."
@@ -253,7 +263,8 @@ class TransferRequest(BaseModel):
     )
     # Add other fields that are used in the code
     requested_datetime: Optional[datetime] = Field(
-        default_factory=datetime.now, description="Date and time when the transfer was requested."
+        default_factory=datetime.now,
+        description="Date and time when the transfer was requested.",
     )
     transport_mode: Optional[TransportMode] = Field(
         default=None, description="Selected transport mode for this transfer."

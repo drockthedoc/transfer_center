@@ -4,13 +4,7 @@ Recommendation Output Widget for the Transfer Center GUI.
 This module contains the recommendation output widget used in the main application window.
 """
 
-from PyQt5.QtWidgets import (
-    QGroupBox,
-    QTabWidget,
-    QTextEdit,
-    QVBoxLayout,
-    QWidget,
-)
+from PyQt5.QtWidgets import QGroupBox, QTabWidget, QTextEdit, QVBoxLayout, QWidget
 
 
 class RecommendationOutputWidget(QWidget):
@@ -35,36 +29,40 @@ class RecommendationOutputWidget(QWidget):
         self.recommendation_tab = QWidget()
         recommendation_layout = QVBoxLayout(self.recommendation_tab)
         recommendation_layout.setContentsMargins(5, 5, 5, 5)
-        
+
         self.recommendation_output = QTextEdit()
         self.recommendation_output.setReadOnly(True)
-        self.recommendation_output.setPlaceholderText("Recommendation will appear here...")
+        self.recommendation_output.setPlaceholderText(
+            "Recommendation will appear here..."
+        )
         recommendation_layout.addWidget(self.recommendation_output)
-        
+
         self.output_tabs.addTab(self.recommendation_tab, "Recommendation")
 
         # Explanation tab
         self.explanation_tab = QWidget()
         explanation_layout = QVBoxLayout(self.explanation_tab)
         explanation_layout.setContentsMargins(5, 5, 5, 5)
-        
+
         self.explanation_output = QTextEdit()
         self.explanation_output.setReadOnly(True)
-        self.explanation_output.setPlaceholderText("Detailed explanation will appear here...")
+        self.explanation_output.setPlaceholderText(
+            "Detailed explanation will appear here..."
+        )
         explanation_layout.addWidget(self.explanation_output)
-        
+
         self.output_tabs.addTab(self.explanation_tab, "Explanation")
 
         # Raw Data tab
         self.raw_tab = QWidget()
         raw_layout = QVBoxLayout(self.raw_tab)
         raw_layout.setContentsMargins(5, 5, 5, 5)
-        
+
         self.raw_output = QTextEdit()
         self.raw_output.setReadOnly(True)
         self.raw_output.setPlaceholderText("Raw data will appear here...")
         raw_layout.addWidget(self.raw_output)
-        
+
         self.output_tabs.addTab(self.raw_tab, "Raw Data")
 
         # Add the tabs to the layout

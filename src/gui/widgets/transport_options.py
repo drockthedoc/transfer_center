@@ -66,9 +66,9 @@ class TransportOptionsWidget(QWidget):
         # Enable/disable transport mode selection based on transport type
         is_kc = self.transport_type_input.currentText() == "Kangaroo Crew"
         is_family = self.transport_type_input.currentText() == "Family"
-        
+
         self.transport_mode_input.setEnabled(is_kc)
-        
+
         if is_family:
             self.transport_mode_input.setCurrentIndex(0)  # Set to Ground
 

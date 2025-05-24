@@ -83,85 +83,87 @@ def get_traffic_factor(metro_area: str, eta_minutes: Optional[int] = None) -> fl
     """
     # Use the metro area patterns or default to houston
     patterns = TRAFFIC_PATTERNS.get(metro_area.lower(), TRAFFIC_PATTERNS["houston"])
-    
+
     # Get current hour
     current_hour = datetime.now().hour
-    
+
     # If eta_minutes is provided, adjust the hour accordingly
     if eta_minutes is not None:
         # Convert minutes to hours and add to current hour
         hour_offset = eta_minutes // 60  # Integer division
         future_hour = (current_hour + hour_offset) % 24  # Wrap around to 0-23
         traffic_factor = patterns[future_hour]
-        logger.debug(f"Using future hour {future_hour} with traffic factor {traffic_factor}")
+        logger.debug(
+            f"Using future hour {future_hour} with traffic factor {traffic_factor}"
+        )
     else:
         # Use current hour
         traffic_factor = patterns[current_hour]
-        logger.debug(f"Using current hour {current_hour} with traffic factor {traffic_factor}")
-    
+        logger.debug(
+            f"Using current hour {current_hour} with traffic factor {traffic_factor}"
+        )
+
     return traffic_factor
 
 
 def get_weather_adjustment(
-    weather_condition: str, 
-    visibility_km: float, 
-    wind_speed_kph: float
+    weather_condition: str, visibility_km: float, wind_speed_kph: float
 ) -> Dict[str, float]:
     """
     Calculate adjustments to travel time based on weather conditions.
-    
+
     Args:
         weather_condition: Description of weather (e.g., "clear", "rain", "snow")
         visibility_km: Visibility in kilometers
         wind_speed_kph: Wind speed in kilometers per hour
-        
+
     Returns:
         Dictionary of adjustment factors by transport mode
     """
     # Initialize with default (no adjustment) factors
-    adjustments = {
-        "ground": 1.0,
-        "helicopter": 1.0,
-        "fixed_wing": 1.0
-    }
-    
+    adjustments = {"ground": 1.0, "helicopter": 1.0, "fixed_wing": 1.0}
+
     # Adjust for weather condition
     weather_condition = weather_condition.lower()
     if "rain" in weather_condition:
         adjustments["ground"] *= 1.3  # 30% slower in rain
-        
+
         if "heavy" in weather_condition:
             adjustments["ground"] *= 1.2  # Additional 20% slower in heavy rain
             adjustments["helicopter"] *= 1.5  # 50% slower or potentially unavailable
-    
+
     elif "snow" in weather_condition:
         adjustments["ground"] *= 1.5  # 50% slower in snow
         adjustments["helicopter"] *= 1.3  # 30% slower in snow
-        
+
         if "heavy" in weather_condition:
             adjustments["ground"] *= 1.5  # Additional 50% slower in heavy snow
             adjustments["helicopter"] *= 1.5  # Additional 50% slower in heavy snow
-    
+
     elif "fog" in weather_condition or "mist" in weather_condition:
         if visibility_km < 5:
             adjustments["ground"] *= 1.2  # 20% slower in fog with reduced visibility
-        
+
         if visibility_km < 2:
             adjustments["ground"] *= 1.3  # Additional 30% slower in dense fog
             adjustments["helicopter"] *= 2.0  # 100% slower or potentially unavailable
-    
+
     # Adjust for wind
     if wind_speed_kph > 30:
         # Wind affects air transport more than ground
         wind_factor = min(2.0, 1.0 + (wind_speed_kph - 30) / 50)  # Cap at 2.0
         adjustments["helicopter"] *= wind_factor
-        adjustments["fixed_wing"] *= (1.0 + (wind_factor - 1.0) / 2)  # Less impact on fixed wing
-    
+        adjustments["fixed_wing"] *= (
+            1.0 + (wind_factor - 1.0) / 2
+        )  # Less impact on fixed wing
+
     # Adjust for visibility
     if visibility_km < 10:
         # Low visibility affects air transport
         visibility_factor = max(1.0, 2.0 - visibility_km / 10)  # Between 1.0 and 2.0
         adjustments["helicopter"] *= visibility_factor
-        adjustments["fixed_wing"] *= (1.0 + (visibility_factor - 1.0) / 2)  # Less impact on fixed wing
-    
+        adjustments["fixed_wing"] *= (
+            1.0 + (visibility_factor - 1.0) / 2
+        )  # Less impact on fixed wing
+
     return adjustments

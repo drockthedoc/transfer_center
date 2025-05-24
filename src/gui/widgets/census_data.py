@@ -45,10 +45,10 @@ class CensusDataWidget(QWidget):
         self.census_file_input = QLineEdit()
         self.census_file_input.setReadOnly(True)
         self.census_file_input.setPlaceholderText("Select census data file...")
-        
+
         self.browse_button = QPushButton("Browse...")
         self.browse_button.clicked.connect(self.browse_clicked)
-        
+
         file_layout.addWidget(self.census_file_input, 3)
         file_layout.addWidget(self.browse_button, 1)
         census_layout.addLayout(file_layout)
@@ -56,14 +56,14 @@ class CensusDataWidget(QWidget):
         # Last update info and update button row
         update_layout = QHBoxLayout()
         update_layout.addWidget(QLabel("Last Update:"))
-        
+
         self.last_update_label = QLineEdit()
         self.last_update_label.setReadOnly(True)
         self.last_update_label.setText("Never")
-        
+
         self.update_button = QPushButton("Update Census")
         self.update_button.clicked.connect(self.update_clicked)
-        
+
         update_layout.addWidget(self.last_update_label, 2)
         update_layout.addWidget(self.update_button, 1)
         census_layout.addLayout(update_layout)
@@ -77,7 +77,9 @@ class CensusDataWidget(QWidget):
         self.status_display = QTextEdit()
         self.status_display.setReadOnly(True)
         self.status_display.setMaximumHeight(100)
-        self.status_display.setPlaceholderText("Census update status will appear here...")
+        self.status_display.setPlaceholderText(
+            "Census update status will appear here..."
+        )
         census_layout.addWidget(self.status_display)
 
         census_group.setLayout(census_layout)

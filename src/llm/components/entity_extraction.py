@@ -10,8 +10,10 @@ import re
 from typing import Any, Dict, List, Optional
 
 from src.llm.utils import robust_json_parser
+from src.llm.llm_logging import get_llm_logger
 
 logger = logging.getLogger(__name__)
+llm_logger = get_llm_logger()
 
 
 class EntityExtractor:
@@ -42,18 +44,31 @@ class EntityExtractor:
 
         # Construct the prompt for entity extraction
         prompt = self._build_extraction_prompt(text)
+        
+        # Prepare messages for the LLM
+        messages = [
+            {
+                "role": "system",
+                "content": "You are a clinical data extraction assistant.",
+            },
+            {"role": "user", "content": prompt},
+        ]
+        
+        # Log the prompt being sent to the LLM
+        interaction_id = llm_logger.log_prompt(
+            component="EntityExtractor",
+            method="extract_entities",
+            prompt=prompt,
+            model=self.model,
+            messages=messages,
+            metadata={"text_length": len(text), "text_sample": text[:100]}
+        )
 
         try:
             # Call the LLM
             response = self.client.chat.completions.create(
                 model=self.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are a clinical data extraction assistant.",
-                    },
-                    {"role": "user", "content": prompt},
-                ],
+                messages=messages,
                 temperature=0.0,  # Use deterministic output for extractions
                 max_tokens=2000,
             )
@@ -64,19 +79,42 @@ class EntityExtractor:
 
             # Parse JSON from response using the robust parser
             entities = robust_json_parser(content)
-
+            
             if entities:
                 logger.info("Entity extraction successful using robust parser")
+                # Log the successful response
+                llm_logger.log_response(
+                    interaction_id=interaction_id,
+                    output_data=entities,
+                    success=True,
+                    metadata={"parser": "robust_json_parser"}
+                )
                 return entities
             else:
                 logger.warning(
                     "Robust JSON parsing failed, falling back to rule-based extraction"
+                )
+                # Log the failed parsing
+                llm_logger.log_response(
+                    interaction_id=interaction_id,
+                    output_data=content,
+                    success=False,
+                    error="JSON parsing failed",
+                    metadata={"fallback": "rule-based"}
                 )
                 # Fallback to simple extraction
                 return self._fallback_extraction(text)
 
         except Exception as e:
             logger.error(f"Error during entity extraction: {e}")
+            # Log the error
+            llm_logger.log_response(
+                interaction_id=interaction_id,
+                output_data=None,
+                success=False,
+                error=str(e),
+                metadata={"fallback": "rule-based", "exception": type(e).__name__}
+            )
             return self._fallback_extraction(text)
 
     def _build_extraction_prompt(self, text: str) -> str:

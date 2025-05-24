@@ -26,7 +26,7 @@ class ExclusionEvaluator:
         self.model = model
 
     def evaluate_exclusions(
-        self, extracted_entities: Dict[str, Any], exclusion_criteria: Dict[str, Any]
+        self, clinical_text: str, extracted_entities: Dict[str, Any], specialty_assessment: Dict[str, Any] = None
     ) -> Dict[str, Any]:
         """
         Evaluate exclusion criteria based on extracted clinical entities.
@@ -40,6 +40,9 @@ class ExclusionEvaluator:
         """
         logger.info("Running exclusion criteria evaluation...")
 
+        # Get exclusion criteria from predefined criteria (this would typically come from a config)
+        exclusion_criteria = self._get_exclusion_criteria()
+        
         # Construct the prompt for exclusion evaluation
         prompt = self._build_evaluation_prompt(extracted_entities, exclusion_criteria)
 
@@ -163,6 +166,49 @@ JSON Output:
 Respond only with the JSON output.
 """
 
+    def _get_exclusion_criteria(self) -> Dict[str, Any]:
+        """
+        Return a dictionary of predefined exclusion criteria by campus.
+        This would typically come from a configuration file or database.
+        
+        Returns:
+            Dictionary with exclusion criteria by campus
+        """
+        # Return hardcoded default exclusion criteria
+        return {
+            "TCH_MAIN_TMC": [
+                "ECMO needed",
+                "Transplant patient",
+                "Advanced cardiac care needed",
+                "Specialty surgery required"
+            ],
+            "TCH_WOODLANDS": [
+                "ECMO needed",
+                "Transplant patient",
+                "Major trauma requiring Level 1 trauma center",
+                "Advanced interventional radiology needed"
+            ],
+            "TCH_WEST_KATY": [
+                "ECMO needed",
+                "Transplant patient",
+                "Major trauma requiring Level 1 trauma center",
+                "Advanced interventional radiology needed"
+            ],
+            "TCH_NORTH_AUSTIN": [
+                "ECMO needed",
+                "Transplant patient",
+                "Major trauma requiring Level 1 trauma center",
+                "Advanced cardiac care needed",
+                "Subspecialty consultation required"
+            ],
+            "TCH_PAVILION_WOMEN": [
+                "Pediatric patient (non-neonatal)",
+                "Adult male patient",
+                "Major trauma requiring Level 1 trauma center",
+                "Non-maternal or non-neonatal care required"
+            ]
+        }
+    
     def _fallback_evaluation(
         self, extracted_entities: Dict[str, Any], exclusion_criteria: Dict[str, Any]
     ) -> Dict[str, Any]:

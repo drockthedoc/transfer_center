@@ -15,27 +15,49 @@
         "description": "Primarily a pediatric facility. Adults only seen for specific congenital conditions or as parents.",
         "affected_keywords_in_complaint": [
           "adult physical",
-          "routine checkup adult"
+          "routine checkup adult",
+          "general adult care"
         ],
         "affected_keywords_in_history": [
-          "adult patient general care"
+          "adult patient general care",
+          "adult primary care needs"
         ]
       },
       {
         "criteria_id": "TCHM_EX02",
-        "criteria_name": "Limited Adult Specialized Services",
-        "description": "Some adult specialized services (e.g., adult congenital heart) available, but not comprehensive adult care.",
-        "affected_keywords_in_complaint": [],
-        "affected_keywords_in_history": []
+        "criteria_name": "Age Restrictions",
+        "description": "Patients greater than 21 years of age are not accepted unless they are current TCH patients.",
+        "affected_keywords_in_complaint": [
+          "adult patient",
+          "over 21 years old"
+        ],
+        "affected_keywords_in_history": [
+          "patient is 22 years old",
+          "adult over 21"
+        ]
+      },
+      {
+        "criteria_id": "TCHM_EX03",
+        "criteria_name": "Futile Diagnosis or Condition",
+        "description": "Cases requiring administrative review by medical control due to futile diagnosis or condition.",
+        "affected_keywords_in_complaint": [
+          "terminal condition",
+          "end-stage disease",
+          "futile care"
+        ],
+        "affected_keywords_in_history": [
+          "no curative options",
+          "palliative care candidate"
+        ]
       }
     ],
     "bed_census": {
-      "total_beds": 1542,
-      "available_beds": 120,
-      "icu_beds_total": 279,
-      "icu_beds_available": 20,
-      "nicu_beds_total": 251,
-      "nicu_beds_available": 21
+      "total_beds": 822,
+      "available_beds": 50,
+      "icu_beds_total": 159,
+      "icu_beds_available": 5,
+      "nicu_beds_total": 101,
+      "nicu_beds_available": 1
     },
     "helipads": [
       {
@@ -61,34 +83,56 @@
     "exclusions": [
       {
         "criteria_id": "TCHW_EX01",
-        "criteria_name": "No Solid Organ Transplant Surgery",
-        "description": "Complex solid organ transplants (liver, kidney, heart, lung) primarily at TMC.",
+        "criteria_name": "Transplant Patients",
+        "description": "Transplant patients cannot be accepted at this community campus.",
         "affected_keywords_in_complaint": [
-          "transplant surgery needed"
+          "transplant patient",
+          "transplant complications",
+          "post-transplant infection"
         ],
         "affected_keywords_in_history": [
-          "awaiting heart transplant"
+          "transplant recipient",
+          "liver transplant",
+          "kidney transplant",
+          "heart transplant"
         ]
       },
       {
         "criteria_id": "TCHW_EX02",
-        "criteria_name": "Limited ECMO Capabilities",
-        "description": "ECMO initiation may be limited or stabilized for transfer to TMC.",
+        "criteria_name": "Oncology Limitations",
+        "description": "Patients with confirmed new diagnosis of malignancy (e.g., Leukemia in induction chemotherapy) must go to main campus.",
         "affected_keywords_in_complaint": [
-          "needs ecmo"
+          "newly diagnosed cancer",
+          "leukemia",
+          "lymphoma"
         ],
         "affected_keywords_in_history": [
-          "ecmo candidate"
+          "induction chemotherapy",
+          "new malignancy",
+          "oncology treatment plan"
+        ]
+      },
+      {
+        "criteria_id": "TCHW_EX03",
+        "criteria_name": "Neonatal Weight Restrictions",
+        "description": "Infants <2.5 kg cannot be accepted at this campus.",
+        "affected_keywords_in_complaint": [
+          "premature infant",
+          "low birth weight"
+        ],
+        "affected_keywords_in_history": [
+          "infant <2.5 kg",
+          "extremely low birth weight"
         ]
       }
     ],
     "bed_census": {
-      "total_beds": 323,
-      "available_beds": 45,
-      "icu_beds_total": 42,
-      "icu_beds_available": 5,
-      "nicu_beds_total": 55,
-      "nicu_beds_available": 10
+      "total_beds": 113,
+      "available_beds": 14,
+      "icu_beds_total": 12,
+      "icu_beds_available": 0,
+      "nicu_beds_total": 15,
+      "nicu_beds_available": 2
     },
     "helipads": [
       {
@@ -114,36 +158,68 @@
     "exclusions": [
       {
         "criteria_id": "TCHWC_EX01",
-        "criteria_name": "No Open-Heart Surgery",
-        "description": "Complex cardiac surgeries, especially requiring bypass, are performed at TMC.",
+        "criteria_name": "Cardiology Exclusions",
+        "description": "PGE-dependent lesions, cardiac repair <6 weeks, single ventricle, unstable congenital heart disease.",
         "affected_keywords_in_complaint": [
-          "cardiac_surgery_complex",
-          "open heart"
+          "congenital heart disease",
+          "heart failure",
+          "recent cardiac surgery"
         ],
         "affected_keywords_in_history": [
-          "complex congenital heart defect surgery"
+          "PGE-dependent lesion",
+          "single ventricle",
+          "cardiac repair less than 6 weeks ago"
         ]
       },
       {
         "criteria_id": "TCHWC_EX02",
-        "criteria_name": "NICU Level III (No Level IV)",
-        "description": "Handles most neonatal cases but most extreme prematurity or complex surgical neonates may go to TMC.",
+        "criteria_name": "Respiratory Support Limitations",
+        "description": "Patients requiring ventilator/BiPAP/CPAP, with tracheostomy, or recurrent apnea.",
         "affected_keywords_in_complaint": [
-          "neonate_under_1kg",
-          "micropremie"
+          "ventilator dependent",
+          "respiratory failure",
+          "tracheostomy"
         ],
         "affected_keywords_in_history": [
-          "24 weeker neonate"
+          "mechanical ventilation",
+          "BiPAP requirement",
+          "unstable airway"
+        ]
+      },
+      {
+        "criteria_id": "TCHWC_EX03",
+        "criteria_name": "Infant Weight Restrictions",
+        "description": "Infants <2.5 kg not accepted at this campus.",
+        "affected_keywords_in_complaint": [
+          "very low birth weight",
+          "premature infant"
+        ],
+        "affected_keywords_in_history": [
+          "infant weighs less than 2.5 kg",
+          "extremely premature"
+        ]
+      },
+      {
+        "criteria_id": "TCHWC_EX04",
+        "criteria_name": "Metabolic Disorders",
+        "description": "Suspected/known metabolic disorders with risk of neurologic compromise.",
+        "affected_keywords_in_complaint": [
+          "metabolic crisis",
+          "inborn error of metabolism"
+        ],
+        "affected_keywords_in_history": [
+          "metabolic disorder",
+          "specialized formula requirement"
         ]
       }
     ],
     "bed_census": {
-      "total_beds": 246,
-      "available_beds": 27,
-      "icu_beds_total": 37,
-      "icu_beds_available": 5,
-      "nicu_beds_total": 30,
-      "nicu_beds_available": 6
+      "total_beds": 99,
+      "available_beds": 5,
+      "icu_beds_total": 15,
+      "icu_beds_available": 1,
+      "nicu_beds_total": 0,
+      "nicu_beds_available": 0
     },
     "helipads": [
       {
@@ -159,7 +235,7 @@
   },
   {
     "campus_id": "TCH_NORTH_AUSTIN",
-    "name": "Texas Children's Hospital - North Austin Campus (Representative)",
+    "name": "Texas Children's Hospital - North Austin Campus",
     "metro_area": "AUSTIN_METRO",
     "address": "9835 N. Lake Creek Pkwy, Austin, TX 78717",
     "location": {
@@ -169,36 +245,67 @@
     "exclusions": [
       {
         "criteria_id": "TCNA_EX01",
-        "criteria_name": "No Highly Specialized Surgeries",
-        "description": "Does not perform highly complex surgeries like neurosurgery or transplant; refers to larger centers.",
+        "criteria_name": "Transplant Patients",
+        "description": "Transplant patients (rejection or recent surgery, including BMT) are not accepted.",
         "affected_keywords_in_complaint": [
-          "brain tumor surgery",
-          "liver transplant needed"
+          "transplant patient",
+          "post-transplant complications",
+          "BMT patient"
         ],
         "affected_keywords_in_history": [
-          "complex neuro case"
+          "transplant recipient",
+          "bone marrow transplant",
+          "graft rejection"
         ]
       },
       {
         "criteria_id": "TCNA_EX02",
-        "criteria_name": "NICU Level II/III (Limited Level IV capabilities)",
-        "description": "Handles moderately premature infants; most critical neonates or those needing subspecialty surgery may be transferred.",
+        "criteria_name": "Cardiac Surgery Patients",
+        "description": "Cardiac surgery patients require on-call cardiologist approval prior to acceptance.",
         "affected_keywords_in_complaint": [
-          "extreme prematurity",
-          "neonate_under_1kg"
+          "post cardiac surgery",
+          "heart repair complications"
         ],
         "affected_keywords_in_history": [
-          "23 week gestation"
+          "recent cardiac surgery",
+          "post-operative cardiac patient"
+        ]
+      },
+      {
+        "criteria_id": "TCNA_EX03",
+        "criteria_name": "Pulmonary Hypertension Crisis",
+        "description": "Patients with acute pulmonary arterial hypertension crisis cannot be accepted.",
+        "affected_keywords_in_complaint": [
+          "pulmonary hypertension",
+          "shortness of breath with cyanosis"
+        ],
+        "affected_keywords_in_history": [
+          "pulmonary arterial hypertension",
+          "PH crisis"
+        ]
+      },
+      {
+        "criteria_id": "TCNA_EX04",
+        "criteria_name": "Major Burns",
+        "description": "Burn patients >10% TBSA, perineal burns, or airway burns cannot be accepted.",
+        "affected_keywords_in_complaint": [
+          "severe burn",
+          "airway burn",
+          "perineal burn"
+        ],
+        "affected_keywords_in_history": [
+          "burn >10% body surface area",
+          "inhalation injury"
         ]
       }
     ],
     "bed_census": {
-      "total_beds": 146,
-      "available_beds": 20,
-      "icu_beds_total": 22,
-      "icu_beds_available": 3,
-      "nicu_beds_total": 31,
-      "nicu_beds_available": 5
+      "total_beds": 51,
+      "available_beds": 4,
+      "icu_beds_total": 7,
+      "icu_beds_available": 0,
+      "nicu_beds_total": 11,
+      "nicu_beds_available": 0
     },
     "helipads": [
       {
@@ -224,36 +331,55 @@
     "exclusions": [
       {
         "criteria_id": "TCHPW_EX01",
-        "criteria_name": "Maternal and Women's Care Only",
-        "description": "Primarily focuses on maternal, women's care, and neonatal services.",
+        "criteria_name": "Non-Maternal or Non-Neonatal Care",
+        "description": "Primarily focuses on maternal, women's care, and neonatal services only.",
         "affected_keywords_in_complaint": [
           "pediatric trauma",
-          "pediatric surgery"
+          "pediatric surgery",
+          "child injury"
         ],
         "affected_keywords_in_history": [
-          "pediatric patient non-neonatal"
+          "pediatric patient non-neonatal",
+          "older child",
+          "adolescent"
         ]
       },
       {
         "criteria_id": "TCHPW_EX02",
-        "criteria_name": "Limited Pediatric Services",
-        "description": "Limited pediatric services outside of neonatal and newborn care.",
+        "criteria_name": "Male Patients",
+        "description": "Adult male patients are not accepted at this facility.",
         "affected_keywords_in_complaint": [
-          "older child",
-          "adolescent"
+          "adult male patient",
+          "male with abdominal pain"
         ],
         "affected_keywords_in_history": [
-          "school-aged patient"
+          "adult male",
+          "father of patient"
+        ]
+      },
+      {
+        "criteria_id": "TCHPW_EX03",
+        "criteria_name": "NICU Respiratory Exclusions",
+        "description": "Neonates with respiratory distress or apnea with viral contacts are not accepted.",
+        "affected_keywords_in_complaint": [
+          "newborn with cough",
+          "neonate with respiratory distress",
+          "infant apnea"
+        ],
+        "affected_keywords_in_history": [
+          "viral contacts",
+          "nasal discharge",
+          "neonatal apnea"
         ]
       }
     ],
     "bed_census": {
-      "total_beds": 362,
-      "available_beds": 69,
-      "icu_beds_total": 8,
-      "icu_beds_available": 2,
-      "nicu_beds_total": 136,
-      "nicu_beds_available": 30
+      "total_beds": 220,
+      "available_beds": 43,
+      "icu_beds_total": 4,
+      "icu_beds_available": 1,
+      "nicu_beds_total": 68,
+      "nicu_beds_available": 15
     },
     "helipads": [
       {

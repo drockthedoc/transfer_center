@@ -136,7 +136,8 @@ def read_census_data(census_file_path: str) -> Dict[str, Dict[str, Any]]:
                 if col not in reader.fieldnames
             ]
             if missing_columns:
-                logger.error("Missing required columns: %s", ", ".join(missing_columns))
+                logger.error("Census file missing required columns: %s", ", ".join(missing_columns))
+                # Do not create default data - fail properly
                 return {}
 
             # Process each row

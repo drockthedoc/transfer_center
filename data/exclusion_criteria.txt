@@ -1,0 +1,171 @@
+EXCLUSION CRITERIA (AGGREGATED FROM BOTH FILES)
+
+⸻
+
+Austin Transfer Exclusion Criteria
+
+Administrative Review by Medical Control
+	•	Futile diagnosis or condition
+	•	Greater than 21 years of age (unless current TCH patient)
+	•	No change in level of care or services provided
+
+NICU Exclusions (System-Wide)
+	•	Nasal discharge (clear or purulent) or cough
+	•	Neonate with respiratory distress or apnea with viral contacts (cough, cold, runny nose, fever)
+	•	Severe hypoxemia and lactic acidosis (require on-call cardiologist approval prior to accepting)
+
+Austin Campus Exclusion Criteria
+	•	Acute Pulmonary Arterial Hypertension Crisis
+	•	Burn patients >10% TBSA, perineal burns, airway burns
+	•	Cardiac Surgery patients (requires on-call cardiologist approval)
+	•	Cystic Fibrosis (acute/chronic complications)
+	•	Open Globes
+	•	Maternal patient requiring ICU Level Care and/or:
+	•	Placenta Accreta
+	•	HELLP Syndrome
+	•	Eclamptic Seizure/Eclampsia
+	•	Mass Transfusion
+	•	Post CPR/ROSC
+	•	Sepsis
+	•	Telemetry Monitoring
+	•	Psychiatric
+	•	Transplant (rejection or recent surgery, including BMT)
+	•	Sexual Assault requiring SANE Exam (coverage only Mon 1000–Fri 2300)
+
+Community Campus Exclusion Criteria (2024)
+
+General Principles
+	•	Specialty care not available at the community site
+	•	Certain age, weight, and post-gestational criteria for NICU/WL NICU
+	•	Decision by clinical team for complex or high-risk patients
+
+Physiolologic Parameters/Monitoring Needs
+	•	Need for telemetry
+	•	Non-rebreather mask for respiratory distress
+	•	Continuous beta agonist treatment
+	•	CRS score ≥4 and not improving
+	•	HFNC (high flow, max for cannula size, and not improving)
+	•	Glasgow Coma Score <9 (non-trauma)
+	•	Hourly/q2h assessments without expected imminent improvement
+	•	Aggressive fluid resuscitation (>60 cc/kg)
+	•	Continuous EEG monitoring
+	•	Hypothermia (<97°F), q1 temp checks, Bare Hugger warmer
+	•	Infants <2.5 kg
+
+Diagnosis Specific Exclusions
+
+Endocrine
+	•	Diabetes in DKA, HCO3 <15 (requiring insulin drip)
+	•	Diabetes insipidus
+	•	Persistent hypoglycemia in patient <6 months
+
+Gastrointestinal
+	•	Hyperbilirubinemia—TSB within 2 of exchange level
+	•	Portal hypertension
+	•	GI bleed with hemodynamic instability (Hgb drop ≥3 g/dL or Hgb 8-10 g/dL if unknown baseline)
+	•	Gallstone pancreatitis/biliary obstruction needing ERCP
+	•	Acute liver failure (INR ≥2 or >1.5 with mental status changes)
+	•	Transplant patients
+
+Genetics/Metabolic
+	•	Suspected/known metabolic disorder with risk of neurologic compromise or requiring specialized formulas
+
+Hematology/Oncology
+	•	Need for plasmapheresis
+	•	Malignancy needing ongoing monitoring/intervention
+	•	Anticoagulation requiring heparin drip
+	•	Confirmed new diagnosis of malignancy (Leukemia in induction chemotherapy)
+
+Vascular/IR
+	•	DVT (need for heparin drip or vascular surgery)
+	•	IR procedures requiring catheter-directed thrombolysis
+	•	Pulmonary embolism
+	•	Bone marrow transplant patients
+
+Infectious Disease
+	•	Suspected bacterial meningitis in infant (first 24h): <60 days with CSF+GS±pleocytosis; >60 days–12 months with meningitis score ≥2; ill-appearance any age
+
+Neurologic
+	•	Evidence/suspicion for stroke
+	•	Intracranial process or need for monitoring
+	•	Non-improving altered mental status
+	•	Progressive neuromuscular dysfunction
+	•	Seizures requiring frequent (hourly) interventions
+	•	Status epilepticus needing continuous EEG
+	•	Suspected new diagnosis of infantile spasms
+	•	Seizure in neonate <30 days (needs continuous EEG)
+	•	Acute inflammatory process needing plasmapheresis
+	•	Vagal nerve stimulator/baclofen pump malfunction/infection
+
+Pregnancy
+	•	Pregnant or complications of pregnancy
+
+Psychiatry
+	•	Psychiatric diagnoses
+	•	Aggressive behavioral health requiring multiple medication interventions (especially with no psych coverage)
+
+Ophthalmology
+	•	Post-septal involvement, abscess, rapid progression, frequent eye exams/surgery
+	•	Atypical presentation (e.g., concern for malignancy)
+	•	Immunocompromised patient
+
+Renal
+	•	Hypertensive emergency (neuro changes)
+	•	Oliguric renal failure needing close fluid management
+	•	Need for peritoneal/hemodialysis
+	•	Electrolyte abnormality needing q1–2 blood draws/meds
+	•	Renal transplant patients
+
+Respiratory
+	•	Recurrent apnea, unstable airway
+	•	Tracheostomy present
+	•	Ventilator/BiPAP/CPAP required
+	•	Pulmonary hypertension (requiring 2+ meds)
+	•	Cystic fibrosis with complications
+	•	Lung transplant patients
+
+Rheumatology
+	•	Kawasaki requiring IVIG (if needing rheum eval/not responding to 1st line/age<12mo/coronary dilatations)
+	•	New/worsening rheumatologic conditions
+	•	Suspected/confirmed MIS-C (with shock or cardiac failure)
+
+Trauma/Neurosurgical
+	•	Trauma or neurosurgical patients (all non-accidental trauma or head trauma with complications)
+	•	Burn patients
+
+Interventional Radiology
+	•	Arterial studies (diagnostic or therapeutic)
+	•	Venous lesions with airway/head/neck involvement
+	•	IR procedures requiring TPA/thrombolysis
+	•	Venous/lymphatic malformations
+	•	Need for vascular surgery
+
+Neonatology (WL NICU)
+	•	Infants <2.5 kg
+	•	Neonates needing subspecialty consult at birth
+	•	Prematurity
+
+Cardiology (per Appendix)
+	•	PGE-dependent lesions
+	•	Cardiac repair <6 weeks
+	•	Single ventricle (during inter-stage)
+	•	Congenital heart disease in neonatal period
+	•	Unstable congenital/acquired heart disease
+	•	Decompensated heart failure
+	•	Patients listed for heart transplant
+	•	Mechanical assist device
+	•	Not cleared by HF/TX team
+	•	Moderate/severe Kawasaki
+	•	Evidence of myocardial ischemia
+	•	Endocarditis not approved by CT surgery
+	•	New myocarditis/myopericarditis
+	•	SVT/arrhythmia requiring escalation (drips)
+	•	Complete heart block
+	•	Telemetry, pacing, cardioversion (multiple times)
+	•	Need for procedures requiring CV anesthesia
+
+⸻
+
+File references:
+	•	Austin-Transfer-Exclusion-Criteria.pdf
+	•	Community-Campus-Exclusion-Criteria-4_2024-v1.pdf

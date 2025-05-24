@@ -1,0 +1,772 @@
+"""Recommendation component for LLM integration.
+
+This module handles the generation of final recommendations based on all previous assessments.
+"""
+
+import json
+import logging
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+from src.core.decision.confidence_estimator import calculate_recommendation_confidence
+from src.core.models import Recommendation
+from src.llm.utils import robust_json_parser
+
+logger = logging.getLogger(__name__)
+
+
+class RecommendationGenerator:
+    """Handles generation of final recommendations based on all previous assessments."""
+
+    def __init__(self, client, model: str):
+        """
+        Initialize the recommendation generator.
+
+        Args:
+            client: OpenAI client instance
+            model: Name of the model to use
+        """
+        self.client = client
+        self.model = model
+
+    def generate_recommendation(
+        self,
+        extracted_entities: Dict[str, Any],
+        specialty_assessment: Dict[str, Any],
+        exclusion_evaluation: Optional[Dict[str, Any]] = None,
+    ) -> Recommendation:
+        """Generate final recommendation based on previous steps.
+
+        Args:
+            extracted_entities: Dictionary of extracted clinical entities
+            specialty_assessment: Dictionary with specialty need assessment
+            exclusion_evaluation: Optional dictionary with exclusion criteria evaluation
+
+        Returns:
+            Dictionary with final recommendation
+        """
+        logger.info("Generating final recommendation...")
+
+        # First try with the LLM approach
+        llm_result = self._try_llm_recommendation(
+            extracted_entities, specialty_assessment, exclusion_evaluation
+        )
+
+        # Always return the LLM recommendation if it's available - no fallback to rule-based
+        if llm_result:
+            return llm_result
+
+        # If LLM approach fails completely, log the error and return a basic error recommendation
+        logger.error("LLM recommendation generation failed completely")
+        
+        # Create a basic error recommendation with a low confidence score
+        recommendation_data = {
+            "patient_demographics": extracted_entities.get("demographics", {}),
+            "clinical_history": "",
+            "chief_complaint": "",
+            "extracted_vital_signs": {}
+        }
+        
+        # Calculate a minimal confidence score based on very limited data
+        confidence = calculate_recommendation_confidence(recommendation_data) / 2  # Halve it due to error condition
+        
+        return Recommendation(
+            transfer_request_id="error",
+            recommended_campus_id="ERROR",
+            confidence_score=confidence,  # Using calculated low confidence
+            reason="Failed to generate a recommendation with the LLM",
+            notes=["LLM error - please check the logs and try again"],
+            explainability_details=recommendation_data
+        )
+
+    def _try_llm_recommendation(
+        self,
+        extracted_entities: Dict[str, Any],
+        specialty_assessment: Dict[str, Any],
+        exclusion_evaluation: Optional[Dict[str, Any]] = None,
+    ) -> Optional[Recommendation]:
+        """
+        Attempt to generate a recommendation using the LLM with JSON schema.
+        
+        Args:
+            extracted_entities: Dictionary of extracted clinical entities
+            specialty_assessment: Dictionary with specialty need assessment
+            exclusion_evaluation: Optional dictionary with exclusion criteria evaluation
+            
+        Returns:
+            Dictionary with recommendation or None if failed
+        """
+        try:
+            # Build the prompt for the LLM
+            prompt, has_scores, score_count = self._build_recommendation_prompt(
+                extracted_entities, specialty_assessment, exclusion_evaluation
+            )
+            
+            # Add JSON instructions
+            json_instructions = """
+Use the above information to provide a hospital transfer recommendation in the following JSON format:
+```json
+{
+  "recommended_campus": string,       // The recommended campus or hospital name
+  "care_level": string,               // Recommended care level (general_floor, intermediate_care, intensive_care, etc.)
+  "confidence_score": number,         // Confidence score (0-100) for this recommendation
+  "clinical_reasoning": string,       // Clinical justification for the recommendation
+  "campus_scores": {                  // Detailed scoring for each considered campus
+    "primary": {
+      "location": number,             // Score for location proximity (1-5)
+      "specific_resources": number    // Score for specific resources needed (1-5)
+    },
+    "backup": {                       // Optional backup recommendation
+      "location": number,
+      "specific_resources": number
+    }
+  },
+  "bed_availability": {
+    "confirmed": boolean,             // Whether bed availability was confirmed
+    "availability_notes": string      // Notes on bed availability status
+  },
+  "traffic_report": {
+    "estimated_transport_time": string,  // Estimated transport time to facility
+    "traffic_conditions": string,        // Current traffic conditions (normal, heavy, etc.)
+    "route_notes": string                // Any notes about the transport route
+  }
+}
+```
+
+Do not include any text before or after the JSON. Only return a valid JSON object.
+"""
+            
+            # Call the LLM
+            logger.info(f"Sending recommendation prompt to {self.model}")
+            
+            # Print to console for debugging
+            print(f"===== SENDING RECOMMENDATION PROMPT =====")
+            
+            # Call the API with the combined prompt
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a hospital transfer coordinator. Respond ONLY with valid JSON.",
+                    },
+                    {"role": "user", "content": prompt + json_instructions},
+                ],
+                temperature=0.1,
+                max_tokens=2048,
+            )
+
+            # Extract response content
+            content = response.choices[0].message.content
+            logger.debug(f"Raw LLM response (truncated): {content[:500]}...")
+            # Print to console for debugging
+            print(f"===== LLM RESPONSE RECEIVED =====\nLength: {len(content)}")
+
+            # Check for response truncation
+            finish_reason = response.choices[0].finish_reason
+            if finish_reason == "length":
+                logger.warning(f"LLM response was truncated (finish_reason={finish_reason})")
+
+            # Try to parse the JSON response
+            try:
+                # First try to use the robust_json_parser
+                try:
+                    # Call the function directly (not as a method)
+                    recommendation_json = robust_json_parser(content)
+                    print(f"===== JSON PARSING SUCCEEDED =====\nKeys: {list(recommendation_json.keys()) if recommendation_json else 'None'}")
+                except Exception as parser_error:
+                    print(f"===== JSON PARSING FAILED =====\n{str(parser_error)}\nRaw response content: {content[:500]}...")
+                    # Try manual extraction methods
+                    if "```json" in content and "```" in content.split("```json", 1)[1]:
+                        # Extract JSON from code block
+                        json_content = content.split("```json", 1)[1].split("```", 1)[0].strip()
+                        try:
+                            recommendation_json = json.loads(json_content)
+                        except json.JSONDecodeError as json_error:
+                            logger.error(f"Failed to parse JSON from code block: {str(json_error)}")
+                            # Fall back to direct JSON parsing
+                            try:
+                                recommendation_json = json.loads(content)
+                            except json.JSONDecodeError:
+                                logger.error("All JSON parsing methods failed")
+                                return None
+                    else:
+                        # Try direct JSON parsing
+                        try:
+                            recommendation_json = json.loads(content)
+                        except json.JSONDecodeError as direct_error:
+                            logger.error(f"Direct JSON parsing failed: {str(direct_error)}")
+                            return None
+
+                # Log the parsed structure
+                logger.info(f"Successfully parsed recommendation JSON")
+                
+                # Validate that the LLM used the pediatric scores in its decision-making
+                if has_scores and recommendation_json:
+                    # Look for score references in reasoning or justification
+                    score_references = 0
+                    score_terms = ["pews", "trap", "prism", "cameo", "queensland", "chews", "tps", 
+                                   "score", "scoring", "pediatric score", "severity score"]
+                    
+                    # Check various fields for score references
+                    fields_to_check = [
+                        "clinical_reasoning", "justification", "reasoning", 
+                        "rationale", "notes", "considerations"
+                    ]
+                    
+                    for field in fields_to_check:
+                        if field in recommendation_json and recommendation_json[field]:
+                            field_text = recommendation_json[field]
+                            if isinstance(field_text, list):
+                                field_text = " ".join(field_text)
+                            if isinstance(field_text, str):
+                                for term in score_terms:
+                                    if term.lower() in field_text.lower():
+                                        score_references += 1
+                    
+                    # Log whether scores were referenced
+                    if score_references > 0:
+                        logger.info(f"LLM referenced scores {score_references} times in its recommendation")
+                    else:
+                        logger.warning("LLM did not reference pediatric scores in its recommendation despite availability")
+                        
+                    # Add score utilization data to the recommendation
+                    recommendation_json["score_utilization"] = {
+                        "pediatric_scores_available": score_count,
+                        "referenced_in_reasoning": score_references > 0,
+                        "reference_count": score_references
+                    }
+                
+                # Convert the JSON to a Recommendation object
+                return self._convert_to_recommendation(recommendation_json)
+                
+            except Exception as e:
+                logger.error(f"Error processing LLM recommendation: {str(e)}")
+                return None
+                
+        except Exception as e:
+            logger.error(f"Error generating LLM recommendation: {str(e)}")
+            return None
+
+    def _standardize_llm_response(self, recommendation_json: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Standardize the LLM JSON response to match our application's expected format.
+        
+        Args:
+            recommendation_json: The raw JSON response from the LLM
+            
+        Returns:
+            A standardized dictionary with consistent field names
+        """
+        # Start with a standardized template with default values
+        standardized = {
+            "campus_id": "UNKNOWN",
+            "reason": "No reason provided",
+            "confidence_score": 50.0,
+            "care_level": "unknown",
+            "notes": []
+        }
+        
+        # Map LLM output fields to our standardized format
+        field_mappings = {
+            # Campus ID field variations
+            "campus_id": ["recommended_campus", "campus_id", "campus", "hospital", "facility"],
+            # Reason field variations 
+            "reason": ["clinical_reasoning", "reasoning", "reason", "justification", "rationale"],
+            # Confidence score field variations
+            "confidence_score": ["confidence_score", "confidence", "score"],
+            # Care level field variations
+            "care_level": ["care_level", "level_of_care", "recommended_care_level"]
+        }
+        
+        # Extract values using field mappings
+        for target_field, source_fields in field_mappings.items():
+            for source_field in source_fields:
+                if source_field in recommendation_json and recommendation_json[source_field]:
+                    standardized[target_field] = recommendation_json[source_field]
+                    break
+        
+        # Store the original response
+        standardized["original_response"] = recommendation_json
+        
+        # Add all other fields from the original response
+        for key, value in recommendation_json.items():
+            if key not in standardized:
+                standardized[key] = value
+                
+        # Debug print
+        print(f"===== STANDARDIZED RECOMMENDATION =====\nType: {type(standardized)}\nKeys: {list(standardized.keys())}")
+        print(f"Campus: {standardized['campus_id']}\nReason: {standardized['reason'][:50]}...\nCare Level: {standardized['care_level']}")
+        
+        return standardized
+    
+    def _convert_to_recommendation(
+        self, recommendation_json: Dict[str, Any]
+    ) -> Recommendation:
+        """
+        Convert the LLM recommendation JSON response to a Recommendation object.
+
+        Args:
+            recommendation_json: The parsed JSON response from the LLM
+
+        Returns:
+            Recommendation object with the appropriate fields populated
+        """
+        try:
+            # First standardize the response format
+            standardized = self._standardize_llm_response(recommendation_json)
+            
+            logger.info(
+                f"Processing standardized recommendation: {json.dumps(standardized, indent=2)[:1000]}..."
+            )
+
+            # Extract primary campus name - use the standardized field
+            campus_name = standardized.get("campus_id", "No specific campus recommended")
+
+            # Extract backup campus if available - try both standard and original formats
+            backup_campus = standardized.get("backup_campus", "No backup campus specified")
+            backup_confidence = float(standardized.get("backup_confidence_score", 0.0))
+
+            # Extract confidence score from the standardized data
+            # Get the LLM's confidence score as a starting point
+            confidence = float(standardized.get("confidence_score", 70.0))
+            
+            # Validate confidence score is in range
+            if confidence < 0 or confidence > 100:
+                logger.warning(
+                    f"Invalid confidence score from LLM: {confidence}. Using default value."
+                )
+                confidence = 70.0
+                
+            # Calculate legitimate confidence score based on available data
+            all_data = standardized.get("all_data", standardized.get("original_response", {}))
+            specialty_data = standardized.get("specialty_data", {})
+            exclusion_data = standardized.get("exclusion_data", {})
+            recommendation_data = {
+                "patient_demographics": all_data.get("demographics", {}),
+                "chief_complaint": all_data.get("chief_complaint", ""),
+                "clinical_history": all_data.get("clinical_history", ""),
+                "extracted_vital_signs": all_data.get("vital_signs", {}),
+                "care_level_assessment": specialty_data,
+                "exclusion_criteria": exclusion_data,
+                "recommended_campus": {
+                    "campus_id": campus_name,
+                    "confidence_score": confidence
+                }
+            }
+            
+            # Get care level to determine urgency
+            care_level = standardized.get("care_level", "general").lower()
+            
+            # Map care level to display names
+            care_level_display = {
+                "general": "General Floor",
+                "general_floor": "General Floor",
+                "telemetry": "Telemetry Unit",
+                "intermediate": "Intermediate Care",
+                "intermediate_care": "Intermediate Care",
+                "icu": "ICU (Intensive Care)",
+                "intensive_care": "ICU (Intensive Care)",
+                "picu": "PICU (Pediatric Intensive Care)",
+                "nicu": "NICU (Neonatal Intensive Care)",
+            }.get(care_level, care_level.upper())
+
+            # Prepare notes list with care level and other info
+            notes = []
+            notes.append(f"Care Level: {care_level_display}")
+
+            # Add backup recommendation information
+            notes.append(
+                f"\nBackup Recommendation: {backup_campus} (Confidence: {backup_confidence:.1f}%)"
+            )
+
+            # Prepare final reason text
+            final_reason = standardized.get(
+                "reason",
+                "Recommendation generated without detailed reasoning."
+            )
+
+            # Build explainability details
+            explainability_details = {}
+            
+            # Add score utilization information if available
+            if "score_utilization" in recommendation_json:
+                score_util = recommendation_json["score_utilization"]
+                explainability_details["pediatric_scores"] = {
+                    "scores_available": score_util.get("pediatric_scores_available", 0),
+                    "referenced_in_reasoning": score_util.get("referenced_in_reasoning", False),
+                    "reference_count": score_util.get("reference_count", 0)
+                }
+
+            # Add care level justification
+            explainability_details["care_level"] = care_level_display
+
+            # Add urgency level
+            urgency = recommendation_json.get("urgency", "medium")
+            explainability_details["urgency"] = urgency
+
+            # Add key factors for recommendation
+            key_factors = []
+            for key in ["care_level", "confidence_score", "urgency"]:
+                if key in recommendation_json:
+                    key_factors.append(f"{key}: {recommendation_json[key]}")
+            if key_factors:
+                explainability_details["key_factors_for_recommendation"] = key_factors
+
+            # Add proximity analysis for campus choice
+            explainability_details["proximity_analysis"] = {}
+            if "campus_scores" in recommendation_json:
+                closer_bypassed = False
+                closer_campus = ""
+                bypass_reason = ""
+
+                explainability_details["proximity_analysis"].update(
+                    {
+                        "closer_options_bypassed": closer_bypassed,
+                        "closer_campus": closer_campus,
+                        "bypass_reason": bypass_reason,
+                    }
+                )
+
+            # Create and return the recommendation
+            print(f"===== CREATING FINAL RECOMMENDATION =====\nCampus: {campus_name}\nConfidence: {confidence}\nReason: {final_reason[:50]}...")
+            return Recommendation(
+                transfer_request_id="llm_generated",  # This will be updated by the caller
+                recommended_campus_id=campus_name,
+                confidence_score=confidence,
+                reason=final_reason,
+                notes=notes,
+                explainability_details=standardized,  # Use the standardized data
+            )
+
+        except Exception as e:
+            logger.error(f"Error processing LLM recommendation: {str(e)}")
+            return Recommendation(
+                transfer_request_id="error",
+                recommended_campus_id="ERROR",
+                confidence_score=10.0,  # Low confidence for error conditions
+                reason=f"Error processing recommendation: {str(e)}",
+                notes=["LLM processing error"],
+                explainability_details={"error": str(e)}
+            )
+
+    def _build_recommendation_prompt(
+        self,
+        extracted_entities: Dict[str, Any],
+        specialty_assessment: Dict[str, Any],
+        exclusion_evaluation: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[str, bool, int]:
+        """
+        Build the prompt for recommendation generation with optimized token usage.
+
+        Args:
+            extracted_entities: Dictionary of extracted clinical entities
+            specialty_assessment: Dictionary with specialty need assessment
+            exclusion_evaluation: Optional dictionary with exclusion criteria evaluation
+
+        Returns:
+            Tuple of (prompt text, has_scoring_data, number_of_scores)
+        """
+        # Extract only essential information to reduce token usage
+        patient_info = self._extract_essential_patient_info(extracted_entities)
+        specialty_info = self._extract_essential_specialty_info(specialty_assessment)
+        exclusion_info = self._extract_essential_exclusion_info(exclusion_evaluation)
+
+        # Check if we have scoring data
+        has_scores = False
+        score_count = 0
+        scoring_info = ""
+        
+        if "scoring_results" in specialty_assessment:
+            scoring_results = specialty_assessment["scoring_results"]
+            if scoring_results and isinstance(scoring_results, dict):
+                has_scores = True
+                score_count = len(scoring_results.get("scores", {}))
+                scoring_info = self._format_scoring_data(scoring_results)
+
+        # Build final prompt
+        prompt = f"""
+# Transfer Recommendation Request
+
+## Patient Information
+{patient_info}
+
+## Specialty Assessment
+{specialty_info}
+
+## Exclusion Criteria
+{exclusion_info}
+"""
+
+        # Add scoring data if available
+        if has_scores:
+            prompt += f"""
+## Pediatric Scoring Data
+{scoring_info}
+"""
+
+        prompt += """
+## Recommendation Task
+Based on the above information, provide a hospital transfer recommendation. Consider:
+1. The patient's care needs and suggested care level
+2. Any excluded campuses or specialties
+3. Proximity to the patient's location
+4. Availability of required services
+5. Current bed availability
+"""
+
+        # Add explanation of how to use scoring data if available
+        if has_scores:
+            prompt += """
+6. Pediatric severity scores should heavily influence your recommendation, especially:
+   - Use PEWS, TRAP scores to determine transport requirements
+   - Use PRISM III scores to assess mortality risk
+   - Use CAMEO II scores to determine nursing care needs
+   - Explicitly reference the scores in your reasoning
+"""
+
+        # Log the prompt size
+        logger.debug(f"Recommendation prompt size: {len(prompt)} characters")
+        
+        return prompt, has_scores, score_count
+
+    def _extract_essential_patient_info(self, entities: Dict[str, Any]) -> str:
+        """Extract the most relevant patient information in a concise format."""
+        if not entities:
+            return "No patient information available."
+
+        # Extract demographics
+        demographics = entities.get("demographics", {})
+        age = demographics.get("age", "Unknown age")
+        gender = demographics.get("gender", "Unknown gender")
+        weight = demographics.get("weight", "Unknown weight")
+
+        # Extract vital signs
+        vital_signs = entities.get("vital_signs", {})
+        vitals_text = []
+        for vital_key, display_name in [
+            ("hr", "Heart Rate"),
+            ("rr", "Respiratory Rate"),
+            ("bp", "Blood Pressure"),
+            ("temp", "Temperature"),
+            ("o2", "O2 Saturation"),
+        ]:
+            if vital_key in vital_signs:
+                vitals_text.append(f"- {display_name}: {vital_signs[vital_key]}")
+
+        # Extract clinical information
+        clinical_info = entities.get("clinical_information", entities.get("clinical_info", {}))
+        chief_complaint = clinical_info.get("chief_complaint", "Unknown")
+        clinical_history = clinical_info.get("clinical_history", "No history provided")
+
+        # Format the output
+        output = f"- Demographics: {age}, {gender}, {weight}\n"
+        
+        if vitals_text:
+            output += "- Vital Signs:\n  " + "\n  ".join(vitals_text) + "\n"
+            
+        output += f"- Chief Complaint: {chief_complaint}\n"
+        output += f"- Clinical History: {clinical_history}\n"
+        
+        # Add any diagnoses if available
+        if "diagnoses" in clinical_info and clinical_info["diagnoses"]:
+            diagnoses = clinical_info["diagnoses"]
+            if isinstance(diagnoses, list):
+                diagnoses_text = ", ".join(diagnoses)
+            else:
+                diagnoses_text = str(diagnoses)
+            output += f"- Diagnoses: {diagnoses_text}\n"
+            
+        return output
+
+    def _extract_essential_specialty_info(self, assessment: Dict[str, Any]) -> str:
+        """Extract the most relevant specialty assessment information."""
+        if not assessment:
+            return "No specialty assessment available."
+
+        output = []
+
+        # Get care level recommendation
+        if "recommended_care_level" in assessment:
+            output.append(f"- Recommended Care Level: {assessment['recommended_care_level']}")
+            
+            # Add care level reasoning if available
+            if "care_level_reasoning" in assessment:
+                output.append(f"- Care Level Reasoning: {assessment['care_level_reasoning']}")
+
+        # Get required specialties
+        if "required_specialties" in assessment:
+            specialties = assessment["required_specialties"]
+            if specialties:
+                if isinstance(specialties, list):
+                    # Handle both string list and dict list formats
+                    specialty_names = []
+                    for spec in specialties:
+                        if isinstance(spec, dict) and "specialty" in spec:
+                            specialty_names.append(f"{spec['specialty']} (Confidence: {spec.get('confidence', 'Unknown')}%)")
+                        elif isinstance(spec, str):
+                            specialty_names.append(spec)
+                    output.append(f"- Required Specialties: {', '.join(specialty_names)}")
+                else:
+                    output.append(f"- Required Specialties: {specialties}")
+
+        # Return the formatted output
+        return "\n".join(output) if output else "No specific specialty needs identified."
+
+    def _extract_essential_exclusion_info(
+        self, exclusion: Optional[Dict[str, Any]]
+    ) -> str:
+        """Extract essential exclusion information."""
+        if not exclusion:
+            return "No exclusion criteria evaluated."
+
+        output = []
+
+        # Get excluded campuses
+        if "excluded_campuses" in exclusion and exclusion["excluded_campuses"]:
+            excluded = exclusion["excluded_campuses"]
+            if isinstance(excluded, list):
+                output.append(f"- Excluded Campuses: {', '.join(excluded)}")
+            else:
+                output.append(f"- Excluded Campuses: {excluded}")
+
+        # Get exclusion reasons
+        if "exclusion_reasons" in exclusion and exclusion["exclusion_reasons"]:
+            reasons = exclusion["exclusion_reasons"]
+            if isinstance(reasons, dict):
+                reason_texts = []
+                for campus, reason in reasons.items():
+                    reason_texts.append(f"{campus}: {reason}")
+                output.append("- Exclusion Reasons:\n  - " + "\n  - ".join(reason_texts))
+            else:
+                output.append(f"- Exclusion Reasons: {reasons}")
+
+        # Get recommended campus if available
+        if "recommended_campus" in exclusion and exclusion["recommended_campus"]:
+            output.append(f"- Recommended Campus from Exclusion Analysis: {exclusion['recommended_campus']}")
+
+        # Return the formatted output
+        return "\n".join(output) if output else "No specific exclusion criteria identified."
+
+    def _format_scoring_data(self, scoring_results: Dict[str, Any]) -> str:
+        """
+        Format the pediatric scoring data in a comprehensive way for the LLM.
+        
+        This method prepares the scoring data with complete details including subscores,
+        interpretations, and care recommendations to help the LLM make an informed decision.
+        
+        Args:
+            scoring_results: Dictionary containing score results and care level recommendations
+            
+        Returns:
+            Formatted string with comprehensive scoring information
+        """
+        if not scoring_results or not isinstance(scoring_results, dict):
+            return "No pediatric scoring data available."
+            
+        formatted_text = ""
+        
+        # Process each score type
+        if "scores" in scoring_results and scoring_results["scores"]:
+            scores = scoring_results["scores"]
+            
+            # PEWS (Pediatric Early Warning Score)
+            if "pews" in scores:
+                pews = scores["pews"]
+                formatted_text += "### PEWS (Pediatric Early Warning Score)\n"
+                formatted_text += f"- Total Score: {pews.get('total_score', 'N/A')}\n"
+                formatted_text += f"- Interpretation: {pews.get('interpretation', 'N/A')}\n"
+                
+                # Add subscores if available
+                if "subscores" in pews:
+                    subscores = pews["subscores"]
+                    formatted_text += "- Subscores:\n"
+                    for subscore_name, value in subscores.items():
+                        formatted_text += f"  - {subscore_name}: {value}\n"
+                
+                # Add recommended actions
+                if "recommended_actions" in pews:
+                    actions = pews["recommended_actions"]
+                    formatted_text += "- Recommended Actions:\n"
+                    if isinstance(actions, list):
+                        for action in actions:
+                            formatted_text += f"  - {action}\n"
+                    else:
+                        formatted_text += f"  - {actions}\n"
+                
+                formatted_text += "\n"
+            
+            # TRAP (Transport Risk Assessment in Pediatrics)
+            if "trap" in scores:
+                trap = scores["trap"]
+                formatted_text += "### TRAP (Transport Risk Assessment in Pediatrics)\n"
+                formatted_text += f"- Total Score: {trap.get('total_score', 'N/A')}\n"
+                formatted_text += f"- Risk Level: {trap.get('risk_level', 'N/A')}\n"
+                
+                # Add subscores
+                if "subscores" in trap:
+                    subscores = trap["subscores"]
+                    formatted_text += "- System Assessments:\n"
+                    for system, value in subscores.items():
+                        formatted_text += f"  - {system}: {value}\n"
+                
+                # Add transport team recommendation
+                if "transport_team_recommendation" in trap:
+                    formatted_text += f"- Transport Team: {trap['transport_team_recommendation']}\n"
+                
+                formatted_text += "\n"
+            
+            # PRISM III
+            if "prism_iii" in scores:
+                prism = scores["prism_iii"]
+                formatted_text += "### PRISM III (Pediatric Risk of Mortality)\n"
+                formatted_text += f"- Total Score: {prism.get('total_score', 'N/A')}\n"
+                formatted_text += f"- Mortality Risk: {prism.get('mortality_risk', 'N/A')}\n"
+                
+                # Add variable scores
+                if "variable_scores" in prism:
+                    variables = prism["variable_scores"]
+                    formatted_text += "- Physiologic Variables:\n"
+                    for variable, value in variables.items():
+                        formatted_text += f"  - {variable}: {value}\n"
+                
+                formatted_text += "\n"
+            
+            # CAMEO II
+            if "cameo_ii" in scores:
+                cameo = scores["cameo_ii"]
+                formatted_text += "### CAMEO II (Complexity Assessment and Monitoring)\n"
+                formatted_text += f"- Total Score: {cameo.get('total_score', 'N/A')}\n"
+                formatted_text += f"- Acuity Level: {cameo.get('acuity_level', 'N/A')}\n"
+                
+                # Add domain scores
+                if "domain_scores" in cameo:
+                    domains = cameo["domain_scores"]
+                    formatted_text += "- Domain Scores:\n"
+                    for domain, value in domains.items():
+                        formatted_text += f"  - {domain}: {value}\n"
+                
+                # Add staffing recommendation
+                if "recommended_nurse_ratio" in cameo:
+                    formatted_text += f"- Recommended Nurse Ratio: {cameo['recommended_nurse_ratio']}\n"
+                
+                formatted_text += "\n"
+                
+        # Add recommended care level information
+        if "recommended_care_levels" in scoring_results:
+            care_levels = scoring_results["recommended_care_levels"]
+            formatted_text += "### Care Level Recommendations Based on Scores\n"
+            
+            for score_name, level in care_levels.items():
+                formatted_text += f"- {score_name}: {level}\n"
+            
+            formatted_text += "\n"
+            
+        # Add justifications for score-based recommendations
+        if "justifications" in scoring_results:
+            justifications = scoring_results["justifications"]
+            formatted_text += "### Score-Based Justifications\n"
+            
+            for score_name, justification in justifications.items():
+                formatted_text += f"- {score_name}: {justification}\n"
+                
+        return formatted_text

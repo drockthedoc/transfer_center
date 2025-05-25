@@ -112,6 +112,37 @@ class TestPEWS(unittest.TestCase):
             result["score"], 1
         )  # Should have at least some points for low vitals
 
+    def test_neonate_p_e_w_s(self):
+        """Test PEWS for a neonate (e.g., age < 1 month)."""
+        result = calculate_pews(
+            age_months=0.5, # Neonate
+            respiratory_rate=55, # Slightly high for neonate
+            respiratory_effort="mild",
+            oxygen_requirement="none",
+            heart_rate=170, # Slightly high for neonate
+            capillary_refill=2,
+            behavior="irritable"
+        )
+        self.assertIsInstance(result["score"], int)
+        # Based on typical PEWS, mild tachypnea and tachycardia, plus irritability might give a score around 3-4
+        self.assertGreaterEqual(result["score"], 2) 
+        self.assertLessEqual(result["score"], 5)
+        self.assertIn("Infant", result["normal_ranges"]["heart_rate"]) # Check if age-specific ranges were used
+
+    def test_p_e_w_s_missing_optional_cap_refill(self):
+        """Test PEWS when optional capillary_refill is missing."""
+        result = calculate_pews(
+            age_months=24, # 2 years old
+            respiratory_rate=25,
+            respiratory_effort="normal",
+            oxygen_requirement="none",
+            heart_rate=110,
+            capillary_refill=None, # Optional
+            behavior="playing"
+        )
+        self.assertIsInstance(result["score"], int)
+        self.assertEqual(result["score"], 0) # Should be 0 if all other params are normal
+
 
 class TestTRAP(unittest.TestCase):
     """Test cases for the Transport Risk Assessment in Pediatrics (TRAP)"""
@@ -200,6 +231,41 @@ class TestTRAP(unittest.TestCase):
         self.assertIsInstance(result["score"], int)
         self.assertGreaterEqual(result["score"], 3)  # Should be high risk
         self.assertIn("Critical", result["risk_level"])
+
+    def test_trap_missing_age_but_no_age_dependent_vitals(self, mock_get_llm_logger=None): # Add mock for consistency if other tests use it
+        """Test TRAP when age is missing but no age-dependent vitals are provided that would require it."""
+        result = calculate_trap(
+            respiratory_support="ventilator", # Score 3
+            oxygen_saturation=85,            # Score 3 (max with support)
+            hemodynamic_stability="unstable", # Score 3
+            neuro_status="unresponsive",       # Score 3
+            access_difficulty="difficult",     # Score 2
+            age_months=None 
+            # No RR, HR, or BP provided, so age ranges are not strictly needed for these.
+        )
+        self.assertIsInstance(result["score"], int)
+        # Max domain score is 3. Access difficult (2) + max_domain_score >=2 (3) -> adds 1. Total = 4
+        self.assertEqual(result["score"], 4) 
+        self.assertIn("Critical", result["risk_level"])
+
+    def test_trap_missing_optional_access_difficulty(self, mock_get_llm_logger=None):
+        """Test TRAP when optional access_difficulty is missing."""
+        result = calculate_trap(
+            respiratory_support="none",
+            respiratory_rate=30, # Assuming age 36 months, this is normal
+            work_of_breathing="normal",
+            oxygen_saturation=98,
+            hemodynamic_stability="stable",
+            blood_pressure=100, # Assuming age 36 months, this is normal
+            heart_rate=120,   # Assuming age 36 months, this is normal
+            neuro_status="alert",
+            gcs=15,
+            access_difficulty=None, # Optional
+            age_months=36
+        )
+        self.assertIsInstance(result["score"], int)
+        self.assertEqual(result["score"], 0)
+        self.assertIn("Low Risk", result["risk_level"])
 
 
 class TestCAMEO2(unittest.TestCase):

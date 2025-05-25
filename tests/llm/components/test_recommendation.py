@@ -15,7 +15,302 @@ from src.llm.components.recommendation import (
     generate_transfer_recommendation,
     prioritize_care_requirements,
     format_recommendation,
+    RecommendationGenerator,
 )
+
+from src.core.models import LLMReasoningDetails, Recommendation as RecommendationModel
+
+
+class MockOpenAIClient:
+    def __init__(self, response_content):
+        self.response_content = response_content
+        self.chat = self.Chat()
+
+    class Chat:
+        def __init__(self):
+            self.completions = self.Completions()
+
+        class Completions:
+            def __init__(self):
+                self._response_content = None # Will be set by outer class
+
+            def create(self, model, messages, temperature, max_tokens):
+                # Access the response_content from the enclosing MockOpenAIClient instance
+                mock_choice = MagicMock()
+                mock_choice.message.content = self._response_content
+                mock_choice.finish_reason = "stop"
+                
+                mock_usage = MagicMock()
+                mock_usage.total_tokens = 100
+                mock_usage.prompt_tokens = 50
+                mock_usage.completion_tokens = 50
+
+                mock_response = MagicMock()
+                mock_response.choices = [mock_choice]
+                mock_response.usage = mock_usage
+                return mock_response
+
+# Patch the get_llm_logger to avoid issues with its internal state if not configured
+@patch('src.llm.components.recommendation.get_llm_logger')
+class TestRecommendationGenerator(unittest.TestCase):
+    """Test cases for the RecommendationGenerator class."""
+
+    def setUp(self):
+        self.sample_extracted_entities = {
+            "demographics": {"age": "5 years", "gender": "female"},
+            "clinical_information": {"chief_complaint": "fever", "clinical_history": "cough for 3 days"},
+            "vital_signs": {"hr": "120", "rr": "30", "bp": "100/60", "temp": "38.5C", "o2": "95%"}
+        }
+        self.sample_specialty_assessment = {
+            "recommended_care_level": "General Pediatrics",
+            "required_specialties": ["Pediatrics"],
+            "scoring_results": {"scores": {"pews": {"total_score": 2}}}
+        }
+        self.sample_exclusion_evaluation = {"excluded_campuses": [], "exclusion_reasons": {}}
+        self.sample_available_hospitals = [
+            {"name": "City General", "campus_id": "CGH", "care_levels": ["General", "ICU"], "specialties": ["Pediatrics"]}
+        ]
+        self.sample_census_data = {"CGH": {"GENERAL_BEDS": {"available": 10, "total": 20}}}
+
+    def test_successful_recommendation_full_explainability(self, mock_get_llm_logger):
+        """Test successful recommendation with full explainability details."""
+        mock_llm_logger_instance = MagicMock()
+        mock_get_llm_logger.return_value = mock_llm_logger_instance
+
+        llm_response_data = {
+            "recommended_campus_id": "CGH",
+            "recommended_campus_name": "City General",
+            "care_level": "General Pediatrics",
+            "confidence_score": 95.0,
+            "explainability_details": {
+                "main_recommendation_reason": "Excellent pediatric services and bed availability.",
+                "alternative_reasons": {"OtherHospital": "Lacks pediatric specialty."},
+                "key_factors_considered": ["Pediatric specialty", "Bed availability", "Distance"],
+                "confidence_explanation": "High confidence due to direct match of needs."
+            },
+            "notes": ["Patient stable for transport."],
+            "transport_details": {"mode": "GROUND_AMBULANCE", "estimated_time_minutes": 30, "special_requirements": "None"},
+            "conditions": {"weather": "Clear", "traffic": "Light"}
+        }
+        mock_client = MockOpenAIClient(json.dumps(llm_response_data))
+        mock_client.chat.completions._response_content = json.dumps(llm_response_data) # Set response content for the mock
+
+        generator = RecommendationGenerator(client=mock_client, model="test-model")
+        recommendation = generator.generate_recommendation(
+            self.sample_extracted_entities, self.sample_specialty_assessment,
+            self.sample_exclusion_evaluation, self.sample_available_hospitals, self.sample_census_data
+        )
+
+        self.assertIsInstance(recommendation, RecommendationModel)
+        self.assertEqual(recommendation.recommended_campus_id, "CGH")
+        self.assertEqual(recommendation.recommended_campus_name, "City General")
+        self.assertIsInstance(recommendation.explainability_details, LLMReasoningDetails)
+        self.assertEqual(recommendation.explainability_details.main_recommendation_reason, llm_response_data["explainability_details"]["main_recommendation_reason"])
+        self.assertEqual(recommendation.explainability_details.alternative_reasons, llm_response_data["explainability_details"]["alternative_reasons"])
+        self.assertEqual(recommendation.explainability_details.key_factors_considered, llm_response_data["explainability_details"]["key_factors_considered"])
+        self.assertEqual(recommendation.explainability_details.confidence_explanation, llm_response_data["explainability_details"]["confidence_explanation"])
+        self.assertEqual(recommendation.notes, llm_response_data["notes"])
+
+    def test_recommendation_incomplete_explainability(self, mock_get_llm_logger):
+        """Test recommendation when LLM returns incomplete explainability details."""
+        mock_llm_logger_instance = MagicMock()
+        mock_get_llm_logger.return_value = mock_llm_logger_instance
+
+        llm_response_data = {
+            "recommended_campus_id": "CGH",
+            "recommended_campus_name": "City General",
+            "care_level": "General Pediatrics",
+            "confidence_score": 80.0,
+            "explainability_details": {
+                "main_recommendation_reason": "Good pediatric services."
+                # Missing alternative_reasons, key_factors_considered, confidence_explanation
+            }
+        }
+        mock_client = MockOpenAIClient(json.dumps(llm_response_data))
+        mock_client.chat.completions._response_content = json.dumps(llm_response_data)
+
+
+        generator = RecommendationGenerator(client=mock_client, model="test-model")
+        recommendation = generator.generate_recommendation(
+            self.sample_extracted_entities, self.sample_specialty_assessment,
+            self.sample_exclusion_evaluation, self.sample_available_hospitals, self.sample_census_data
+        )
+
+        self.assertIsInstance(recommendation.explainability_details, LLMReasoningDetails)
+        self.assertEqual(recommendation.explainability_details.main_recommendation_reason, "Good pediatric services.")
+        self.assertEqual(recommendation.explainability_details.alternative_reasons, {}) # Should default
+        self.assertEqual(recommendation.explainability_details.key_factors_considered, []) # Should default
+        self.assertIsNone(recommendation.explainability_details.confidence_explanation) # Optional
+
+    def test_recommendation_missing_explainability_entirely(self, mock_get_llm_logger):
+        """Test recommendation when LLM response misses explainability_details entirely."""
+        mock_llm_logger_instance = MagicMock()
+        mock_get_llm_logger.return_value = mock_llm_logger_instance
+        
+        llm_response_data = {
+            "recommended_campus_id": "CGH",
+            "recommended_campus_name": "City General",
+            "care_level": "General Pediatrics",
+            "confidence_score": 75.0
+            # explainability_details is completely missing
+        }
+        mock_client = MockOpenAIClient(json.dumps(llm_response_data))
+        mock_client.chat.completions._response_content = json.dumps(llm_response_data)
+
+        generator = RecommendationGenerator(client=mock_client, model="test-model")
+        recommendation = generator.generate_recommendation(
+            self.sample_extracted_entities, self.sample_specialty_assessment,
+            self.sample_exclusion_evaluation, self.sample_available_hospitals, self.sample_census_data
+        )
+
+        self.assertIsInstance(recommendation.explainability_details, LLMReasoningDetails)
+        # Check for default value from LLMReasoningDetails or the validator in Recommendation model
+        self.assertIn("Primary reason not specified", recommendation.explainability_details.main_recommendation_reason)
+        self.assertEqual(recommendation.explainability_details.alternative_reasons, {})
+        self.assertEqual(recommendation.explainability_details.key_factors_considered, [])
+
+    @patch('src.llm.components.recommendation.robust_json_parser', side_effect=json.JSONDecodeError("Simulated Error", "doc", 0))
+    def test_llm_processing_failure_json_decode(self, mock_robust_parser, mock_get_llm_logger):
+        """Test error handling when LLM response parsing fails (JSONDecodeError)."""
+        mock_llm_logger_instance = MagicMock()
+        mock_get_llm_logger.return_value = mock_llm_logger_instance
+
+        mock_client = MockOpenAIClient("This is not JSON") # Malformed content
+        mock_client.chat.completions._response_content = "This is not JSON"
+
+
+        generator = RecommendationGenerator(client=mock_client, model="test-model")
+        recommendation = generator.generate_recommendation(
+            self.sample_extracted_entities, self.sample_specialty_assessment
+        )
+        
+        self.assertEqual(recommendation.recommended_campus_id, "ERROR_PARSING")
+        self.assertIsInstance(recommendation.explainability_details, LLMReasoningDetails)
+        self.assertIn("Failed to parse LLM response", recommendation.explainability_details.main_recommendation_reason)
+
+    @patch('src.llm.components.recommendation.RecommendationGenerator._standardize_llm_response', side_effect=Exception("Simulated standardization error"))
+    def test_llm_processing_failure_standardization(self, mock_standardize, mock_get_llm_logger):
+        """Test error handling when standardization fails."""
+        mock_llm_logger_instance = MagicMock()
+        mock_get_llm_logger.return_value = mock_llm_logger_instance
+
+        llm_response_data = {"recommended_campus_id": "CGH"} # Valid JSON, but assume it causes standardization error
+        mock_client = MockOpenAIClient(json.dumps(llm_response_data))
+        mock_client.chat.completions._response_content = json.dumps(llm_response_data)
+
+        generator = RecommendationGenerator(client=mock_client, model="test-model")
+        recommendation = generator.generate_recommendation(
+            self.sample_extracted_entities, self.sample_specialty_assessment
+        )
+        
+        self.assertEqual(recommendation.recommended_campus_id, "ERROR_OUTER_PROCESSING") # Updated based on where error is caught
+        self.assertIsInstance(recommendation.explainability_details, LLMReasoningDetails)
+        self.assertIn("Critical error processing LLM recommendation", recommendation.explainability_details.main_recommendation_reason)
+
+    def test_recommendation_with_valid_transport_and_conditions(self, mock_get_llm_logger):
+        """Test successful recommendation with valid transport_details and conditions."""
+        mock_llm_logger_instance = MagicMock()
+        mock_get_llm_logger.return_value = mock_llm_logger_instance
+
+        transport_data = {"mode": "Ambulance", "estimated_time_minutes": 30}
+        conditions_data = {"weather": "Clear", "traffic": "Light"}
+        llm_response_data = {
+            "recommended_campus_id": "CGH",
+            "recommended_campus_name": "City General",
+            "care_level": "General Pediatrics",
+            "confidence_score": 90.0,
+            "explainability_details": {"main_recommendation_reason": "Reason"},
+            "transport_details": transport_data,
+            "conditions": conditions_data,
+        }
+        mock_client = MockOpenAIClient(json.dumps(llm_response_data))
+        mock_client.chat.completions._response_content = json.dumps(llm_response_data)
+
+        generator = RecommendationGenerator(client=mock_client, model="test-model")
+        
+        # Patch the logger inside the _standardize_llm_response to check specific log messages
+        with patch.object(generator.logger, 'debug') as mock_logger_debug:
+            recommendation = generator.generate_recommendation(
+                self.sample_extracted_entities, self.sample_specialty_assessment
+            )
+
+            self.assertEqual(recommendation.transport_details, transport_data)
+            self.assertEqual(recommendation.conditions, conditions_data)
+            
+            # Check for specific logging calls (optional, but good practice)
+            # This checks if the logger was called with messages containing these substrings.
+            # Note: This part of the test relies on the internal logging messages.
+            # If these messages change, the test might need updating.
+            mock_logger_debug.assert_any_call(f"Raw transport_details from LLM: {transport_data}")
+            mock_logger_debug.assert_any_call(f"Standardized transport_details: {transport_data}")
+            mock_logger_debug.assert_any_call(f"Raw conditions from LLM: {conditions_data}")
+            mock_logger_debug.assert_any_call(f"Standardized conditions: {conditions_data}")
+            mock_logger_debug.assert_any_call(f"Data for Recommendation model instantiation (pre-Pydantic):")
+
+
+    def test_recommendation_missing_transport_and_conditions(self, mock_get_llm_logger):
+        """Test recommendation when transport_details and conditions are missing."""
+        mock_llm_logger_instance = MagicMock()
+        mock_get_llm_logger.return_value = mock_llm_logger_instance
+
+        llm_response_data = {
+            "recommended_campus_id": "CGH",
+            "recommended_campus_name": "City General",
+            "care_level": "General Pediatrics",
+            "confidence_score": 85.0,
+            "explainability_details": {"main_recommendation_reason": "Reason"},
+            # transport_details and conditions are missing
+        }
+        mock_client = MockOpenAIClient(json.dumps(llm_response_data))
+        mock_client.chat.completions._response_content = json.dumps(llm_response_data)
+        generator = RecommendationGenerator(client=mock_client, model="test-model")
+        
+        with patch.object(generator.logger, 'debug') as mock_logger_debug:
+            recommendation = generator.generate_recommendation(
+                self.sample_extracted_entities, self.sample_specialty_assessment
+            )
+            self.assertEqual(recommendation.transport_details, {})
+            self.assertEqual(recommendation.conditions, {})
+            mock_logger_debug.assert_any_call("Raw transport_details from LLM: None")
+            mock_logger_debug.assert_any_call("Standardized transport_details: {}")
+            mock_logger_debug.assert_any_call("Raw conditions from LLM: None")
+            mock_logger_debug.assert_any_call("Standardized conditions: {}")
+
+    def test_recommendation_invalid_type_transport_and_conditions(self, mock_get_llm_logger):
+        """Test recommendation when transport_details and conditions are of invalid types."""
+        mock_llm_logger_instance = MagicMock()
+        mock_get_llm_logger.return_value = mock_llm_logger_instance
+
+        llm_response_data = {
+            "recommended_campus_id": "CGH",
+            "recommended_campus_name": "City General",
+            "care_level": "General Pediatrics",
+            "confidence_score": 82.0,
+            "explainability_details": {"main_recommendation_reason": "Reason"},
+            "transport_details": "Should be a dict",
+            "conditions": "Should be a dict"
+        }
+        mock_client = MockOpenAIClient(json.dumps(llm_response_data))
+        mock_client.chat.completions._response_content = json.dumps(llm_response_data)
+        generator = RecommendationGenerator(client=mock_client, model="test-model")
+
+        with patch.object(generator.logger, 'warning') as mock_logger_warning, \
+             patch.object(generator.logger, 'debug') as mock_logger_debug:
+            recommendation = generator.generate_recommendation(
+                self.sample_extracted_entities, self.sample_specialty_assessment
+            )
+            self.assertEqual(recommendation.transport_details, {})
+            self.assertEqual(recommendation.conditions, {})
+            
+            # Verify warnings were logged
+            mock_logger_warning.assert_any_call("LLM provided transport_details of type <class 'str'>, expected dict. Defaulting to empty dict.")
+            mock_logger_warning.assert_any_call("LLM provided conditions of type <class 'str'>, expected dict. Defaulting to empty dict.")
+            
+            # Verify debug logs for raw and standardized values
+            mock_logger_debug.assert_any_call("Raw transport_details from LLM: Should be a dict")
+            mock_logger_debug.assert_any_call("Standardized transport_details: {}")
+            mock_logger_debug.assert_any_call("Raw conditions from LLM: Should be a dict")
+            mock_logger_debug.assert_any_call("Standardized conditions: {}")
 
 
 class TestRecommendationComponent(unittest.TestCase):

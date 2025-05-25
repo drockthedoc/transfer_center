@@ -192,31 +192,37 @@ class RecommendationGenerator:
 Use the above information to provide a hospital transfer recommendation in the following JSON format:
 ```json
 {
-  "recommended_campus": string,       // The recommended campus or hospital name
-  "care_level": string,               // Recommended care level (general_floor, intermediate_care, intensive_care, etc.)
+  "recommended_campus_id": string,    // The ID of the recommended hospital campus
+  "recommended_campus_name": string,  // The name of the recommended hospital campus
+  "care_level": string,               // Recommended care level (e.g., General, ICU, PICU)
   "confidence_score": number,         // Confidence score (0-100) for this recommendation
-  "clinical_reasoning": string,       // Clinical justification for the recommendation
-  "campus_scores": {                  // Detailed scoring for each considered campus
-    "primary": {
-      "location": number,             // Score for location proximity (1-5)
-      "specific_resources": number    // Score for specific resources needed (1-5)
+  "explainability_details": {
+    "main_recommendation_reason": string, // Primary reason for choosing this specific campus
+    "alternative_reasons": {        // Optional: Reasons for NOT choosing other considered campuses. Key is campus_id or name.
+      "OtherCampusID1": "Reason why OtherCampusID1 was not chosen...",
+      "OtherCampusName2": "Reason why OtherCampusName2 was not chosen..."
     },
-    "backup": {                       // Optional backup recommendation
-      "location": number,
-      "specific_resources": number
-    }
+    "key_factors_considered": [string], // List of key factors, e.g., ["distance", "specialty_match", "bed_availability_heuristic"]
+    "confidence_explanation": string    // Optional: Brief explanation of the confidence score
   },
-  "bed_availability": {
-    "confirmed": boolean,             // Whether bed availability was confirmed
-    "availability_notes": string      // Notes on bed availability status
+  "notes": [string],                  // Optional: Any additional notes or brief details
+  "transport_details": {              // Details about transport for the UI
+    "mode": string,                   // Suggested transport mode (e.g., "GROUND_AMBULANCE", "HELICOPTER")
+    "estimated_time_minutes": number, // Estimated transport time in minutes
+    "special_requirements": string    // Any special transport requirements (e.g., "Requires NICU-capable team")
   },
-  "traffic_report": {
-    "estimated_transport_time": string,  // Estimated transport time to facility
-    "traffic_conditions": string,        // Current traffic conditions (normal, heavy, etc.)
-    "route_notes": string                // Any notes about the transport route
+  "conditions": {                     // Current conditions affecting transport for the UI
+    "weather": string,                // Brief weather summary (e.g., "Clear, 75F")
+    "traffic": string                 // Brief traffic summary (e.g., "Light traffic on I-10")
   }
 }
 ```
+
+**Instructions for Explainability Details:**
+- `main_recommendation_reason`: Clearly state why the *recommended_campus_id* is the best choice.
+- `alternative_reasons`: If other campuses were strong contenders but ultimately not chosen, briefly explain why for each. Use their ID or name as the key.
+- `key_factors_considered`: List the critical factors that influenced the decision (e.g., specific patient need, unique hospital capability, distance, bed availability).
+- `confidence_explanation`: Briefly explain why the confidence score is what it is (e.g., "High confidence due to clear specialty match and bed availability" or "Moderate confidence due to conflicting factors").
 
 Do not include any text before or after the JSON. Only return a valid JSON object.
 """
@@ -612,63 +618,95 @@ Do not include any text before or after the JSON. Only return a valid JSON objec
         
         # Initialize with default values
         standardized = {
-            "campus_id": "Unknown Campus",
-            "reason": "No clinical reasoning provided",
-            "confidence_score": 70.0,
-            "care_level": "General",
-            "notes": []
+            "recommended_campus_id": recommendation_json.get("recommended_campus_id", "UnknownCampusID"),
+            "recommended_campus_name": recommendation_json.get("recommended_campus_name", "Unknown Campus Name"),
+            "care_level": recommendation_json.get("care_level", "General"),
+            "confidence_score": recommendation_json.get("confidence_score", 70.0),
+            "notes": recommendation_json.get("notes", []) if isinstance(recommendation_json.get("notes"), list) else [],
+            "explainability_details": {}, # Default, will be populated below
+            "transport_details": {},      # Default, will be populated below
+            "conditions": {}              # Default, will be populated below
         }
-        logger.debug(f"Initialized standardized structure with default values")
+        logger.debug(f"Initialized standardized structure with direct mappings and defaults for collections: {list(standardized.keys())}")
         
-        # Map LLM output fields to our standardized format
-        field_mappings = {
-            # Campus ID field variations
-            "campus_id": ["recommended_campus", "campus_id", "campus", "hospital", "facility"],
-            # Reason field variations 
-            "reason": ["clinical_reasoning", "reasoning", "reason", "justification", "rationale"],
-            # Confidence score field variations
-            "confidence_score": ["confidence_score", "confidence", "score"],
-            # Care level field variations
-            "care_level": ["care_level", "level_of_care", "recommended_care_level"]
-        }
+        # Explainability Details
+        raw_explainability = recommendation_json.get("explainability_details")
+        logger.debug(f"Raw explainability_details from LLM: {raw_explainability}")
+        if isinstance(raw_explainability, dict):
+            standardized["explainability_details"] = {
+                "main_recommendation_reason": raw_explainability.get("main_recommendation_reason", "Primary reason not specified by LLM."),
+                "alternative_reasons": raw_explainability.get("alternative_reasons") if isinstance(raw_explainability.get("alternative_reasons"), dict) else {},
+                "key_factors_considered": raw_explainability.get("key_factors_considered") if isinstance(raw_explainability.get("key_factors_considered"), list) else [],
+                "confidence_explanation": raw_explainability.get("confidence_explanation") # Optional, so None is fine
+            }
+        else:
+            standardized["explainability_details"] = {
+                "main_recommendation_reason": "Explainability details missing or malformed from LLM.",
+                "alternative_reasons": {},
+                "key_factors_considered": [],
+                "confidence_explanation": None
+            }
+        standardized["reason"] = standardized["explainability_details"]["main_recommendation_reason"] # For backward compatibility / simple display
+        logger.debug(f"Standardized explainability_details: {standardized['explainability_details']}")
+
+        # Transport Details
+        raw_transport_details = recommendation_json.get("transport_details")
+        logger.debug(f"Raw transport_details from LLM: {raw_transport_details}")
+        if isinstance(raw_transport_details, dict):
+            standardized["transport_details"] = raw_transport_details
+        else:
+            standardized["transport_details"] = {}
+            if raw_transport_details is not None:
+                logger.warning(f"LLM provided transport_details of type {type(raw_transport_details)}, expected dict. Defaulting to empty dict.")
+        logger.debug(f"Standardized transport_details: {standardized['transport_details']}")
+
+        # Conditions
+        raw_conditions = recommendation_json.get("conditions")
+        logger.debug(f"Raw conditions from LLM: {raw_conditions}")
+        if isinstance(raw_conditions, dict): # Model expects Dict[str, Any]
+            standardized["conditions"] = raw_conditions
+        else:
+            standardized["conditions"] = {}
+            if raw_conditions is not None:
+                logger.warning(f"LLM provided conditions of type {type(raw_conditions)}, expected dict. Defaulting to empty dict.")
+        logger.debug(f"Standardized conditions: {standardized['conditions']}")
+
+        # Legacy field mapping for campus_id and reason if new fields were not provided
+        # This is for backward compatibility if the LLM hasn't fully switched to the new schema.
+        if standardized["recommended_campus_id"] == "UnknownCampusID":
+            legacy_campus_id = recommendation_json.get("recommended_campus") or \
+                               recommendation_json.get("campus_id") or \
+                               recommendation_json.get("campus") or \
+                               recommendation_json.get("hospital") or \
+                               recommendation_json.get("facility")
+            if legacy_campus_id:
+                standardized["recommended_campus_id"] = legacy_campus_id
+                standardized["recommended_campus_name"] = legacy_campus_id # Assume name is same if only legacy ID
+                logger.info(f"Mapped legacy campus field to recommended_campus_id/name: {legacy_campus_id}")
         
-        # Extract values using field mappings with detailed logging
-        logger.info("Mapping LLM response fields to standardized format")
-        for target_field, source_fields in field_mappings.items():
-            logger.debug(f"Looking for '{target_field}' using these possible fields: {source_fields}")
-            for source_field in source_fields:
-                if source_field in recommendation_json and recommendation_json[source_field]:
-                    value = recommendation_json[source_field]
-                    standardized[target_field] = value
-                    logger.info(f"Found '{source_field}' with value: {value} -> mapped to '{target_field}'")
+        if standardized["reason"] == standardized["explainability_details"]["main_recommendation_reason"] and \
+           standardized["reason"] in ["Primary reason not specified by LLM.", "Explainability details missing or malformed from LLM."]:
+            legacy_reason_fields = ["clinical_reasoning", "reasoning", "reason", "justification", "rationale"]
+            for field in legacy_reason_fields:
+                if field in recommendation_json and recommendation_json[field]:
+                    standardized["reason"] = recommendation_json[field]
+                    standardized["explainability_details"]["main_recommendation_reason"] = recommendation_json[field]
+                    logger.info(f"Used legacy reason field '{field}' for main_recommendation_reason.")
                     break
-            if standardized[target_field] == field_mappings.get(target_field, ""):
-                logger.warning(f"No value found for '{target_field}', using default: {standardized[target_field]}")
         
-        # Store the original response
-        standardized["original_response"] = recommendation_json
-        logger.debug("Added original response to standardized structure")
-        
-        # Add all other fields from the original response
-        additional_fields = []
-        for key, value in recommendation_json.items():
-            if key not in standardized:
-                standardized[key] = value
-                additional_fields.append(key)
-        if additional_fields:
-            logger.info(f"Added {len(additional_fields)} additional fields from original response: {additional_fields}")
+        # Store the original full JSON response for reference if needed, can be part of metadata or a specific field if desired
+        # standardized["original_llm_response"] = recommendation_json 
                 
-        # Debug print and detailed logging
-        logger.info(f"Standardization complete with {len(standardized.keys())} total fields")
-        logger.info(f"COMPLETE STANDARDIZED DATA:\n{json.dumps(standardized, indent=2)}")
+        logger.info(f"Standardization complete. Final standardized keys: {list(standardized.keys())}")
+        logger.debug(f"COMPLETE STANDARDIZED DATA (for Pydantic model):\n{json.dumps(standardized, indent=2, default=str)}")
         
-        print(f"===== STANDARDIZED RECOMMENDATION =====\nType: {type(standardized)}\nKeys: {list(standardized.keys())}")
-        print(f"Campus: {standardized['campus_id']}\nReason: {standardized['reason'][:50]}...\nCare Level: {standardized['care_level']}")
+        print(f"===== STANDARDIZED RECOMMENDATION (PRE-MODEL) =====\nType: {type(standardized)}\nKeys: {list(standardized.keys())}")
+        print(f"Campus Name: {standardized.get('recommended_campus_name')}\nMain Reason: {standardized.get('reason')[:50]}...\nCare Level: {standardized.get('care_level')}")
         
         return standardized
     
     def _convert_to_recommendation(
-        self, recommendation_json: Dict[str, Any]
+        self, raw_llm_json: Dict[str, Any] # Renamed for clarity, this is the direct output from robust_json_parser
     ) -> Recommendation:
         """
         Convert the LLM recommendation JSON response to a Recommendation object.
@@ -680,211 +718,69 @@ Do not include any text before or after the JSON. Only return a valid JSON objec
             Recommendation object with the appropriate fields populated
         """
         try:
-            # Start with detailed logging
-            logger.info("========== CONVERTING JSON TO RECOMMENDATION OBJECT ===========")
-            logger.info(f"Input JSON type: {type(recommendation_json)}")
-            logger.info(f"Input JSON keys: {list(recommendation_json.keys()) if isinstance(recommendation_json, dict) else 'Not a dict'}")
-            logger.info(f"FULL INPUT JSON:\n{json.dumps(recommendation_json, indent=2)}")
-            
-            # Print to console for debugging
-            print(f"===== CONVERTING RECOMMENDATION JSON =====\nJSON keys: {list(recommendation_json.keys()) if isinstance(recommendation_json, dict) else 'Not a dict'}")
-            
-            # First standardize the response format
-            logger.info("Standardizing LLM response format")
-            standardized = self._standardize_llm_response(recommendation_json)
-            
-            logger.info("Standardization complete")
-            logger.info(f"Standardized keys: {list(standardized.keys())}")
-            logger.info(f"FULL STANDARDIZED DATA:\n{json.dumps(standardized, indent=2)}")
-            
-            # Print to console for debugging
-            print(f"===== STANDARDIZED RECOMMENDATION DATA =====\nKeys: {list(standardized.keys())}")
+            logger.info("========== CONVERTING LLM JSON TO RECOMMENDATION OBJECT (NEW) ===========")
+            logger.debug(f"RAW LLM JSON for conversion:\n{json.dumps(raw_llm_json, indent=2, default=str)}")
 
-            # Extract primary campus name with detailed logging
-            campus_name = standardized.get("campus_id", "No specific campus recommended")
-            logger.info(f"Extracted campus_id: '{campus_name}'")
+            # Standardize the raw LLM JSON to a consistent dictionary structure
+            # This handles variations and prepares for Pydantic model instantiation.
+            standardized_data = self._standardize_llm_response(raw_llm_json)
+            
+            logger.debug(f"Data for Recommendation model instantiation (pre-Pydantic):")
+            logger.debug(f"  recommended_campus_id: {standardized_data.get('recommended_campus_id')}")
+            logger.debug(f"  recommended_campus_name: {standardized_data.get('recommended_campus_name')}")
+            logger.debug(f"  reason (main): {standardized_data.get('reason')}") # This is main_recommendation_reason
+            logger.debug(f"  confidence_score: {standardized_data.get('confidence_score')}")
+            logger.debug(f"  recommended_level_of_care: {standardized_data.get('care_level')}")
+            logger.debug(f"  explainability_details (dict): {standardized_data.get('explainability_details')}")
+            logger.debug(f"  notes: {standardized_data.get('notes')}")
+            logger.debug(f"  transport_details (dict): {standardized_data.get('transport_details')}") # Log before passing
+            logger.debug(f"  conditions (dict): {standardized_data.get('conditions')}") # Log before passing
 
-            # Extract backup campus if available - try both standard and original formats
-            backup_campus = standardized.get("backup_campus", "No backup campus specified")
-            logger.info(f"Extracted backup_campus: '{backup_campus}'")
-            backup_confidence = float(standardized.get("backup_confidence_score", 0.0))
-            logger.info(f"Extracted backup_confidence_score: {backup_confidence}")
 
-            # Extract confidence score from the standardized data
-            # Get the LLM's confidence score as a starting point
-            raw_confidence = standardized.get("confidence_score", 70.0)
-            logger.info(f"Raw confidence score from LLM: {raw_confidence} (type: {type(raw_confidence)})")
+            # Now, create the Recommendation object using the standardized_data
+            # The validator in Recommendation model for explainability_details will handle
+            # converting the dict to an LLMReasoningDetails instance.
+            
+            # Ensure confidence score is a float
+            confidence_score = standardized_data.get("confidence_score", 70.0)
             try:
-                confidence = float(raw_confidence)
-                logger.info(f"Converted confidence score to float: {confidence}")
-            except (ValueError, TypeError) as e:
-                logger.error(f"Failed to convert confidence score to float: {e}")
-                confidence = 70.0
-                logger.info(f"Using default confidence score: {confidence}")
-                
-            print(f"Confidence score: {confidence}")
-            
-            # Validate confidence score is in range
-            if confidence < 0 or confidence > 100:
-                logger.warning(
-                    f"Invalid confidence score from LLM: {confidence}. Using default value."
-                )
-                confidence = 70.0
-                
-            # Calculate legitimate confidence score based on available data
-            all_data = standardized.get("all_data", standardized.get("original_response", {}))
-            specialty_data = standardized.get("specialty_data", {})
-            exclusion_data = standardized.get("exclusion_data", {})
-            recommendation_data = {
-                "patient_demographics": all_data.get("demographics", {}),
-                "chief_complaint": all_data.get("chief_complaint", ""),
-                "clinical_history": all_data.get("clinical_history", ""),
-                "extracted_vital_signs": all_data.get("vital_signs", {}),
-                "care_level_assessment": specialty_data,
-                "exclusion_criteria": exclusion_data,
-                "recommended_campus": {
-                    "campus_id": campus_name,
-                    "confidence_score": confidence
-                }
-            }
-            
-            # Get care level to determine urgency
-            care_level = standardized.get("care_level", "general").lower()
-            
-            # Map care level to display names
-            care_level_display = {
-                "general": "General Floor",
-                "general_floor": "General Floor",
-                "telemetry": "Telemetry Unit",
-                "intermediate": "Intermediate Care",
-                "intermediate_care": "Intermediate Care",
-                "icu": "ICU (Intensive Care)",
-                "intensive_care": "ICU (Intensive Care)",
-                "picu": "PICU (Pediatric Intensive Care)",
-                "nicu": "NICU (Neonatal Intensive Care)",
-            }.get(care_level, care_level.upper())
+                confidence_score = float(confidence_score)
+                if not (0 <= confidence_score <= 100):
+                    logger.warning(f"Confidence score {confidence_score} out of range. Clamping to 0-100.")
+                    confidence_score = max(0.0, min(100.0, confidence_score))
+            except (ValueError, TypeError):
+                logger.error(f"Invalid confidence score format: {confidence_score}. Defaulting to 70.0.")
+                confidence_score = 70.0
 
-            # Prepare notes list with care level and other info
-            notes = []
-            notes.append(f"Care Level: {care_level_display}")
-
-            # Add backup recommendation information
-            notes.append(
-                f"\nBackup Recommendation: {backup_campus} (Confidence: {backup_confidence:.1f}%)"
+            recommendation_obj = Recommendation(
+                transfer_request_id="llm_generated_trid", # Placeholder, will be updated by caller
+                recommended_campus_id=standardized_data.get("recommended_campus_id", "UnknownCampusID"),
+                recommended_campus_name=standardized_data.get("recommended_campus_name", "Unknown Campus Name"),
+                reason=standardized_data.get("reason", "No primary reason provided."), # This is main_recommendation_reason
+                confidence_score=confidence_score,
+                recommended_level_of_care=standardized_data.get("care_level", "General"),
+                explainability_details=standardized_data.get("explainability_details", {}), # This will be parsed by Pydantic validator
+                notes=standardized_data.get("notes", []),
+                transport_details=standardized_data.get("transport_details", {}),
+                conditions=standardized_data.get("conditions", {})
             )
-
-            # Prepare final reason text
-            final_reason = standardized.get(
-                "reason",
-                "Recommendation generated without detailed reasoning."
-            )
-
-            # Build explainability details
-            explainability_details = {}
             
-            # Add score utilization information if available
-            if "score_utilization" in recommendation_json:
-                score_util = recommendation_json["score_utilization"]
-                explainability_details["pediatric_scores"] = {
-                    "scores_available": score_util.get("pediatric_scores_available", 0),
-                    "referenced_in_reasoning": score_util.get("referenced_in_reasoning", False),
-                    "reference_count": score_util.get("reference_count", 0)
-                }
-
-            # Add care level justification
-            explainability_details["care_level"] = care_level_display
-
-            # Add urgency level
-            urgency = recommendation_json.get("urgency", "medium")
-            explainability_details["urgency"] = urgency
-
-            # Add key factors for recommendation
-            key_factors = []
-            for key in ["care_level", "confidence_score", "urgency"]:
-                if key in recommendation_json:
-                    key_factors.append(f"{key}: {recommendation_json[key]}")
-            if key_factors:
-                explainability_details["key_factors_for_recommendation"] = key_factors
-
-            # Add proximity analysis for campus choice
-            explainability_details["proximity_analysis"] = {}
-            if "campus_scores" in recommendation_json:
-                closer_bypassed = False
-                closer_campus = ""
-                bypass_reason = ""
-
-                explainability_details["proximity_analysis"].update(
-                    {
-                        "closer_options_bypassed": closer_bypassed,
-                        "closer_campus": closer_campus,
-                        "bypass_reason": bypass_reason,
-                    }
-                )
-
-            # Extract transport details from standardized data or create defaults
-            transport_details = standardized.get('transport_report', standardized.get('traffic_report', {}))
-            if not transport_details or not isinstance(transport_details, dict):
-                transport_details = {
-                    'mode': 'Unknown',
-                    'estimated_time': 'Not specified',
-                    'special_requirements': 'None specified'
-                }
-                
-                # Try to extract transport information from various fields
-                if 'estimated_transport_time' in standardized:
-                    transport_details['estimated_time'] = standardized['estimated_transport_time']
-                if 'traffic_conditions' in standardized:
-                    transport_details['traffic_conditions'] = standardized['traffic_conditions']
-                if 'route_notes' in standardized:
-                    transport_details['special_requirements'] = standardized['route_notes']
+            logger.info(f"Successfully created Recommendation object. Campus: {recommendation_obj.recommended_campus_name}")
+            logger.debug(f"Final Recommendation object dump:\n{recommendation_obj.model_dump_json(indent=2)}")
             
-            # Extract conditions data from standardized data or create defaults
-            conditions = standardized.get('conditions', {})
-            if not conditions or not isinstance(conditions, dict):
-                conditions = {
-                    'weather': 'Not specified',
-                    'traffic': 'Not specified'
-                }
-                
-                # Try to extract conditions information from various fields
-                if 'weather_conditions' in standardized:
-                    conditions['weather'] = standardized['weather_conditions']
-                if 'traffic_conditions' in standardized:
-                    conditions['traffic'] = standardized['traffic_conditions']
-            
-            # Add key information to the notes section
-            if 'weather' in conditions and conditions['weather'] != 'Not specified':
-                notes.append(f"Weather: {conditions['weather']}")
-            if 'traffic' in conditions and conditions['traffic'] != 'Not specified':
-                notes.append(f"Traffic: {conditions['traffic']}")
-            if 'estimated_time' in transport_details and transport_details['estimated_time'] != 'Not specified':
-                notes.append(f"Est. Transport Time: {transport_details['estimated_time']}")
-            
-            # Create and return the recommendation with all required fields
-            print(f"===== CREATING FINAL RECOMMENDATION =====\nCampus: {campus_name}\nConfidence: {confidence}\nReason: {final_reason[:50]}...")
-            logger.info(f"Creating Recommendation with transport_details and conditions fields")
-            return Recommendation(
-                transfer_request_id="llm_generated",  # This will be updated by the caller
-                recommended_campus_id=campus_name,
-                recommended_level_of_care=care_level_display,  # Explicitly set the care level
-                confidence_score=confidence,
-                reason=final_reason,
-                clinical_reasoning=final_reason,  # Set both reason and clinical_reasoning
-                notes=notes,
-                transport_details=transport_details,  # Add transport details for the transport tab
-                conditions=conditions,  # Add conditions data for the conditions tab
-                explainability_details=standardized,  # Use the standardized data
-            )
+            return recommendation_obj
 
         except Exception as e:
-            logger.error(f"Error processing LLM recommendation: {str(e)}")
+            logger.error(f"Error converting standardized JSON to Recommendation object: {str(e)}", exc_info=True)
             return Recommendation(
-                transfer_request_id="error",
-                recommended_campus_id="ERROR",
-                confidence_score=10.0,  # Low confidence for error conditions
-                reason=f"Error processing recommendation: {str(e)}",
-                notes=["LLM processing error"],
-                explainability_details={"error": str(e)}
+                transfer_request_id="error_conversion",
+                recommended_campus_id="ERROR_CONVERSION",
+                recommended_campus_name="Error During Model Conversion",
+                confidence_score=10.0,
+                reason=f"Error converting LLM data to Recommendation model: {str(e)}",
+                explainability_details=LLMReasoningDetails(
+                    main_recommendation_reason=f"Data conversion error: {str(e)}"
+                )
             )
 
     def _build_recommendation_prompt(

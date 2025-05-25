@@ -482,16 +482,9 @@ class Recommendation(BaseModel):
         default_factory=dict,
         description="Current conditions affecting transport such as weather and traffic."
     )
-    explainability_details: Dict[str, Any] = Field(
-        default_factory=lambda: {
-            "factors_considered": [],
-            "alternative_options": [],
-            "decision_points": [],
-            "score_utilization": {},
-            "distance_factors": {},
-            "exclusion_reasons": {}
-        },
-        description="Detailed factors contributing to the recommendation."
+    explainability_details: "LLMReasoningDetails" = Field(
+        default_factory=lambda: LLMReasoningDetails(main_recommendation_reason="No specific reason provided."),
+        description="Detailed LLM reasoning contributing to the recommendation."
     )
     notes: List[str] = Field(
         default_factory=list,
@@ -511,42 +504,61 @@ class Recommendation(BaseModel):
             return 100.0
         return result
     
+    # @validator("explainability_details", pre=True, always=True)
+    # def ensure_explainability_details(cls, v, values):
+    #     """Ensure explainability_details is an instance of LLMReasoningDetails or can be converted."""
+    #     if isinstance(v, LLMReasoningDetails):
+    #         return v
+    #     if isinstance(v, dict):
+    #         try:
+    #             # Ensure 'main_recommendation_reason' is present if creating from dict
+    #             if "main_recommendation_reason" not in v:
+    #                 # Provide a default if it's missing and other legacy fields are present
+    #                 if any(key in v for key in ["factors_considered", "alternative_options"]): # Heuristic for legacy
+    #                     v["main_recommendation_reason"] = "Reason not explicitly provided by LLM."
+    #                 # If it's a new-style dict missing the required field, this will fail as intended
+    #             return LLMReasoningDetails(**v)
+    #         except ValidationError as e: # Catch Pydantic validation error
+    #             # If conversion fails, return a default LLMReasoningDetails instance
+    #             # This path is taken if critical fields like main_recommendation_reason are missing
+    #             # and it's not clearly a legacy structure being auto-converted.
+    #             # Log the error for debugging.
+    #             print(f"Warning: Failed to parse explainability_details: {e}. Using default.")
+    #             return LLMReasoningDetails(main_recommendation_reason="Could not parse LLM reasoning.")
+    #     # If v is None or any other type, return a default instance
+    #     if v is None and not values.get('explainability_details_validated'): # Avoid recursion if already tried
+    #         return LLMReasoningDetails(main_recommendation_reason="No LLM reasoning provided.")
+        
+    #     # Fallback for unexpected types or if validation has already been attempted
+    #     return LLMReasoningDetails(main_recommendation_reason="Invalid or missing LLM reasoning structure.")
+
     @validator("explainability_details", pre=True, always=True)
     def ensure_explainability_details(cls, v):
-        """Ensure explainability_details has a valid structure."""
-        # Create default structure
-        default_structure = {
-            "factors_considered": [],
-            "alternative_options": [],
-            "decision_points": [],
-            "score_utilization": {},
-            "distance_factors": {},
-            "exclusion_reasons": {}
-        }
-        
-        # If None, return default structure
-        if v is None:
-            return default_structure
-        
-        # Ensure v is a dictionary
-        if not isinstance(v, dict):
-            return default_structure
-        
-        # Ensure all required keys exist
-        default_keys = [
-            "factors_considered", "alternative_options", "decision_points",
-            "score_utilization", "distance_factors", "exclusion_reasons"
-        ]
-        
-        for key in default_keys:
-            if key not in v:
-                if key in ["factors_considered", "alternative_options", "decision_points"]:
-                    v[key] = []
-                else:
-                    v[key] = {}
-        
-        return v
-    
+        if isinstance(v, LLMReasoningDetails):
+            return v
+        if isinstance(v, dict):
+            # Attempt to gracefully handle old structure vs new structure.
+            # If 'main_recommendation_reason' is present, assume it's new.
+            # Otherwise, provide a default for the new required field.
+            if "main_recommendation_reason" not in v and \
+               any(k in v for k in ["factors_considered", "alternative_options", "decision_points", "score_utilization", "distance_factors", "exclusion_reasons"]):
+                # This looks like the old dictionary structure.
+                # We'll create a default LLMReasoningDetails and try to map old fields later if necessary,
+                # or simply accept that the old fields won't map directly.
+                # For now, just ensuring the new model can be initialized.
+                return LLMReasoningDetails(
+                    main_recommendation_reason="Primary reason not specified in new format.",
+                    key_factors_considered=v.get("factors_considered", []),
+                    # Note: 'alternative_reasons' needs specific mapping if old 'alternative_options' was structured differently
+                )
+            try:
+                return LLMReasoningDetails(**v)
+            except Exception: # Broad exception to catch Pydantic errors during parsing
+                # If parsing fails (e.g. missing main_recommendation_reason in a dict that's not the old format)
+                return LLMReasoningDetails(main_recommendation_reason="Could not parse LLM reasoning.")
+        # If it's None or some other incompatible type, return a default.
+        return LLMReasoningDetails(main_recommendation_reason="No LLM reasoning provided.")
+
     @property
     def has_transport_weather_info(self) -> bool:
         """Check if the recommendation has weather information for transport."""
@@ -581,20 +593,59 @@ class Recommendation(BaseModel):
             return self.recommended_level_of_care
         
         # Try to infer from explainability details
-        factors = self.explainability_details.get("factors_considered", [])
-        for factor in factors:
-            if isinstance(factor, str) and any(level in factor.upper() for level in ["ICU", "PICU", "NICU", "CRITICAL"]):
-                if "PICU" in factor.upper():
-                    self.recommended_level_of_care = "PICU"
-                elif "NICU" in factor.upper():
-                    self.recommended_level_of_care = "NICU"
-                elif "ICU" in factor.upper() or "CRITICAL" in factor.upper():
-                    self.recommended_level_of_care = "ICU"
-                return self.recommended_level_of_care
+        if isinstance(self.explainability_details, LLMReasoningDetails) and self.explainability_details.key_factors_considered:
+            factors = self.explainability_details.key_factors_considered
+            for factor in factors:
+                if isinstance(factor, str) and any(level in factor.upper() for level in ["ICU", "PICU", "NICU", "CRITICAL"]):
+                    if "PICU" in factor.upper():
+                        self.recommended_level_of_care = "PICU"
+                    elif "NICU" in factor.upper():
+                        self.recommended_level_of_care = "NICU"
+                    elif "ICU" in factor.upper() or "CRITICAL" in factor.upper():
+                        self.recommended_level_of_care = "ICU"
+                    return self.recommended_level_of_care
         
         return self.recommended_level_of_care
 
 
+class LLMReasoningDetails(BaseModel):
+    """Standardized schema for LLM reasoning and explainability."""
+
+    main_recommendation_reason: str = Field(
+        ..., description="Primary reason for the top recommendation."
+    )
+    alternative_reasons: Optional[Dict[str, str]] = Field(
+        default_factory=dict,
+        description="Reasons why other hospitals were considered but not chosen, mapping hospital ID/name to reason string.",
+    )
+    key_factors_considered: Optional[List[str]] = Field(
+        default_factory=list,
+        description="Key factors LLM considered (e.g., 'distance', 'specialty_match').",
+    )
+    confidence_explanation: Optional[str] = Field(
+        None, description="Brief explanation of the confidence score, if available."
+    )
+
+    # Ensure that default_factory is used correctly for mutable types
+    @validator("alternative_reasons", "key_factors_considered", pre=True, always=True)
+    def ensure_defaults(cls, v, field):
+        if v is None:
+            return field.default_factory() if field.default_factory else field.default
+        return v
+
+
 # Pydantic v2 automatically handles forward references like List["HelipadData"]
-# if they are defined as string literals in type hints.
-# No explicit update_forward_refs() call is needed.
+# and "LLMReasoningDetails" if they are defined as string literals in type hints
+# or if the class is already defined before being referenced.
+# No explicit update_forward_refs() call is needed if LLMReasoningDetails is defined before Recommendation,
+# or if "LLMReasoningDetails" is used as a string hint.
+# For clarity and to avoid potential issues with linters/type checkers if order changes,
+# it's often good practice to define models before they are referenced directly by type
+# or use forward references (string literals for type hints).
+
+# If Recommendation is defined before LLMReasoningDetails, you might need:
+# Recommendation.update_forward_refs()
+# However, with Pydantic v2 and the current ordering (LLMReasoningDetails after Recommendation,
+# but type hint is a string "LLMReasoningDetails"), this should be handled.
+# Let's ensure LLMReasoningDetails is defined before it's used or use string consistently.
+# The provided code uses a string hint, which is fine.

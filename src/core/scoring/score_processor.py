@@ -67,136 +67,149 @@ def extract_vital_signs(patient_data: PatientData) -> Dict[str, Any]:
 
     # Extract vital signs from extracted_data
     respiratory_rate = None
-    if "respiratory_rate" in patient_data.extracted_data:
+    # Standardize access to extracted_data, defaulting to an empty dict if not present
+    extracted_data = patient_data.extracted_data if patient_data.extracted_data is not None else {}
+
+    if "respiratory_rate" in extracted_data:
         try:
-            respiratory_rate = float(patient_data.extracted_data["respiratory_rate"])
+            respiratory_rate = float(extracted_data["respiratory_rate"])
         except (ValueError, TypeError):
             pass
     elif (
-        "vital_signs" in patient_data.extracted_data
-        and "respiratory_rate" in patient_data.extracted_data["vital_signs"]
+        "vital_signs" in extracted_data
+        and isinstance(extracted_data["vital_signs"], dict)
+        and "respiratory_rate" in extracted_data["vital_signs"]
     ):
         try:
             respiratory_rate = float(
-                patient_data.extracted_data["vital_signs"]["respiratory_rate"]
+                extracted_data["vital_signs"]["respiratory_rate"]
             )
         except (ValueError, TypeError):
             pass
 
     # Extract heart rate
     heart_rate = None
-    if "heart_rate" in patient_data.extracted_data:
+    if "heart_rate" in extracted_data:
         try:
-            heart_rate = float(patient_data.extracted_data["heart_rate"])
+            heart_rate = float(extracted_data["heart_rate"])
         except (ValueError, TypeError):
             pass
     elif (
-        "vital_signs" in patient_data.extracted_data
-        and "heart_rate" in patient_data.extracted_data["vital_signs"]
+        "vital_signs" in extracted_data
+        and isinstance(extracted_data["vital_signs"], dict)
+        and "heart_rate" in extracted_data["vital_signs"]
     ):
         try:
-            heart_rate = float(patient_data.extracted_data["vital_signs"]["heart_rate"])
+            heart_rate = float(extracted_data["vital_signs"]["heart_rate"])
         except (ValueError, TypeError):
             pass
 
     # Extract blood pressure
     systolic_bp = None
     diastolic_bp = None
-    if "systolic_bp" in patient_data.extracted_data:
+    if "systolic_bp" in extracted_data:
         try:
-            systolic_bp = float(patient_data.extracted_data["systolic_bp"])
+            systolic_bp = float(extracted_data["systolic_bp"])
         except (ValueError, TypeError):
             pass
     elif (
-        "vital_signs" in patient_data.extracted_data
-        and "systolic_bp" in patient_data.extracted_data["vital_signs"]
+        "vital_signs" in extracted_data
+        and isinstance(extracted_data["vital_signs"], dict)
+        and "systolic_bp" in extracted_data["vital_signs"]
     ):
         try:
             systolic_bp = float(
-                patient_data.extracted_data["vital_signs"]["systolic_bp"]
+                extracted_data["vital_signs"]["systolic_bp"]
             )
         except (ValueError, TypeError):
             pass
 
-    if "diastolic_bp" in patient_data.extracted_data:
+    if "diastolic_bp" in extracted_data:
         try:
-            diastolic_bp = float(patient_data.extracted_data["diastolic_bp"])
+            diastolic_bp = float(extracted_data["diastolic_bp"])
         except (ValueError, TypeError):
             pass
     elif (
-        "vital_signs" in patient_data.extracted_data
-        and "diastolic_bp" in patient_data.extracted_data["vital_signs"]
+        "vital_signs" in extracted_data
+        and isinstance(extracted_data["vital_signs"], dict)
+        and "diastolic_bp" in extracted_data["vital_signs"]
     ):
         try:
             diastolic_bp = float(
-                patient_data.extracted_data["vital_signs"]["diastolic_bp"]
+                extracted_data["vital_signs"]["diastolic_bp"]
             )
         except (ValueError, TypeError):
             pass
 
     # Extract oxygen saturation
     oxygen_saturation = None
-    if "oxygen_saturation" in patient_data.extracted_data:
+    if "oxygen_saturation" in extracted_data:
         try:
-            oxygen_saturation = float(patient_data.extracted_data["oxygen_saturation"])
+            oxygen_saturation = float(extracted_data["oxygen_saturation"])
         except (ValueError, TypeError):
             pass
     elif (
-        "vital_signs" in patient_data.extracted_data
-        and "oxygen_saturation" in patient_data.extracted_data["vital_signs"]
+        "vital_signs" in extracted_data
+        and isinstance(extracted_data["vital_signs"], dict)
+        and "oxygen_saturation" in extracted_data["vital_signs"]
     ):
         try:
             oxygen_saturation = float(
-                patient_data.extracted_data["vital_signs"]["oxygen_saturation"]
+                extracted_data["vital_signs"]["oxygen_saturation"]
             )
         except (ValueError, TypeError):
             pass
     elif (
-        "vital_signs" in patient_data.extracted_data
-        and "spo2" in patient_data.extracted_data["vital_signs"]
+        "vital_signs" in extracted_data
+        and isinstance(extracted_data["vital_signs"], dict)
+        and "spo2" in extracted_data["vital_signs"]
     ):
         try:
             oxygen_saturation = float(
-                patient_data.extracted_data["vital_signs"]["spo2"]
+                extracted_data["vital_signs"]["spo2"]
             )
         except (ValueError, TypeError):
             pass
 
-    # Extract respiratory effort, oxygen requirement from clinical text
-    respiratory_effort = None
+    # Extract respiratory effort, oxygen requirement from clinical text or structured fields
+    respiratory_effort = extracted_data.get("respiratory_effort")
     oxygen_requirement = None
 
     # Simple parsing of respiratory effort
     resp_terms = ["respiratory effort", "work of breathing", "breathing effort"]
-    # First check if it's explicitly mentioned in the clinical text
-    if (
-        "respiratory effort is increased" in clinical_text.lower()
-        or "increased work of breathing" in clinical_text.lower()
-    ):
-        respiratory_effort = "increased"
-    else:
-        # More generic search
-        for term in resp_terms:
-            if term in clinical_text.lower():
-                text_lower = clinical_text.lower()
-                idx = text_lower.find(term)
-                if idx >= 0:
-                    # Check for common descriptors near the term
-                    window_text = text_lower[max(0, idx - 30) : idx + 40]
-                    for desc in [
-                        "normal",
-                        "mild",
-                        "moderate",
-                        "severe",
-                        "increased",
-                        "labored",
-                    ]:
-                        if desc in window_text:
-                            respiratory_effort = desc
-                            break
+    if not respiratory_effort: # If not directly provided in extracted_data
+        resp_terms = ["respiratory effort", "work of breathing", "breathing effort"]
+        # First check if it's explicitly mentioned in the clinical text
+        if (
+            "respiratory effort is increased" in clinical_text.lower()
+            or "increased work of breathing" in clinical_text.lower()
+        ):
+            respiratory_effort = "increased"
+        else:
+            # More generic search
+            for term in resp_terms:
+                if term in clinical_text.lower():
+                    text_lower = clinical_text.lower()
+                    idx = text_lower.find(term)
+                    if idx >= 0:
+                        # Check for common descriptors near the term
+                        window_text = text_lower[max(0, idx - 30) : idx + 40]
+                        for desc in [
+                            "normal",
+                            "mild",
+                            "moderate",
+                            "severe",
+                            "increased",
+                            "labored",
+                        ]:
+                            if desc in window_text:
+                                respiratory_effort = desc
+                                break
+                    if respiratory_effort: break # Found it
 
-    # Simple parsing of oxygen requirement
-    oxygen_terms = ["oxygen", "o2", "ventilat", "intubat", "nasal cannula", "high flow"]
+    oxygen_requirement = extracted_data.get("oxygen_requirement")
+    if not oxygen_requirement: # If not directly provided
+        oxygen_terms = ["oxygen", "o2", "ventilat", "intubat", "nasal cannula", "high flow", "room air"]
     for term in oxygen_terms:
         if term in clinical_text.lower():
             text_lower = clinical_text.lower()
@@ -212,17 +225,18 @@ def extract_vital_signs(patient_data: PatientData) -> Dict[str, Any]:
 
     # Extract neurological parameters
     gcs = None
-    if "gcs" in patient_data.extracted_data:
+    if "gcs" in extracted_data:
         try:
-            gcs = int(patient_data.extracted_data["gcs"])
+            gcs = int(extracted_data["gcs"])
         except (ValueError, TypeError):
             pass
     elif (
-        "vital_signs" in patient_data.extracted_data
-        and "gcs" in patient_data.extracted_data["vital_signs"]
+        "vital_signs" in extracted_data
+        and isinstance(extracted_data["vital_signs"], dict)
+        and "gcs" in extracted_data["vital_signs"]
     ):
         try:
-            gcs = int(patient_data.extracted_data["vital_signs"]["gcs"])
+            gcs = int(extracted_data["vital_signs"]["gcs"])
         except (ValueError, TypeError):
             pass
     else:
@@ -242,19 +256,13 @@ def extract_vital_signs(patient_data: PatientData) -> Dict[str, Any]:
                             break
                         except ValueError:
                             pass
+    
+    # Behavior / Mental Status (prioritize structured, then parse)
+    behavior = extracted_data.get("behavior") # For PEWS
+    mental_status = extracted_data.get("mental_status") # For TRAP, QLD
 
-    # Extract mental status
-    mental_status = None
-    if "mental_status" in patient_data.extracted_data:
-        mental_status = patient_data.extracted_data["mental_status"]
-    elif (
-        "vital_signs" in patient_data.extracted_data
-        and "mental_status" in patient_data.extracted_data["vital_signs"]
-    ):
-        mental_status = patient_data.extracted_data["vital_signs"]["mental_status"]
-    else:
-        # Try to extract from clinical text
-        status_terms = ["alert", "voice", "pain", "unresponsive", "avpu"]
+    if not behavior and not mental_status: # If neither is directly provided
+        status_terms = ["alert", "voice", "pain", "unresponsive", "avpu", "playing", "sleeping", "irritable", "lethargic"]
         for term in status_terms:
             if term in clinical_text.lower():
                 text_lower = clinical_text.lower()
@@ -268,20 +276,26 @@ def extract_vital_signs(patient_data: PatientData) -> Dict[str, Any]:
                     mental_status = "unresponsive"
                 break
 
+                    mental_status = desc # Use for both if found this way
+                    behavior = desc
+                    break
+            if mental_status: break # Found it
+
     # Extract capillary refill
     capillary_refill = None
-    if "capillary_refill" in patient_data.extracted_data:
+    if "capillary_refill" in extracted_data:
         try:
-            capillary_refill = float(patient_data.extracted_data["capillary_refill"])
+            capillary_refill = float(extracted_data["capillary_refill"])
         except (ValueError, TypeError):
             pass
     elif (
-        "vital_signs" in patient_data.extracted_data
-        and "capillary_refill" in patient_data.extracted_data["vital_signs"]
+        "vital_signs" in extracted_data
+        and isinstance(extracted_data["vital_signs"], dict)
+        and "capillary_refill" in extracted_data["vital_signs"]
     ):
         try:
             capillary_refill = float(
-                patient_data.extracted_data["vital_signs"]["capillary_refill"]
+                extracted_data["vital_signs"]["capillary_refill"]
             )
         except (ValueError, TypeError):
             pass
@@ -307,25 +321,33 @@ def extract_vital_signs(patient_data: PatientData) -> Dict[str, Any]:
 
     # Build and return the vitals dictionary
     weight_kg = None
-    if "weight_kg" in patient_data.extracted_data:
+    if "weight_kg" in extracted_data:
         try:
-            weight_kg = float(patient_data.extracted_data["weight_kg"])
+            weight_kg = float(extracted_data["weight_kg"])
         except (ValueError, TypeError):
             pass
+    
+    # TRAP specific fields (placeholders for now, as they require more complex NLP or structured input)
+    hemodynamic_stability = extracted_data.get("hemodynamic_stability") # Could be 'stable', 'compensated', 'unstable'
+    access_difficulty = extracted_data.get("access_difficulty") # Could be 'easy', 'moderate', 'difficult'
+
 
     vitals = {
         "age_months": age_months,
         "respiratory_rate": respiratory_rate,
-        "respiratory_effort": respiratory_effort,
-        "oxygen_requirement": oxygen_requirement,
+        "respiratory_effort": respiratory_effort, # Used by PEWS, TRAP (as work_of_breathing)
+        "oxygen_requirement": oxygen_requirement, # Used by PEWS, TRAP (as respiratory_support), CHEWS (as oxygen_therapy)
         "oxygen_saturation": oxygen_saturation,
         "heart_rate": heart_rate,
         "systolic_bp": systolic_bp,
         "diastolic_bp": diastolic_bp,
         "gcs": gcs,
-        "mental_status": mental_status,
+        "mental_status": mental_status, # Used by TRAP (as neuro_status), QLD
+        "behavior": behavior, # Used by PEWS
         "capillary_refill": capillary_refill,
         "weight_kg": weight_kg,
+        "hemodynamic_stability": hemodynamic_stability, # For TRAP
+        "access_difficulty": access_difficulty,       # For TRAP
     }
 
     return vitals

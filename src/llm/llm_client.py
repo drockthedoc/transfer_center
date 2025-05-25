@@ -16,6 +16,9 @@ import requests
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Import the structured LLM interaction logger
+from src.llm.llm_logging import get_llm_logger
+
 
 class LLMClient:
     """
@@ -33,6 +36,7 @@ class LLMClient:
         """
         self.provider = provider
         self.api_key = api_key or os.environ.get(f"{provider.upper()}_API_KEY")
+        self.interaction_logger = get_llm_logger() # Get the structured logger
 
         if not self.api_key:
             logger.warning(
@@ -146,13 +150,35 @@ class LLMClient:
             "temperature": temperature,
         }
 
-        response = requests.post(url, headers=self.config["headers"], json=payload)
-
-        if response.status_code == 200:
-            return response.json()["choices"][0]["message"]["content"]
-        else:
-            logger.error(f"OpenAI API error: {response.status_code} - {response.text}")
-            raise Exception(f"OpenAI API error: {response.status_code}")
+        response_content = None
+        error_message = None
+        success = False
+        
+        try:
+            response = requests.post(url, headers=self.config["headers"], json=payload)
+            response.raise_for_status()  # Raises an HTTPError for bad responses (4XX or 5XX)
+            response_content = response.json()["choices"][0]["message"]["content"]
+            success = True
+        except requests.exceptions.RequestException as e:
+            logger.error(f"OpenAI API request failed: {e}")
+            error_message = str(e)
+            raise  # Re-raise the exception to be handled by the calling method
+        except (KeyError, IndexError) as e:
+            logger.error(f"Failed to parse OpenAI response: {e}. Response: {response.text[:200]}")
+            error_message = f"Failed to parse OpenAI response: {e}"
+            raise Exception(error_message) # Re-raise as a generic exception
+        finally:
+            self.interaction_logger.log_interaction(
+                component="LLMClient",
+                method="_generate_openai",
+                input_data={"prompt": prompt, "payload": payload}, # Log the original prompt and the full payload
+                output_data=response_content if success else None,
+                model=self.config["model"],
+                success=success,
+                error=error_message,
+                metadata={"provider": "openai", "status_code": response.status_code if 'response' in locals() else None}
+            )
+        return response_content
 
     def _generate_anthropic(
         self, prompt: str, max_tokens: int = 2000, temperature: float = 0.0
@@ -177,15 +203,35 @@ class LLMClient:
             "temperature": temperature,
         }
 
-        response = requests.post(url, headers=self.config["headers"], json=payload)
+        response_content = None
+        error_message = None
+        success = False
 
-        if response.status_code == 200:
-            return response.json()["content"][0]["text"]
-        else:
-            logger.error(
-                f"Anthropic API error: {response.status_code} - {response.text}"
+        try:
+            response = requests.post(url, headers=self.config["headers"], json=payload)
+            response.raise_for_status()
+            response_content = response.json()["content"][0]["text"]
+            success = True
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Anthropic API request failed: {e}")
+            error_message = str(e)
+            raise
+        except (KeyError, IndexError) as e:
+            logger.error(f"Failed to parse Anthropic response: {e}. Response: {response.text[:200]}")
+            error_message = f"Failed to parse Anthropic response: {e}"
+            raise Exception(error_message)
+        finally:
+            self.interaction_logger.log_interaction(
+                component="LLMClient",
+                method="_generate_anthropic",
+                input_data={"prompt": prompt, "payload": payload},
+                output_data=response_content if success else None,
+                model=self.config["model"],
+                success=success,
+                error=error_message,
+                metadata={"provider": "anthropic", "status_code": response.status_code if 'response' in locals() else None}
             )
-            raise Exception(f"Anthropic API error: {response.status_code}")
+        return response_content
 
 
 def get_llm_client(provider: str = None) -> LLMClient:

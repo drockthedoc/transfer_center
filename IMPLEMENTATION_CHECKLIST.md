@@ -142,23 +142,23 @@ This document provides a prioritized and focused checklist for implementing and 
 
 ## 6. Core Data Model Fixes (Critical)
 
-- [ ] **TransferRequest Model**
-  - [ ] Fix transport_info dictionary usage for extended data
-  - [ ] Ensure clinical_text, scoring_results, and human_suggestions are properly stored
-  - [ ] Add validation for required fields
-  - [ ] Implement defensive attribute access
+- [x] **TransferRequest Model**
+  - [x] Fix transport_info dictionary usage for extended data
+  - [x] Ensure clinical_text, scoring_results, and human_suggestions are properly stored
+  - [x] Add validation for required fields (Pydantic handles this)
+  - [x] Implement defensive attribute access
 
-- [ ] **Recommendation Model**
-  - [ ] Ensure all UI-required fields are defined and populated
-  - [ ] Properly implement transport_details and conditions fields
-  - [ ] Add explainability_details with all reasoning components
-  - [ ] Include recommended_level_of_care with proper inference
+- [x] **Recommendation Model**
+  - [x] Ensure all UI-required fields are defined and populated
+  - [x] Properly implement transport_details and conditions fields
+  - [x] Add explainability_details with all reasoning components
+  - [x] Include recommended_level_of_care with proper inference
 
-- [ ] **HospitalCampus Model**
-  - [ ] Complete essential fields (campus_id, name, location)
-  - [ ] Add care_levels and specialties as standard fields
-  - [ ] Implement simple distance calculation methods
-  - [ ] Ensure proper serialization/deserialization
+- [x] **HospitalCampus Model**
+  - [x] Complete essential fields (campus_id, name, location)
+  - [x] Add care_levels and specialties as standard fields
+  - [x] Implement simple distance calculation methods (Haversine formula)
+  - [x] Ensure proper serialization/deserialization (Pydantic handles this)
 
 ## 7. De-Prioritized Features (Future Enhancements)
 

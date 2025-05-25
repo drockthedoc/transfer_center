@@ -35,15 +35,16 @@ class LLMLogger:
         
         # Create log directory if it doesn't exist
         if log_dir is None:
-            self.log_dir = Path("logs/llm")
+            # Use the specified directory structure
+            self.log_dir = Path("logs/llm_interactions")
         else:
             self.log_dir = Path(log_dir)
             
         self.log_dir.mkdir(parents=True, exist_ok=True)
         
-        # Create the log file with date-time stamp
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.log_file = self.log_dir / f"llm_interactions_{timestamp}.log"
+        # Create the log file with the specified date-time stamp format
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.log_file = self.log_dir / f"{timestamp}_interaction.log"
         
         # Track interaction count for the session
         self.interaction_count = 0

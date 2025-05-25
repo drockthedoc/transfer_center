@@ -57,9 +57,9 @@ cover/
 
 # Django stuff:
 # Allow logs directory but ignore other log files
-*.log
-!logs/
-!logs/**/*.log
+# *.log <-- This was too general, let's be more specific or remove if not needed elsewhere
+# !logs/ <-- This un-ignores the logs directory
+# !logs/**/*.log <-- This un-ignores specific log files
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -200,3 +200,11 @@ ies to
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Application-specific log files
+logs/
+# If you want to commit the general 'logs' directory but not 'llm_interactions':
+# !logs/*
+# !logs/llm_interactions/ # This would re-include it if logs/ was ignored.
+# To specifically ignore llm_interactions:
+logs/llm_interactions/

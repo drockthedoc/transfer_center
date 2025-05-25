@@ -27,35 +27,31 @@ class TestScoreProcessor(unittest.TestCase):
     @patch('src.core.scoring.score_processor.calculate_prism3')
     def test_process_all_scores(self, mock_prism, mock_cameo, mock_trap, mock_pews):
         """Test processing of all pediatric severity scores"""
-        # Mock score calculations
+        # Mock score calculations - ensuring they match the actual detailed structure
         mock_pews.return_value = {
-            "score": 7,
-            "interpretation": "High Risk",
-            "action": "Immediate PICU transfer",
-            "subscores": {"respiratory": 3, "cardiovascular": 2, "behavior": 2}
+            "score": 7, "interpretation": "High Risk", "action": "Immediate PICU transfer",
+            "subscores": {"respiratory": 3, "cardiovascular": 2, "behavior": 2},
+            "normal_ranges": {"heart_rate": "100-180", "respiratory_rate": "30-60"}
         }
         
         mock_trap.return_value = {
-            "score": 8,
-            "risk_level": "High Risk",
-            "transport_recommendation": "Critical Care Team",
+            "score": 8, "risk_level": "High Risk", "transport_recommendation": "Critical Care Team",
             "subscores": {"respiratory": 3, "hemodynamic": 2, "neurologic": 2, "access": 1}
         }
         
+        # For CAMEO and PRISM, we can keep the existing mocks as they are not the focus of this subtask
         mock_cameo.return_value = {
-            "score": 12,
-            "acuity_level": "High",
-            "nurse_ratio": "1:1",
-            "subscores": {"physiologic": 5, "interventions": 4, "nursing": 3}
+            "score": 12, "acuity_level": "High", "staffing_recommendation": "1:1", # Matched key from implementation
+            "subscores": {"physiologic_instability": 5, "respiratory_support": 4, "nursing_dependency": 3} # Example subscore keys
         }
         
         mock_prism.return_value = {
-            "score": 9,
-            "mortality_risk": "Medium",
-            "subscores": {"cardiovascular": 3, "neurologic": 2, "chemistry": 2, "hematology": 2}
+            "score": 9, "interpretation": "Medium Risk", # Matched key from implementation
+            "subscores": {"cardiovascular": 3, "neurological": 2, "acid_base": 2, "chemistry": 1, "hematologic":1 } # Example subscore keys
         }
         
-        # Test data
+        # Test data - simplified as extract_vital_signs will be mocked or tested separately
+        # The key is that calculate_all_scores correctly passes through what it gets.
         patient_data = {
             "age_months": 36,
             "vital_signs": {
@@ -117,23 +113,27 @@ class TestScoreProcessor(unittest.TestCase):
         mock_prism.reset_mock()
         
         # Set up PEWS to return valid score but others to indicate missing data
+        # Ensure the mocked PEWS return matches its actual detailed structure
         mock_pews.return_value = {
-            "score": 5,
-            "interpretation": "Medium Risk"
+            "score": 5, "interpretation": "Medium Risk", "action": "Frequent monitoring",
+            "subscores": {"respiratory": 2, "cardiovascular": 2, "behavior": 1},
+            "normal_ranges": {"heart_rate": "100-180", "respiratory_rate": "30-60"}
         }
         
+        # Ensure the mocked TRAP return matches its actual detailed structure
         mock_trap.return_value = {
-            "score": "N/A",
-            "missing_parameters": ["hemodynamic_status", "neurologic_status"]
+            "score": "N/A", "risk_level": "N/A", "transport_recommendation": "N/A",
+            "missing_parameters": ["hemodynamic_status", "neurologic_status"],
+            "subscores": {"respiratory": "N/A", "hemodynamic": "N/A", "neurologic": "N/A", "access": "N/A"}
         }
         
-        mock_cameo.return_value = {
-            "score": "N/A",
+        mock_cameo.return_value = { # CAMEO and PRISM mocks can remain simpler if not focus
+            "score": "N/A", "acuity_level": "N/A", "staffing_recommendation": "N/A",
             "missing_parameters": ["interventions", "nursing_dependency"]
         }
         
-        mock_prism.return_value = {
-            "score": "N/A",
+        mock_prism.return_value = { # CAMEO and PRISM mocks can remain simpler if not focus
+            "score": "N/A", "interpretation": "N/A",
             "missing_parameters": ["labs", "blood_pressure"]
         }
         

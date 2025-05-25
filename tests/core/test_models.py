@@ -24,7 +24,115 @@ from src.core.models import (
     Specialty,
     TransferRequest,
     TransportMode,
+    LLMReasoningDetails,
 )
+
+
+class TestLLMReasoningDetails(unittest.TestCase):
+    """Tests for the LLMReasoningDetails model."""
+
+    def test_instantiation_all_fields(self):
+        """Test creating an instance with all fields populated."""
+        data = {
+            "main_recommendation_reason": "Primary reason",
+            "alternative_reasons": {"CampusA": "Reason A", "CampusB": "Reason B"},
+            "key_factors_considered": ["Factor1", "Factor2"],
+            "confidence_explanation": "High confidence due to match.",
+        }
+        details = LLMReasoningDetails(**data)
+        self.assertEqual(details.main_recommendation_reason, data["main_recommendation_reason"])
+        self.assertEqual(details.alternative_reasons, data["alternative_reasons"])
+        self.assertEqual(details.key_factors_considered, data["key_factors_considered"])
+        self.assertEqual(details.confidence_explanation, data["confidence_explanation"])
+
+    def test_instantiation_required_only(self):
+        """Test creating an instance with only required fields."""
+        # main_recommendation_reason is the only strictly required field in the definition
+        data = {"main_recommendation_reason": "Only primary reason"}
+        details = LLMReasoningDetails(**data)
+        self.assertEqual(details.main_recommendation_reason, data["main_recommendation_reason"])
+        self.assertEqual(details.alternative_reasons, {}) # default_factory
+        self.assertEqual(details.key_factors_considered, []) # default_factory
+        self.assertIsNone(details.confidence_explanation)
+
+    def test_instantiation_empty_optionals(self):
+        """Test creating an instance with empty optional collections."""
+        data = {
+            "main_recommendation_reason": "Reason",
+            "alternative_reasons": {},
+            "key_factors_considered": [],
+            "confidence_explanation": None,
+        }
+        details = LLMReasoningDetails(**data)
+        self.assertEqual(details.main_recommendation_reason, "Reason")
+        self.assertEqual(details.alternative_reasons, {})
+        self.assertEqual(details.key_factors_considered, [])
+        self.assertIsNone(details.confidence_explanation)
+
+    def test_serialization_deserialization(self):
+        """Test model_dump and model_validate."""
+        data = {
+            "main_recommendation_reason": "Test Reason",
+            "alternative_reasons": {"CampusX": "Reason X"},
+            "key_factors_considered": ["Distance", "Specialty"],
+            "confidence_explanation": "Moderate confidence.",
+        }
+        details_orig = LLMReasoningDetails(**data)
+        
+        # Test model_dump
+        dumped_data = details_orig.model_dump()
+        self.assertEqual(dumped_data, data)
+        
+        # Test model_validate
+        details_new = LLMReasoningDetails.model_validate(data)
+        self.assertEqual(details_new, details_orig)
+
+        # Test with missing optional fields
+        minimal_data = {"main_recommendation_reason": "Minimal Reason"}
+        details_minimal = LLMReasoningDetails.model_validate(minimal_data)
+        self.assertEqual(details_minimal.main_recommendation_reason, "Minimal Reason")
+        self.assertEqual(details_minimal.alternative_reasons, {})
+        self.assertEqual(details_minimal.key_factors_considered, [])
+        self.assertIsNone(details_minimal.confidence_explanation)
+
+    def test_default_factory_behavior(self):
+        """Ensure default_factory creates new collections for each instance."""
+        details1 = LLMReasoningDetails(main_recommendation_reason="Reason 1")
+        details2 = LLMReasoningDetails(main_recommendation_reason="Reason 2")
+        
+        self.assertEqual(details1.alternative_reasons, {})
+        self.assertEqual(details1.key_factors_considered, [])
+        
+        details1.alternative_reasons["Test"] = "Reason"
+        details1.key_factors_considered.append("Factor")
+        
+        # Check that details2 was not affected
+        self.assertEqual(details2.alternative_reasons, {})
+        self.assertEqual(details2.key_factors_considered, [])
+        self.assertNotEqual(details1.alternative_reasons, details2.alternative_reasons)
+        self.assertNotEqual(details1.key_factors_considered, details2.key_factors_considered)
+
+    def test_validator_ensure_defaults(self):
+        """Test the ensure_defaults validator for mutable types."""
+        # Test that None values are converted to default factories
+        details_none = LLMReasoningDetails(
+            main_recommendation_reason="Test None",
+            alternative_reasons=None,
+            key_factors_considered=None
+        )
+        self.assertEqual(details_none.alternative_reasons, {})
+        self.assertEqual(details_none.key_factors_considered, [])
+
+        # Test that provided values are kept
+        alt_reasons = {"CampusY": "Reason Y"}
+        key_factors = ["FactorA"]
+        details_provided = LLMReasoningDetails(
+            main_recommendation_reason="Test Provided",
+            alternative_reasons=alt_reasons,
+            key_factors_considered=key_factors
+        )
+        self.assertEqual(details_provided.alternative_reasons, alt_reasons)
+        self.assertEqual(details_provided.key_factors_considered, key_factors)
 
 
 class TestTransferRequest(unittest.TestCase):
@@ -378,10 +486,8 @@ class TestHospitalCampus(unittest.TestCase):
             bed_census=BedCensus(
                 total_beds=100,
                 available_beds=20,
-                icu_beds_total=20,
-                icu_beds_available=5,
-                picu_beds_total=10,
-                picu_beds_available=3,
+                icu_beds_total=20,  # Includes PICU
+                icu_beds_available=5, # Includes PICU
                 nicu_beds_total=15,
                 nicu_beds_available=2,
             ),

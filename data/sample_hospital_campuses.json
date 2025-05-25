@@ -57,7 +57,9 @@
       "icu_beds_total": 159,
       "icu_beds_available": 5,
       "nicu_beds_total": 101,
-      "nicu_beds_available": 1
+      "nicu_beds_available": 1,
+      "last_updated_source": "current_census.csv",
+      "last_updated_timestamp": "2025-05-25T08:57:57.180024+00:00"
     },
     "helipads": [
       {
@@ -132,7 +134,9 @@
       "icu_beds_total": 12,
       "icu_beds_available": 0,
       "nicu_beds_total": 15,
-      "nicu_beds_available": 2
+      "nicu_beds_available": 2,
+      "last_updated_source": "current_census.csv",
+      "last_updated_timestamp": "2025-05-25T08:57:57.180038+00:00"
     },
     "helipads": [
       {
@@ -219,7 +223,9 @@
       "icu_beds_total": 15,
       "icu_beds_available": 1,
       "nicu_beds_total": 0,
-      "nicu_beds_available": 0
+      "nicu_beds_available": 0,
+      "last_updated_source": "current_census.csv",
+      "last_updated_timestamp": "2025-05-25T08:57:57.180041+00:00"
     },
     "helipads": [
       {
@@ -305,7 +311,9 @@
       "icu_beds_total": 7,
       "icu_beds_available": 0,
       "nicu_beds_total": 11,
-      "nicu_beds_available": 0
+      "nicu_beds_available": 0,
+      "last_updated_source": "current_census.csv",
+      "last_updated_timestamp": "2025-05-25T08:57:57.180043+00:00"
     },
     "helipads": [
       {
@@ -379,7 +387,9 @@
       "icu_beds_total": 4,
       "icu_beds_available": 1,
       "nicu_beds_total": 68,
-      "nicu_beds_available": 15
+      "nicu_beds_available": 15,
+      "last_updated_source": "current_census.csv",
+      "last_updated_timestamp": "2025-05-25T08:57:57.180044+00:00"
     },
     "helipads": [
       {

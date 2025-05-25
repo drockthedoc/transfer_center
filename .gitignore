@@ -201,10 +201,10 @@ ies to
 .cursorignore
 .cursorindexingignore
 
-# Application-specific log files
-logs/
+# Application-specific log files - temporarily allowing access
+# logs/
 # If you want to commit the general 'logs' directory but not 'llm_interactions':
 # !logs/*
 # !logs/llm_interactions/ # This would re-include it if logs/ was ignored.
 # To specifically ignore llm_interactions:
-logs/llm_interactions/
+# logs/llm_interactions/

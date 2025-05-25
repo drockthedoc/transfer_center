@@ -64,26 +64,21 @@ class PatientInfoWidget(QWidget):
         patient_group.setLayout(patient_layout)
         layout.addWidget(patient_group)
 
-        # Pediatric Score Details (PEWS) Group
+        # Pediatric Score Details (PEWS) Group - Hidden from GUI but kept for backend use
         self.pews_score_group = QGroupBox("Pediatric Score Details (PEWS)")
         pews_layout = QFormLayout()
         pews_layout.setContentsMargins(5, 5, 5, 5)
-        pews_layout.setVerticalSpacing(2)
-        pews_layout.setHorizontalSpacing(5)
-
+        
         self.lbl_pews_behavior = QLineEdit("N/A")
         self.lbl_pews_behavior.setReadOnly(True)
-        self.lbl_pews_behavior.setStyleSheet("background-color: #f0f0f0;")
         pews_layout.addRow("Behavior:", self.lbl_pews_behavior)
-
+        
         self.lbl_pews_cardiovascular = QLineEdit("N/A")
         self.lbl_pews_cardiovascular.setReadOnly(True)
-        self.lbl_pews_cardiovascular.setStyleSheet("background-color: #f0f0f0;")
         pews_layout.addRow("Cardiovascular:", self.lbl_pews_cardiovascular)
-
+        
         self.lbl_pews_respiratory = QLineEdit("N/A")
         self.lbl_pews_respiratory.setReadOnly(True)
-        self.lbl_pews_respiratory.setStyleSheet("background-color: #f0f0f0;")
         pews_layout.addRow("Respiratory:", self.lbl_pews_respiratory)
         
         self.lbl_pews_total = QLineEdit("N/A")
@@ -95,7 +90,11 @@ class PatientInfoWidget(QWidget):
         pews_layout.addRow("Total PEWS:", self.lbl_pews_total)
 
         self.pews_score_group.setLayout(pews_layout)
-        layout.addWidget(self.pews_score_group)
+        # Don't add to layout to hide from GUI
+        # layout.addWidget(self.pews_score_group)
+        
+        # Store scores internally without displaying
+        self.scoring_data = {}
 
     def get_patient_data(self):
         """Get the patient data from the widget."""

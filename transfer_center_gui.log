@@ -1,0 +1,735 @@
+2025-05-25 00:49:12,096 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 00:49:12,097 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 00:49:19,964 - src.gui.hospital_search - INFO - Loaded 13 hospitals
+2025-05-25 00:49:19,991 - __main__ - INFO - Loaded 5 hospitals
+2025-05-25 00:49:20,003 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 00:49:20,003 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 00:49:20,012 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 00:49:20,012 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 00:49:20,019 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 00:49:20,020 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 00:49:52,418 - __main__ - INFO - Processing transfer request REQ_20250525004952 with 363 characters
+2025-05-25 00:49:52,439 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 00:49:52,439 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 00:49:52,440 - src.llm.robust_recommendation_handler - INFO - Falling back to rule-based recommendation extraction
+2025-05-25 00:49:52,443 - src.llm.robust_recommendation_handler - INFO - Generated rule-based recommendation: CAMPUS_A (confidence: 40.0%)
+2025-05-25 00:49:52,443 - __main__ - INFO - Generated rule-based recommendation as fallback: CAMPUS_A
+2025-05-25 00:49:52,443 - __main__ - INFO - Passing 5 hospitals to LLM for recommendation
+2025-05-25 00:49:52,443 - src.llm.llm_classifier_refactored - INFO - Processing text with model: medgemma-27b-text-it
+2025-05-25 00:49:52,443 - src.llm.components.entity_extraction - INFO - Running entity extraction...
+2025-05-25 00:49:52,443 - llm.interactions - INFO - LLM Prompt #1 | Component: EntityExtractor.extract_entities | Model: medgemma-27b-text-it
+2025-05-25 00:50:17,255 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 00:50:17,259 - src.llm.components.entity_extraction - INFO - Entity extraction successful using robust parser
+2025-05-25 00:50:17,259 - llm.interactions - INFO - LLM Response #1 | Status: SUCCESS
+2025-05-25 00:50:17,260 - src.llm.llm_classifier_refactored - INFO - Entity extraction complete
+2025-05-25 00:50:17,260 - src.llm.components.specialty_assessment - INFO - Running specialty assessment...
+2025-05-25 00:51:27,067 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 00:51:27,072 - src.llm.components.specialty_assessment - INFO - Specialty assessment successful using robust parser
+2025-05-25 00:51:27,072 - src.llm.llm_classifier_refactored - INFO - Specialty assessment complete
+2025-05-25 00:51:27,072 - src.llm.llm_classifier_refactored - INFO - Using 5 hospitals from context for recommendation
+2025-05-25 00:51:27,072 - src.llm.llm_classifier_refactored - INFO - Available hospitals: ["Texas Children's Hospital - Main Campus (MC)", "Texas Children's Hospital - The Woodlands", "Texas Children's Hospital - West Campus (Katy)", "Texas Children's Hospital - North Austin Campus", "Texas Children's Hospital - Pavilion for Women"]
+2025-05-25 00:51:27,072 - src.llm.llm_classifier_refactored - INFO - Using census data from context for recommendation
+2025-05-25 00:51:27,072 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 00:51:27,072 - src.llm.components.recommendation - INFO - ============== BEGINNING RECOMMENDATION GENERATION =============
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - INFO - Input extracted_entities type: <class 'dict'>
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - INFO - Input extracted_entities keys: ['demographics', 'vital_signs', 'clinical_information', 'care_needs']
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - INFO -   - 'demographics' contains: ['age', 'gender', 'weight']
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - INFO -   - 'vital_signs' contains: ['hr', 'rr', 'bp', 'temp', 'o2']
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - INFO -   - 'clinical_information' contains: ['chief_complaint', 'clinical_history', 'diagnoses', 'medications', 'allergies', 'procedures']
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - INFO -   - 'care_needs' contains: ['suggested_care_level', 'requires_ventilator', 'requires_isolation', 'requires_telemetry', 'requires_specialty_care']
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - INFO - Input specialty_assessment type: <class 'dict'>
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - INFO - Input specialty_assessment keys: ['required_specialties', 'recommended_care_level', 'care_level_reasoning', 'potential_conditions', 'clinical_summary']
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - INFO - Input exclusion_evaluation type: None
+2025-05-25 00:51:27,073 - src.llm.components.recommendation - WARNING - No exclusion_evaluation provided - using null value
+2025-05-25 00:51:27,074 - src.llm.components.recommendation - INFO - Attempting LLM recommendation generation
+2025-05-25 00:51:27,074 - src.llm.components.recommendation - INFO - Using 5 hospitals for recommendation
+2025-05-25 00:51:27,074 - src.llm.components.recommendation - INFO - Available hospitals: ["Texas Children's Hospital - Main Campus (MC)", "Texas Children's Hospital - The Woodlands", "Texas Children's Hospital - West Campus (Katy)", "Texas Children's Hospital - North Austin Campus", "Texas Children's Hospital - Pavilion for Women"]
+2025-05-25 00:51:27,074 - src.llm.components.recommendation - INFO - ========== SENDING RECOMMENDATION PROMPT TO medgemma-27b-text-it ===========
+2025-05-25 00:51:27,074 - llm.interactions - INFO - LLM Prompt #2 | Component: RecommendationGenerator._try_llm_recommendation | Model: medgemma-27b-text-it
+2025-05-25 00:52:36,533 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 00:52:36,537 - src.llm.components.recommendation - INFO - ========== RAW LLM RESPONSE RECEIVED ===========
+2025-05-25 00:52:36,537 - src.llm.components.recommendation - INFO - FULL RAW RESPONSE:
+```json
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (TCH_MAIN_TMC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like severe RSV bronchiolitis in a child with a history of prematurity.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specializes in women's and neonatal care; does not provide PICU services for pediatric patients."
+    },
+    "key_factors_considered": [
+      "Required Care Level (PICU)",
+      "Required Specialties (Pediatric Critical Care, Pulmonology, Infectious Disease)",
+      "Hospital Capabilities (Tertiary Care Center)",
+      "Bed Availability Heuristic (Main Campus most likely to have PICU beds)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's status as the central hub for specialized pediatric services at Texas Children's Hospital."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Consideration for potential need for mechanical ventilation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing respiratory distress and potential deterioration."
+  },
+  "conditions": {
+    "weather": "Clear, 78F",
+    "traffic": "Moderate traffic reported on major highways."
+  }
+}
+```
+2025-05-25 00:52:36,537 - llm.interactions - INFO - LLM Interaction #3 | Component: RecommendationGenerator._try_llm_recommendation | Model: medgemma-27b-text-it | Status: SUCCESS
+2025-05-25 00:52:36,537 - src.llm.components.recommendation - INFO - ========== BEGINNING JSON PARSING PROCESS ===========
+2025-05-25 00:52:36,537 - src.llm.components.recommendation - INFO - Attempting to parse with robust_json_parser
+2025-05-25 00:52:36,538 - src.llm.components.recommendation - INFO - ORIGINAL CONTENT (before stripping):
+```json
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (TCH_MAIN_TMC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily avail...
+2025-05-25 00:52:36,538 - src.llm.components.recommendation - INFO - CLEANED CONTENT (after stripping):
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (TCH_MAIN_TMC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for...
+2025-05-25 00:52:36,538 - src.llm.components.recommendation - INFO - Detected and removed markdown code blocks from LLM response
+2025-05-25 00:52:36,538 - src.llm.components.recommendation - INFO - robust_json_parser SUCCESS
+2025-05-25 00:52:36,538 - src.llm.components.recommendation - INFO - Parsed JSON type: <class 'dict'>
+2025-05-25 00:52:36,540 - src.llm.components.recommendation - INFO - Parsed JSON keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'explainability_details', 'notes', 'transport_details', 'conditions']
+2025-05-25 00:52:36,540 - src.llm.components.recommendation - INFO - COMPLETE PARSED JSON:
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (TCH_MAIN_TMC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like severe RSV bronchiolitis in a child with a history of prematurity.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specializes in women's and neonatal care; does not provide PICU services for pediatric patients."
+    },
+    "key_factors_considered": [
+      "Required Care Level (PICU)",
+      "Required Specialties (Pediatric Critical Care, Pulmonology, Infectious Disease)",
+      "Hospital Capabilities (Tertiary Care Center)",
+      "Bed Availability Heuristic (Main Campus most likely to have PICU beds)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's status as the central hub for specialized pediatric services at Texas Children's Hospital."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Consideration for potential need for mechanical ventilation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing respiratory distress and potential deterioration."
+  },
+  "conditions": {
+    "weather": "Clear, 78F",
+    "traffic": "Moderate traffic reported on major highways."
+  }
+}
+2025-05-25 00:52:36,540 - src.llm.components.recommendation - INFO - ========== JSON PARSING COMPLETE ===========
+2025-05-25 00:52:36,540 - src.llm.components.recommendation - INFO - Successfully parsed recommendation JSON with 8 keys
+2025-05-25 00:52:36,540 - src.llm.components.recommendation - INFO - ========== CONVERTING LLM JSON TO RECOMMENDATION OBJECT (NEW) ===========
+2025-05-25 00:52:36,540 - src.llm.components.recommendation - INFO - ========== STANDARDIZING LLM RESPONSE ===========
+2025-05-25 00:52:36,540 - src.llm.components.recommendation - INFO - Input JSON type: <class 'dict'>
+2025-05-25 00:52:36,540 - src.llm.components.recommendation - INFO - Input JSON keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'explainability_details', 'notes', 'transport_details', 'conditions']
+2025-05-25 00:52:36,540 - src.llm.components.recommendation - INFO - Standardization complete. Final standardized keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'notes', 'explainability_details', 'transport_details', 'conditions', 'reason']
+2025-05-25 00:52:36,540 - src.llm.components.recommendation - INFO - Successfully created Recommendation object. Campus: Texas Children's Hospital - Main Campus (MC)
+2025-05-25 00:52:36,541 - src.llm.components.recommendation - INFO - LLM recommendation generation succeeded
+2025-05-25 00:52:36,541 - src.llm.components.recommendation - INFO - Final recommendation type: <class 'src.core.models.Recommendation'>
+2025-05-25 00:52:36,541 - src.llm.components.recommendation - INFO - Final recommended campus: TCH_MAIN_TMC
+2025-05-25 00:52:36,541 - src.llm.components.recommendation - INFO - Final confidence score: 85.0
+2025-05-25 00:52:36,541 - src.llm.components.recommendation - INFO - Reason length: 350
+2025-05-25 00:52:36,541 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 00:52:36,541 - src.llm.components.recommendation - INFO - ============== RECOMMENDATION GENERATION COMPLETE ==============
+2025-05-25 00:52:36,541 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 00:52:36,541 - src.llm.llm_classifier_refactored - INFO - Final recommendation complete: TCH_MAIN_TMC with confidence 85.0%
+2025-05-25 00:52:36,541 - src.llm.robust_recommendation_handler - INFO - Available data keys: ['demographics', 'vital_signs', 'clinical_information', 'care_needs', 'specialty_assessment', 'final_recommendation', 'note', 'recommendation_data']
+2025-05-25 00:52:36,541 - src.llm.robust_recommendation_handler - INFO - Added missing mode to transport_details: GROUND_AMBULANCE
+2025-05-25 00:52:36,542 - src.llm.robust_recommendation_handler - ERROR - Error parsing recommendation_data: 1 validation error for Recommendation
+recommended_level_of_care
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+2025-05-25 00:52:36,542 - src.llm.robust_recommendation_handler - INFO - Using direct Recommendation object
+2025-05-25 00:52:36,542 - __main__ - INFO - Displaying recommendation for: TCH_MAIN_TMC
+2025-05-25 00:52:36,542 - __main__ - INFO - Formatting transport info for recommendation
+2025-05-25 00:52:36,542 - __main__ - INFO - Transport details: mode=Ground Ambulance, time=30 minutes, distance=Not specified
+2025-05-25 00:52:36,542 - __main__ - INFO - Formatting conditions info for recommendation
+2025-05-25 00:52:36,542 - __main__ - INFO - Weather report: Clear, 78F
+2025-05-25 00:52:36,542 - __main__ - INFO - Traffic report: Moderate traffic reported on major highways.
+2025-05-25 00:52:36,544 - __main__ - INFO - Formatting explanation HTML for recommendation
+2025-05-25 01:02:04,642 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:02:04,643 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:02:13,411 - src.gui.hospital_search - INFO - Loaded 13 hospitals
+2025-05-25 01:02:13,437 - __main__ - INFO - Loaded 5 hospitals
+2025-05-25 01:02:13,449 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:02:13,450 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:02:13,459 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:02:13,460 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:02:13,467 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:02:13,467 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:03:13,151 - __main__ - INFO - Processing transfer request REQ_20250525010313 with 363 characters
+2025-05-25 01:03:13,175 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:03:13,176 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:03:13,176 - src.llm.robust_recommendation_handler - INFO - Falling back to rule-based recommendation extraction
+2025-05-25 01:03:13,182 - src.llm.robust_recommendation_handler - INFO - Generated rule-based recommendation: CAMPUS_A (confidence: 40.0%)
+2025-05-25 01:03:13,182 - __main__ - INFO - Generated rule-based recommendation as fallback: CAMPUS_A
+2025-05-25 01:03:13,182 - __main__ - INFO - Passing 5 hospitals to LLM for recommendation
+2025-05-25 01:03:13,182 - src.llm.llm_classifier_refactored - INFO - Processing text with model: medgemma-27b-text-it
+2025-05-25 01:03:13,182 - src.llm.components.entity_extraction - INFO - Running entity extraction...
+2025-05-25 01:03:13,182 - llm.interactions - INFO - LLM Prompt #1 | Component: EntityExtractor.extract_entities | Model: medgemma-27b-text-it
+2025-05-25 01:03:37,850 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 01:03:37,854 - src.llm.components.entity_extraction - INFO - Entity extraction successful using robust parser
+2025-05-25 01:03:37,854 - llm.interactions - INFO - LLM Response #1 | Status: SUCCESS
+2025-05-25 01:03:37,854 - src.llm.llm_classifier_refactored - INFO - Entity extraction complete
+2025-05-25 01:03:37,854 - src.llm.components.specialty_assessment - INFO - Running specialty assessment...
+2025-05-25 01:04:48,889 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 01:04:48,892 - src.llm.components.specialty_assessment - INFO - Specialty assessment successful using robust parser
+2025-05-25 01:04:48,892 - src.llm.llm_classifier_refactored - INFO - Specialty assessment complete
+2025-05-25 01:04:48,892 - src.llm.llm_classifier_refactored - INFO - Using 5 hospitals from context for recommendation
+2025-05-25 01:04:48,892 - src.llm.llm_classifier_refactored - INFO - Available hospitals: ["Texas Children's Hospital - Main Campus (MC)", "Texas Children's Hospital - The Woodlands", "Texas Children's Hospital - West Campus (Katy)", "Texas Children's Hospital - North Austin Campus", "Texas Children's Hospital - Pavilion for Women"]
+2025-05-25 01:04:48,892 - src.llm.llm_classifier_refactored - INFO - Using census data from context for recommendation
+2025-05-25 01:04:48,892 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:04:48,892 - src.llm.components.recommendation - INFO - ============== BEGINNING RECOMMENDATION GENERATION =============
+2025-05-25 01:04:48,892 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO - Input extracted_entities type: <class 'dict'>
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO - Input extracted_entities keys: ['demographics', 'vital_signs', 'clinical_information', 'care_needs']
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO -   - 'demographics' contains: ['age', 'gender', 'weight']
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO -   - 'vital_signs' contains: ['hr', 'rr', 'bp', 'temp', 'o2']
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO -   - 'clinical_information' contains: ['chief_complaint', 'clinical_history', 'diagnoses', 'medications', 'allergies', 'procedures']
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO -   - 'care_needs' contains: ['suggested_care_level', 'requires_ventilator', 'requires_isolation', 'requires_telemetry', 'requires_specialty_care']
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO - Input specialty_assessment type: <class 'dict'>
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO - Input specialty_assessment keys: ['required_specialties', 'recommended_care_level', 'care_level_reasoning', 'potential_conditions', 'clinical_summary']
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO - Input exclusion_evaluation type: None
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - WARNING - No exclusion_evaluation provided - using null value
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO - Attempting LLM recommendation generation
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO - Using 5 hospitals for recommendation
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO - Available hospitals: ["Texas Children's Hospital - Main Campus (MC)", "Texas Children's Hospital - The Woodlands", "Texas Children's Hospital - West Campus (Katy)", "Texas Children's Hospital - North Austin Campus", "Texas Children's Hospital - Pavilion for Women"]
+2025-05-25 01:04:48,893 - src.llm.components.recommendation - INFO - ========== SENDING RECOMMENDATION PROMPT TO medgemma-27b-text-it ===========
+2025-05-25 01:04:48,893 - llm.interactions - INFO - LLM Prompt #2 | Component: RecommendationGenerator._try_llm_recommendation | Model: medgemma-27b-text-it
+2025-05-25 01:05:53,394 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 01:05:53,396 - src.llm.components.recommendation - INFO - ========== RAW LLM RESPONSE RECEIVED ===========
+2025-05-25 01:05:53,396 - src.llm.components.recommendation - INFO - FULL RAW RESPONSE:
+```json
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like this.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specialized facility for women and newborns; does not provide PICU care for this age group."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Specialty availability (Critical Care, Pulmonology, ID)",
+      "Tertiary care center status",
+      "Bed availability heuristic (assuming MC has highest likelihood)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's role as the central hub for specialized pediatric services."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Consideration for potential need for mechanical ventilation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing pediatric respiratory distress and potential deterioration."
+  },
+  "conditions": {
+    "weather": "Clear, 78F",
+    "traffic": "Moderate traffic reported on major routes."
+  }
+}
+```
+2025-05-25 01:05:53,396 - llm.interactions - INFO - LLM Interaction #3 | Component: RecommendationGenerator._try_llm_recommendation | Model: medgemma-27b-text-it | Status: SUCCESS
+2025-05-25 01:05:53,397 - src.llm.components.recommendation - INFO - ========== BEGINNING JSON PARSING PROCESS ===========
+2025-05-25 01:05:53,397 - src.llm.components.recommendation - INFO - Attempting to parse with robust_json_parser
+2025-05-25 01:05:53,398 - src.llm.components.recommendation - INFO - ORIGINAL CONTENT (before stripping):
+```json
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a...
+2025-05-25 01:05:53,398 - src.llm.components.recommendation - INFO - CLEANED CONTENT (after stripping):
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex...
+2025-05-25 01:05:53,398 - src.llm.components.recommendation - INFO - Detected and removed markdown code blocks from LLM response
+2025-05-25 01:05:53,398 - src.llm.components.recommendation - INFO - robust_json_parser SUCCESS
+2025-05-25 01:05:53,398 - src.llm.components.recommendation - INFO - Parsed JSON type: <class 'dict'>
+2025-05-25 01:05:53,399 - src.llm.components.recommendation - INFO - Parsed JSON keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'explainability_details', 'notes', 'transport_details', 'conditions']
+2025-05-25 01:05:53,399 - src.llm.components.recommendation - INFO - COMPLETE PARSED JSON:
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like this.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specialized facility for women and newborns; does not provide PICU care for this age group."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Specialty availability (Critical Care, Pulmonology, ID)",
+      "Tertiary care center status",
+      "Bed availability heuristic (assuming MC has highest likelihood)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's role as the central hub for specialized pediatric services."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Consideration for potential need for mechanical ventilation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing pediatric respiratory distress and potential deterioration."
+  },
+  "conditions": {
+    "weather": "Clear, 78F",
+    "traffic": "Moderate traffic reported on major routes."
+  }
+}
+2025-05-25 01:05:53,399 - src.llm.components.recommendation - INFO - ========== JSON PARSING COMPLETE ===========
+2025-05-25 01:05:53,400 - src.llm.components.recommendation - INFO - Successfully parsed recommendation JSON with 8 keys
+2025-05-25 01:05:53,400 - src.llm.components.recommendation - INFO - ========== CONVERTING LLM JSON TO RECOMMENDATION OBJECT (NEW) ===========
+2025-05-25 01:05:53,400 - src.llm.components.recommendation - INFO - ========== STANDARDIZING LLM RESPONSE ===========
+2025-05-25 01:05:53,400 - src.llm.components.recommendation - INFO - Input JSON type: <class 'dict'>
+2025-05-25 01:05:53,400 - src.llm.components.recommendation - INFO - Input JSON keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'explainability_details', 'notes', 'transport_details', 'conditions']
+2025-05-25 01:05:53,400 - src.llm.components.recommendation - INFO - Standardization complete. Final standardized keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'notes', 'explainability_details', 'transport_details', 'conditions', 'reason']
+2025-05-25 01:05:53,400 - src.llm.components.recommendation - INFO - Successfully created Recommendation object. Campus: Texas Children's Hospital - Main Campus (MC)
+2025-05-25 01:05:53,402 - src.llm.components.recommendation - INFO - LLM recommendation generation succeeded
+2025-05-25 01:05:53,402 - src.llm.components.recommendation - INFO - Final recommendation type: <class 'src.core.models.Recommendation'>
+2025-05-25 01:05:53,402 - src.llm.components.recommendation - INFO - Final recommended campus: TCH_MAIN_TMC
+2025-05-25 01:05:53,402 - src.llm.components.recommendation - INFO - Final confidence score: 85.0
+2025-05-25 01:05:53,402 - src.llm.components.recommendation - INFO - Reason length: 279
+2025-05-25 01:05:53,402 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:05:53,402 - src.llm.components.recommendation - INFO - ============== RECOMMENDATION GENERATION COMPLETE ==============
+2025-05-25 01:05:53,402 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:05:53,402 - src.llm.llm_classifier_refactored - INFO - Final recommendation complete: TCH_MAIN_TMC with confidence 85.0%
+2025-05-25 01:05:53,402 - src.llm.robust_recommendation_handler - INFO - Available data keys: ['demographics', 'vital_signs', 'clinical_information', 'care_needs', 'specialty_assessment', 'final_recommendation', 'note', 'recommendation_data']
+2025-05-25 01:05:53,402 - src.llm.robust_recommendation_handler - INFO - Added missing mode to transport_details: GROUND_AMBULANCE
+2025-05-25 01:05:53,403 - src.llm.robust_recommendation_handler - ERROR - Error parsing recommendation_data: 1 validation error for Recommendation
+recommended_level_of_care
+  Input should be a valid string [type=string_type, input_value=None, input_type=NoneType]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+2025-05-25 01:05:53,403 - src.llm.robust_recommendation_handler - INFO - Using direct Recommendation object
+2025-05-25 01:05:53,403 - __main__ - INFO - Displaying recommendation for: TCH_MAIN_TMC
+2025-05-25 01:05:53,403 - __main__ - INFO - Formatting transport info for recommendation
+2025-05-25 01:05:53,403 - __main__ - INFO - Extracting transport details from reason: The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely ...
+2025-05-25 01:05:53,403 - __main__ - WARNING - Could not extract time and mode from reason text
+2025-05-25 01:05:53,404 - __main__ - INFO - Formatting conditions info for recommendation
+2025-05-25 01:05:53,404 - __main__ - INFO - Weather report: Clear, 78F
+2025-05-25 01:05:53,404 - __main__ - INFO - Traffic report: Moderate traffic reported on major routes.
+2025-05-25 01:05:53,408 - __main__ - INFO - Formatting explanation HTML for recommendation
+2025-05-25 01:09:34,606 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:09:34,607 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:09:42,629 - src.gui.hospital_search - INFO - Loaded 13 hospitals
+2025-05-25 01:09:42,664 - __main__ - INFO - Loaded 5 hospitals
+2025-05-25 01:09:42,676 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:09:42,676 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:09:42,685 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:09:42,686 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:09:42,692 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:09:42,693 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:10:14,841 - __main__ - INFO - Processing transfer request REQ_20250525011014 with 363 characters
+2025-05-25 01:10:14,865 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:10:14,866 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:10:14,866 - src.llm.robust_recommendation_handler - INFO - Falling back to rule-based recommendation extraction
+2025-05-25 01:10:14,872 - src.llm.robust_recommendation_handler - INFO - Generated rule-based recommendation: CAMPUS_A (confidence: 40.0%)
+2025-05-25 01:10:14,872 - __main__ - INFO - Generated rule-based recommendation as fallback: CAMPUS_A
+2025-05-25 01:10:14,872 - __main__ - INFO - Passing 5 hospitals to LLM for recommendation
+2025-05-25 01:10:14,872 - src.llm.llm_classifier_refactored - INFO - Processing text with model: gemma-3-1b-it
+2025-05-25 01:10:14,872 - src.llm.components.entity_extraction - INFO - Running entity extraction...
+2025-05-25 01:10:14,872 - llm.interactions - INFO - LLM Prompt #1 | Component: EntityExtractor.extract_entities | Model: gemma-3-1b-it
+2025-05-25 01:10:18,399 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 01:10:18,409 - src.llm.components.entity_extraction - INFO - Entity extraction successful using robust parser
+2025-05-25 01:10:18,410 - llm.interactions - INFO - LLM Response #1 | Status: SUCCESS
+2025-05-25 01:10:18,410 - src.llm.llm_classifier_refactored - INFO - Entity extraction complete
+2025-05-25 01:10:18,410 - src.llm.components.specialty_assessment - INFO - Running specialty assessment...
+2025-05-25 01:10:23,971 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 01:10:23,973 - src.llm.components.specialty_assessment - INFO - Specialty assessment successful using robust parser
+2025-05-25 01:10:23,973 - src.llm.llm_classifier_refactored - INFO - Specialty assessment complete
+2025-05-25 01:10:23,974 - src.llm.llm_classifier_refactored - INFO - Using 5 hospitals from context for recommendation
+2025-05-25 01:10:23,974 - src.llm.llm_classifier_refactored - INFO - Available hospitals: ["Texas Children's Hospital - Main Campus (MC)", "Texas Children's Hospital - The Woodlands", "Texas Children's Hospital - West Campus (Katy)", "Texas Children's Hospital - North Austin Campus", "Texas Children's Hospital - Pavilion for Women"]
+2025-05-25 01:10:23,974 - src.llm.llm_classifier_refactored - INFO - Using census data from context for recommendation
+2025-05-25 01:10:23,974 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:10:23,974 - src.llm.components.recommendation - INFO - ============== BEGINNING RECOMMENDATION GENERATION =============
+2025-05-25 01:10:23,974 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:10:23,974 - src.llm.components.recommendation - INFO - Input extracted_entities type: <class 'dict'>
+2025-05-25 01:10:23,974 - src.llm.components.recommendation - INFO - Input extracted_entities keys: ['demographics', 'vital_signs', 'clinical_information', 'care_needs']
+2025-05-25 01:10:23,974 - src.llm.components.recommendation - INFO -   - 'demographics' contains: ['age', 'gender', 'weight']
+2025-05-25 01:10:23,974 - src.llm.components.recommendation - INFO -   - 'vital_signs' contains: ['hr', 'rr', 'bp', 'temp', 'o2']
+2025-05-25 01:10:23,974 - src.llm.components.recommendation - INFO -   - 'clinical_information' contains: ['chief_complaint', 'clinical_history', 'diagnoses', 'medications', 'allergies']
+2025-05-25 01:10:23,974 - src.llm.components.recommendation - INFO -   - 'care_needs' contains: ['suggested_care_level', 'requires_ventilator', 'requires_isolation', 'requires_telemetry', 'requires_specialty_care']
+2025-05-25 01:10:23,974 - src.llm.components.recommendation - INFO - Input specialty_assessment type: <class 'dict'>
+2025-05-25 01:10:23,975 - src.llm.components.recommendation - INFO - Input specialty_assessment keys: ['required_specialties', 'recommended_care_level', 'care_level_reasoning', 'potential_conditions', 'clinical_summary']
+2025-05-25 01:10:23,975 - src.llm.components.recommendation - INFO - Input exclusion_evaluation type: None
+2025-05-25 01:10:23,975 - src.llm.components.recommendation - WARNING - No exclusion_evaluation provided - using null value
+2025-05-25 01:10:23,975 - src.llm.components.recommendation - INFO - Attempting LLM recommendation generation
+2025-05-25 01:10:23,975 - src.llm.components.recommendation - INFO - Using 5 hospitals for recommendation
+2025-05-25 01:10:23,975 - src.llm.components.recommendation - INFO - Available hospitals: ["Texas Children's Hospital - Main Campus (MC)", "Texas Children's Hospital - The Woodlands", "Texas Children's Hospital - West Campus (Katy)", "Texas Children's Hospital - North Austin Campus", "Texas Children's Hospital - Pavilion for Women"]
+2025-05-25 01:10:23,975 - src.llm.components.recommendation - INFO - ========== SENDING RECOMMENDATION PROMPT TO gemma-3-1b-it ===========
+2025-05-25 01:10:23,975 - llm.interactions - INFO - LLM Prompt #2 | Component: RecommendationGenerator._try_llm_recommendation | Model: gemma-3-1b-it
+2025-05-25 01:10:30,982 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 01:10:30,983 - src.llm.components.recommendation - INFO - ========== RAW LLM RESPONSE RECEIVED ===========
+2025-05-25 01:10:30,984 - src.llm.components.recommendation - INFO - FULL RAW RESPONSE:
+```json
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus",
+  "care_level": "PICU",
+  "confidence_score": 95,
+  "explainability_details": {
+    "main_recommendation_reason": "The patient's clinical presentation – high fever, prematurity, previous PICU admission, and respiratory distress – strongly suggests a need for intensive care in a PICU setting. The ventilator and isolation protocols are essential for managing respiratory complications.",
+    "alternative_reasons": [
+      {
+        "campus_id": "TCH_WOODLANDS",
+        "reason": "While the patient's clinical presentation is concerning, the Woodlands campus offers a slightly more accessible location for immediate transfer, potentially reducing the time to reach a specialized care team."
+      },
+      {
+        "campus_id": "TCH_WEST_KATY",
+        "reason": "The West Campus location is further from the patient's current location, requiring additional transportation time and potentially impacting the speed of care."
+      },
+      {
+        "campus_id": "TCH_NORTH_AUSTIN",
+        "reason": "The North Austin campus is further away, potentially increasing the time to reach the patient and potentially impacting the ability to quickly assess the patient's condition."
+      }
+    ],
+    "key_factors_considered": [
+      "Patient's clinical presentation (high fever, prematurity, PICU history)",
+      "Distance from patient's current location",
+      "Specialty match (PICU)",
+      "Bed availability"
+    ],
+    "confidence_explanation": "High confidence due to the clear specialty match and readily available bed space in the PICU unit. The patient's history of PICU admission and respiratory distress strongly supports the need for intensive care."
+  },
+  "notes": [
+    "Requires NICU-capable team for ventilator support.",
+    "Patient requires close monitoring of respiratory status."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 60,
+    "special_requirements": "Requires a dedicated transport team with experience in managing patients with respiratory distress."
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Light traffic on I-10"
+  }
+}
+```
+2025-05-25 01:10:30,984 - llm.interactions - INFO - LLM Interaction #3 | Component: RecommendationGenerator._try_llm_recommendation | Model: gemma-3-1b-it | Status: SUCCESS
+2025-05-25 01:10:30,985 - src.llm.components.recommendation - INFO - ========== BEGINNING JSON PARSING PROCESS ===========
+2025-05-25 01:10:30,985 - src.llm.components.recommendation - INFO - Attempting to parse with robust_json_parser
+2025-05-25 01:10:30,986 - src.llm.components.recommendation - INFO - ORIGINAL CONTENT (before stripping):
+```json
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus",
+  "care_level": "PICU",
+  "confidence_score": 95,
+  "explainability_details": {
+    "main_recommendation_reason": "The patient's clinical presentation – high fever, prematurity, previous PICU admission, and respiratory distress – strongly suggests a need for intensive care in a PICU setting. The ventilator and isolation protocols are essential for managing respiratory comp...
+2025-05-25 01:10:30,986 - src.llm.components.recommendation - INFO - CLEANED CONTENT (after stripping):
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus",
+  "care_level": "PICU",
+  "confidence_score": 95,
+  "explainability_details": {
+    "main_recommendation_reason": "The patient's clinical presentation – high fever, prematurity, previous PICU admission, and respiratory distress – strongly suggests a need for intensive care in a PICU setting. The ventilator and isolation protocols are essential for managing respiratory complication...
+2025-05-25 01:10:30,986 - src.llm.components.recommendation - INFO - Detected and removed markdown code blocks from LLM response
+2025-05-25 01:10:30,986 - src.llm.components.recommendation - INFO - robust_json_parser SUCCESS
+2025-05-25 01:10:30,986 - src.llm.components.recommendation - INFO - Parsed JSON type: <class 'dict'>
+2025-05-25 01:10:30,987 - src.llm.components.recommendation - INFO - Parsed JSON keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'explainability_details', 'notes', 'transport_details', 'conditions']
+2025-05-25 01:10:30,987 - src.llm.components.recommendation - INFO - COMPLETE PARSED JSON:
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus",
+  "care_level": "PICU",
+  "confidence_score": 95,
+  "explainability_details": {
+    "main_recommendation_reason": "The patient's clinical presentation \u2013 high fever, prematurity, previous PICU admission, and respiratory distress \u2013 strongly suggests a need for intensive care in a PICU setting. The ventilator and isolation protocols are essential for managing respiratory complications.",
+    "alternative_reasons": [
+      {
+        "campus_id": "TCH_WOODLANDS",
+        "reason": "While the patient's clinical presentation is concerning, the Woodlands campus offers a slightly more accessible location for immediate transfer, potentially reducing the time to reach a specialized care team."
+      },
+      {
+        "campus_id": "TCH_WEST_KATY",
+        "reason": "The West Campus location is further from the patient's current location, requiring additional transportation time and potentially impacting the speed of care."
+      },
+      {
+        "campus_id": "TCH_NORTH_AUSTIN",
+        "reason": "The North Austin campus is further away, potentially increasing the time to reach the patient and potentially impacting the ability to quickly assess the patient's condition."
+      }
+    ],
+    "key_factors_considered": [
+      "Patient's clinical presentation (high fever, prematurity, PICU history)",
+      "Distance from patient's current location",
+      "Specialty match (PICU)",
+      "Bed availability"
+    ],
+    "confidence_explanation": "High confidence due to the clear specialty match and readily available bed space in the PICU unit. The patient's history of PICU admission and respiratory distress strongly supports the need for intensive care."
+  },
+  "notes": [
+    "Requires NICU-capable team for ventilator support.",
+    "Patient requires close monitoring of respiratory status."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 60,
+    "special_requirements": "Requires a dedicated transport team with experience in managing patients with respiratory distress."
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Light traffic on I-10"
+  }
+}
+2025-05-25 01:10:30,987 - src.llm.components.recommendation - INFO - ========== JSON PARSING COMPLETE ===========
+2025-05-25 01:10:30,987 - src.llm.components.recommendation - INFO - Successfully parsed recommendation JSON with 8 keys
+2025-05-25 01:10:30,987 - src.llm.components.recommendation - INFO - ========== CONVERTING LLM JSON TO RECOMMENDATION OBJECT (NEW) ===========
+2025-05-25 01:10:30,987 - src.llm.components.recommendation - INFO - ========== STANDARDIZING LLM RESPONSE ===========
+2025-05-25 01:10:30,987 - src.llm.components.recommendation - INFO - Input JSON type: <class 'dict'>
+2025-05-25 01:10:30,987 - src.llm.components.recommendation - INFO - Input JSON keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'explainability_details', 'notes', 'transport_details', 'conditions']
+2025-05-25 01:10:30,988 - src.llm.components.recommendation - INFO - Standardization complete. Final standardized keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'notes', 'explainability_details', 'transport_details', 'conditions', 'reason']
+2025-05-25 01:10:30,988 - src.llm.components.recommendation - INFO - Successfully created Recommendation object. Campus: Texas Children's Hospital - Main Campus
+2025-05-25 01:10:30,989 - src.llm.components.recommendation - INFO - LLM recommendation generation succeeded
+2025-05-25 01:10:30,989 - src.llm.components.recommendation - INFO - Final recommendation type: <class 'src.core.models.Recommendation'>
+2025-05-25 01:10:30,990 - src.llm.components.recommendation - INFO - Final recommended campus: TCH_MAIN_TMC
+2025-05-25 01:10:30,990 - src.llm.components.recommendation - INFO - Final confidence score: 95.0
+2025-05-25 01:10:30,990 - src.llm.components.recommendation - INFO - Reason length: 270
+2025-05-25 01:10:30,990 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:10:30,990 - src.llm.components.recommendation - INFO - ============== RECOMMENDATION GENERATION COMPLETE ==============
+2025-05-25 01:10:30,990 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:10:30,990 - src.llm.llm_classifier_refactored - INFO - Final recommendation complete: TCH_MAIN_TMC with confidence 95.0%
+2025-05-25 01:10:30,990 - src.llm.robust_recommendation_handler - INFO - Available data keys: ['demographics', 'vital_signs', 'clinical_information', 'care_needs', 'specialty_assessment', 'final_recommendation', 'note', 'recommendation_data']
+2025-05-25 01:10:30,990 - src.llm.robust_recommendation_handler - INFO - Added missing mode to transport_details: GROUND_AMBULANCE
+2025-05-25 01:10:30,990 - src.llm.robust_recommendation_handler - INFO - Successfully created Recommendation from recommendation_data
+2025-05-25 01:10:30,990 - __main__ - INFO - Displaying recommendation for: TCH_MAIN_TMC
+2025-05-25 01:10:30,990 - __main__ - INFO - Formatting transport info for recommendation
+2025-05-25 01:10:30,991 - __main__ - INFO - Transport details: {'mode': 'GROUND_AMBULANCE'}
+2025-05-25 01:10:30,991 - __main__ - INFO - Formatting conditions info for recommendation
+2025-05-25 01:10:30,991 - __main__ - INFO - Weather report: Clear conditions
+2025-05-25 01:10:30,991 - __main__ - INFO - Traffic report: Normal traffic conditions
+2025-05-25 01:10:30,993 - __main__ - INFO - Formatting explanation HTML for recommendation
+2025-05-25 01:16:21,575 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:16:21,578 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:16:29,857 - src.gui.hospital_search - INFO - Loaded 13 hospitals
+2025-05-25 01:16:29,890 - __main__ - INFO - Loaded 5 hospitals
+2025-05-25 01:16:29,903 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:16:29,903 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:16:29,913 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:16:29,913 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:16:29,920 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:16:29,920 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:16:46,474 - __main__ - INFO - Processing transfer request REQ_20250525011646 with 363 characters
+2025-05-25 01:16:46,495 - httpx - INFO - HTTP Request: GET http://localhost:1234/v1/models "HTTP/1.1 200 OK"
+2025-05-25 01:16:46,496 - src.llm.llm_classifier_refactored - INFO - Found 5 available models: ['medgemma-27b-text-it', 'gemma-3-1b-it', 'dirty-muse-writer-v01-uncensored-erotica-nsfw', 'text-embedding-nomic-embed-text-v1.5', 'mn-12b-rp-ink']
+2025-05-25 01:16:46,496 - src.llm.robust_recommendation_handler - INFO - Falling back to rule-based recommendation extraction
+2025-05-25 01:16:46,502 - src.llm.robust_recommendation_handler - INFO - Generated rule-based recommendation: CAMPUS_A (confidence: 40.0%)
+2025-05-25 01:16:46,502 - __main__ - INFO - Generated rule-based recommendation as fallback: CAMPUS_A
+2025-05-25 01:16:46,502 - __main__ - INFO - Passing 5 hospitals to LLM for recommendation
+2025-05-25 01:16:46,502 - src.llm.llm_classifier_refactored - INFO - Processing text with model: medgemma-27b-text-it
+2025-05-25 01:16:46,502 - src.llm.components.entity_extraction - INFO - Running entity extraction...
+2025-05-25 01:16:46,502 - llm.interactions - INFO - LLM Prompt #1 | Component: EntityExtractor.extract_entities | Model: medgemma-27b-text-it
+2025-05-25 01:17:11,346 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 01:17:11,355 - src.llm.components.entity_extraction - INFO - Entity extraction successful using robust parser
+2025-05-25 01:17:11,356 - llm.interactions - INFO - LLM Response #1 | Status: SUCCESS
+2025-05-25 01:17:11,357 - src.llm.llm_classifier_refactored - INFO - Entity extraction complete
+2025-05-25 01:17:11,357 - src.llm.components.specialty_assessment - INFO - Running specialty assessment...
+2025-05-25 01:18:25,813 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 01:18:25,818 - src.llm.components.specialty_assessment - INFO - Specialty assessment successful using robust parser
+2025-05-25 01:18:25,818 - src.llm.llm_classifier_refactored - INFO - Specialty assessment complete
+2025-05-25 01:18:25,818 - src.llm.llm_classifier_refactored - INFO - Using 5 hospitals from context for recommendation
+2025-05-25 01:18:25,818 - src.llm.llm_classifier_refactored - INFO - Available hospitals: ["Texas Children's Hospital - Main Campus (MC)", "Texas Children's Hospital - The Woodlands", "Texas Children's Hospital - West Campus (Katy)", "Texas Children's Hospital - North Austin Campus", "Texas Children's Hospital - Pavilion for Women"]
+2025-05-25 01:18:25,818 - src.llm.llm_classifier_refactored - INFO - Using census data from context for recommendation
+2025-05-25 01:18:25,818 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:18:25,818 - src.llm.components.recommendation - INFO - ============== BEGINNING RECOMMENDATION GENERATION =============
+2025-05-25 01:18:25,818 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:18:25,818 - src.llm.components.recommendation - INFO - Input extracted_entities type: <class 'dict'>
+2025-05-25 01:18:25,818 - src.llm.components.recommendation - INFO - Input extracted_entities keys: ['demographics', 'vital_signs', 'clinical_information', 'care_needs']
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO -   - 'demographics' contains: ['age', 'gender', 'weight']
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO -   - 'vital_signs' contains: ['hr', 'rr', 'bp', 'temp', 'o2']
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO -   - 'clinical_information' contains: ['chief_complaint', 'clinical_history', 'diagnoses', 'medications', 'allergies', 'procedures']
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO -   - 'care_needs' contains: ['suggested_care_level', 'requires_ventilator', 'requires_isolation', 'requires_telemetry', 'requires_specialty_care']
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO - Input specialty_assessment type: <class 'dict'>
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO - Input specialty_assessment keys: ['required_specialties', 'recommended_care_level', 'care_level_reasoning', 'potential_conditions', 'clinical_summary']
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO - Input exclusion_evaluation type: None
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - WARNING - No exclusion_evaluation provided - using null value
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO - Attempting LLM recommendation generation
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO - Using 5 hospitals for recommendation
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO - Available hospitals: ["Texas Children's Hospital - Main Campus (MC)", "Texas Children's Hospital - The Woodlands", "Texas Children's Hospital - West Campus (Katy)", "Texas Children's Hospital - North Austin Campus", "Texas Children's Hospital - Pavilion for Women"]
+2025-05-25 01:18:25,819 - src.llm.components.recommendation - INFO - ========== SENDING RECOMMENDATION PROMPT TO medgemma-27b-text-it ===========
+2025-05-25 01:18:25,820 - llm.interactions - INFO - LLM Prompt #2 | Component: RecommendationGenerator._try_llm_recommendation | Model: medgemma-27b-text-it
+2025-05-25 01:19:31,839 - httpx - INFO - HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-25 01:19:31,850 - src.llm.components.recommendation - INFO - ========== RAW LLM RESPONSE RECEIVED ===========
+2025-05-25 01:19:31,851 - src.llm.components.recommendation - INFO - FULL RAW RESPONSE:
+```json
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full spectrum of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like this.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specialized facility for women and newborns; does not provide PICU care for this age group."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Specialty availability (Critical Care, Pulmonology, ID)",
+      "Tertiary care center status",
+      "Bed availability heuristic (assuming MC has highest likelihood)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's role as the central hub for specialized pediatric services."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Bed availability at TCH_MAIN_TMC is assumed but needs confirmation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing a pediatric patient with respiratory distress and potential deterioration."
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Moderate traffic reported on major routes"
+  }
+}
+```
+2025-05-25 01:19:31,851 - llm.interactions - INFO - LLM Interaction #3 | Component: RecommendationGenerator._try_llm_recommendation | Model: medgemma-27b-text-it | Status: SUCCESS
+2025-05-25 01:19:31,852 - src.llm.components.recommendation - INFO - ========== BEGINNING JSON PARSING PROCESS ===========
+2025-05-25 01:19:31,852 - src.llm.components.recommendation - INFO - Attempting to parse with robust_json_parser
+2025-05-25 01:19:31,853 - src.llm.components.recommendation - INFO - ORIGINAL CONTENT (before stripping):
+```json
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full spectrum of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available fo...
+2025-05-25 01:19:31,853 - src.llm.components.recommendation - INFO - CLEANED CONTENT (after stripping):
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full spectrum of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a comp...
+2025-05-25 01:19:31,853 - src.llm.components.recommendation - INFO - Detected and removed markdown code blocks from LLM response
+2025-05-25 01:19:31,853 - src.llm.components.recommendation - INFO - robust_json_parser SUCCESS
+2025-05-25 01:19:31,853 - src.llm.components.recommendation - INFO - Parsed JSON type: <class 'dict'>
+2025-05-25 01:19:31,861 - src.llm.components.recommendation - INFO - Parsed JSON keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'explainability_details', 'notes', 'transport_details', 'conditions']
+2025-05-25 01:19:31,861 - src.llm.components.recommendation - INFO - COMPLETE PARSED JSON:
+{
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full spectrum of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like this.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specialized facility for women and newborns; does not provide PICU care for this age group."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Specialty availability (Critical Care, Pulmonology, ID)",
+      "Tertiary care center status",
+      "Bed availability heuristic (assuming MC has highest likelihood)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's role as the central hub for specialized pediatric services."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Bed availability at TCH_MAIN_TMC is assumed but needs confirmation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing a pediatric patient with respiratory distress and potential deterioration."
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Moderate traffic reported on major routes"
+  }
+}
+2025-05-25 01:19:31,861 - src.llm.components.recommendation - INFO - ========== JSON PARSING COMPLETE ===========
+2025-05-25 01:19:31,861 - src.llm.components.recommendation - INFO - Successfully parsed recommendation JSON with 8 keys
+2025-05-25 01:19:31,861 - src.llm.components.recommendation - INFO - ========== CONVERTING LLM JSON TO RECOMMENDATION OBJECT (NEW) ===========
+2025-05-25 01:19:31,861 - src.llm.components.recommendation - INFO - ========== STANDARDIZING LLM RESPONSE ===========
+2025-05-25 01:19:31,861 - src.llm.components.recommendation - INFO - Input JSON type: <class 'dict'>
+2025-05-25 01:19:31,861 - src.llm.components.recommendation - INFO - Input JSON keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'explainability_details', 'notes', 'transport_details', 'conditions']
+2025-05-25 01:19:31,861 - src.llm.components.recommendation - INFO - Standardization complete. Final standardized keys: ['recommended_campus_id', 'recommended_campus_name', 'care_level', 'confidence_score', 'notes', 'explainability_details', 'transport_details', 'conditions', 'reason']
+2025-05-25 01:19:31,862 - src.llm.components.recommendation - INFO - Successfully created Recommendation object. Campus: Texas Children's Hospital - Main Campus (MC)
+2025-05-25 01:19:31,863 - src.llm.components.recommendation - INFO - LLM recommendation generation succeeded
+2025-05-25 01:19:31,863 - src.llm.components.recommendation - INFO - Final recommendation type: <class 'src.core.models.Recommendation'>
+2025-05-25 01:19:31,863 - src.llm.components.recommendation - INFO - Final recommended campus: TCH_MAIN_TMC
+2025-05-25 01:19:31,863 - src.llm.components.recommendation - INFO - Final confidence score: 85.0
+2025-05-25 01:19:31,864 - src.llm.components.recommendation - INFO - Reason length: 282
+2025-05-25 01:19:31,864 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:19:31,864 - src.llm.components.recommendation - INFO - ============== RECOMMENDATION GENERATION COMPLETE ==============
+2025-05-25 01:19:31,864 - src.llm.components.recommendation - INFO - ===============================================================
+2025-05-25 01:19:31,864 - src.llm.llm_classifier_refactored - INFO - Final recommendation complete: TCH_MAIN_TMC with confidence 85.0%
+2025-05-25 01:19:31,864 - src.llm.robust_recommendation_handler - INFO - Available data keys: ['demographics', 'vital_signs', 'clinical_information', 'care_needs', 'specialty_assessment', 'final_recommendation', 'note', 'recommendation_data']
+2025-05-25 01:19:31,864 - src.llm.robust_recommendation_handler - INFO - Added missing mode to transport_details: GROUND_AMBULANCE
+2025-05-25 01:19:31,864 - src.llm.robust_recommendation_handler - INFO - Successfully created Recommendation from recommendation_data
+2025-05-25 01:19:31,864 - __main__ - INFO - Displaying recommendation for: TCH_MAIN_TMC
+2025-05-25 01:19:31,865 - __main__ - INFO - Formatting transport info for recommendation
+2025-05-25 01:19:31,865 - __main__ - INFO - Transport details: {'mode': 'GROUND_AMBULANCE'}
+2025-05-25 01:19:31,865 - __main__ - INFO - Formatting conditions info for recommendation
+2025-05-25 01:19:31,865 - __main__ - INFO - Weather report: Clear conditions
+2025-05-25 01:19:31,865 - __main__ - INFO - Traffic report: Normal traffic conditions
+2025-05-25 01:19:31,872 - __main__ - INFO - Formatting explanation HTML for recommendation

@@ -10,6 +10,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, Optional
 from collections import defaultdict
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +30,8 @@ def _process_census_row(
         stats: Dictionary to store processing statistics
     """
     try:
-        campus_id = row["CampusID"].strip()
-        unit_name = row["Unit"].strip()
+        campus_id = row["campus_id"].strip()
+        unit_name = row["unit_name"].strip()
         unit_key = f"{campus_id}:{unit_name}"
         if unit_key in processed_units:
             stats["duplicate_count"] += 1
@@ -48,8 +49,8 @@ def _process_census_row(
             }
 
         # Get bed counts
-        available = int(float(row.get("AvailableBeds", 0)))
-        total = int(float(row.get("TotalBeds", 0)))
+        available = int(float(row.get("available_beds", 0)))
+        total = int(float(row.get("total_beds", 0)))
 
         # Update statistics
         stats["total_available"] += available
@@ -58,24 +59,22 @@ def _process_census_row(
         stats["max_available"] = max(stats["max_available"], available)
 
         # Categorize unit type and update counts
-        unit_name_lower = unit_name.lower()
-        if "icu" in unit_name_lower or "intensive" in unit_name_lower:
-            bed_type = "icu"
-            campus_data[campus_id]["icu_beds"]["available"] += available
-            campus_data[campus_id]["icu_beds"]["total"] += total
-        elif "nicu" in unit_name_lower or "neonatal" in unit_name_lower:
-            bed_type = "nicu"
-            campus_data[campus_id]["nicu_beds"]["available"] += available
-            campus_data[campus_id]["nicu_beds"]["total"] += total
-        else:
-            bed_type = "general"
-            campus_data[campus_id]["general_beds"]["available"] += available
-            campus_data[campus_id]["general_beds"]["total"] += total
+        unit_type = row.get("unit_type", "general").lower()
 
-        stats["bed_type_counts"][bed_type] += 1
+        if unit_type == "icu":
+            bed_type_key = "icu_beds"
+        elif unit_type == "nicu":
+            bed_type_key = "nicu_beds"
+        else: # Default to general for 'general' or any other unspecified type
+            bed_type_key = "general_beds"
+        
+        campus_data[campus_id][bed_type_key]["available"] += available
+        campus_data[campus_id][bed_type_key]["total"] += total
+
+        stats["bed_type_counts"][unit_type] = stats["bed_type_counts"].get(unit_type, 0) + 1
         stats["unit_types"].add(unit_name)
 
-        # Handle specialized units
+        # Handle specialized units (assuming 'Specialization' column might exist)
         if "Specialization" in row and row["Specialization"].strip():
             spec = row["Specialization"].strip()
             stats["specializations"].add(spec)
@@ -108,7 +107,7 @@ def read_census_data(census_file_path: str) -> Dict[str, Dict[str, Any]]:
         return {}
 
     campus_data = {}
-    required_columns = ["CampusID", "Unit", "AvailableBeds", "TotalBeds"]
+    required_columns = ["campus_id", "unit_name", "available_beds", "total_beds"]
 
     # Initialize statistics
     stats = {
@@ -127,8 +126,21 @@ def read_census_data(census_file_path: str) -> Dict[str, Dict[str, Any]]:
     }
 
     try:
-        with open(census_file, "r", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
+        with open(census_file, "r", encoding="utf-8-sig") as file:
+            # Skip leading blank lines
+            first_line = ""
+            for line in file:
+                if line.strip():
+                    first_line = line
+                    break
+            
+            if not first_line:
+                logger.error("Census file is empty or contains only blank lines.")
+                return {}
+
+            # Combine the first non-blank line (header) with the rest of the file for DictReader
+            import itertools
+            reader = csv.DictReader(itertools.chain([first_line], file))
 
             # Validate required columns
             missing_columns = [
@@ -344,24 +356,29 @@ def update_hospital_campuses(
                 logger.debug("No census data found for campus %s", campus_id)
                 continue
 
-            # Update bed counts
-            campus["beds"] = {
-                "general": {
-                    "available": campus_census.get("general_beds", {}).get(
-                        "available", 0
-                    ),
-                    "total": campus_census.get("general_beds", {}).get("total", 0),
-                },
-                "icu": {
-                    "available": campus_census.get("icu_beds", {}).get("available", 0),
-                    "total": campus_census.get("icu_beds", {}).get("total", 0),
-                },
-                "nicu": {
-                    "available": campus_census.get(
-                        "nicu_beds", {}).get("available", 0),
-                    "total": campus_census.get("nicu_beds", {}).get("total", 0),
-                },
+            # Consolidate bed counts for BedCensus model structure
+            general_avail = campus_census.get("general_beds", {}).get("available", 0)
+            general_total = campus_census.get("general_beds", {}).get("total", 0)
+            icu_avail = campus_census.get("icu_beds", {}).get("available", 0)
+            icu_total = campus_census.get("icu_beds", {}).get("total", 0)
+            nicu_avail = campus_census.get("nicu_beds", {}).get("available", 0)
+            nicu_total = campus_census.get("nicu_beds", {}).get("total", 0)
+
+            # Update bed_census field
+            campus["bed_census"] = {
+                "total_beds": general_total + icu_total + nicu_total,
+                "available_beds": general_avail + icu_avail + nicu_avail,
+                "icu_beds_total": icu_total,
+                "icu_beds_available": icu_avail,
+                "nicu_beds_total": nicu_total,
+                "nicu_beds_available": nicu_avail,
+                "last_updated_source": "current_census.csv",
+                "last_updated_timestamp": datetime.now(timezone.utc).isoformat()
             }
+
+            # Optionally, update or remove the old "beds" structure if it exists
+            if "beds" in campus:
+                del campus["beds"]
 
         # Write updated data back to the file
         with open(campus_file_path, "w", encoding="utf-8") as file:
@@ -392,12 +409,14 @@ def update_census(
     Returns:
         bool: True if update succeeded, False otherwise.
     """
-    # Configure file paths with defaults
-    default_census = Path("data/census/current_census.csv")
-    default_campuses = Path("data/hospitals/hospital_campuses.json")
+    # Determine file paths
+    # Use provided paths or fall back to defaults relative to project root
+    project_root = Path(__file__).resolve().parent.parent.parent # transfer_center/
+    default_census_path = project_root / "data" / "current_census.csv"
+    default_campuses_path = project_root / "data" / "sample_hospital_campuses.json"
 
-    census_path = Path(census_file_path) if census_file_path else default_census
-    campus_path = Path(campus_file_path) if campus_file_path else default_campuses
+    census_path = Path(census_file_path) if census_file_path else default_census_path
+    campus_path = Path(campus_file_path) if campus_file_path else default_campuses_path
 
     # Read and validate census data
     census_info = read_census_data(str(census_path))
@@ -507,7 +526,9 @@ if __name__ == "__main__":
 
     # Example usage:
     # Print census summary for a specific campus
-    census_data = read_census_data("data/census/current_census.csv")
+    project_root_main = Path(__file__).resolve().parent.parent.parent
+    census_data_path_main = project_root_main / "data" / "current_census.csv"
+    census_data = read_census_data(str(census_data_path_main))
     if not census_data:
         print("No census data available")
         sys.exit(0)

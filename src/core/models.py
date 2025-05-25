@@ -11,7 +11,7 @@ from enum import Enum
 import math
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator, FieldValidationInfo
 
 
 class Location(BaseModel):
@@ -303,6 +303,31 @@ class TransportMode(str, Enum):
     FIXED_WING = "FIXED_WING"  # Specific fixed-wing aircraft transport
 
 
+class BedAvailability(BaseModel):
+    """Represents the availability of a specific type of bed at a campus."""
+    campus_id: str = Field(..., description="Identifier for the campus.")
+    bed_type: str = Field(..., description="Type of bed (e.g., General, PICU, NICU).")
+    available_beds: int = Field(..., description="Number of available beds of this type.", ge=0)
+    last_updated: Optional[str] = Field(None, description="Timestamp of when this data was last updated.")
+
+
+class ScoringResult(BaseModel):
+    """Represents the result from a clinical scoring system."""
+    scorer_name: str = Field(..., description="Name of the scoring system used (e.g., PEWS, TRAP).")
+    score_value: Optional[Any] = Field(None, description="The primary numerical score or categorical result.")
+    interpretation: Optional[str] = Field(None, description="Textual interpretation of the score.")
+    details: Dict[str, Any] = Field(default_factory=dict, description="Additional structured data specific to the scorer (e.g., sub-scores, risk levels).")
+    timestamp: datetime = Field(default_factory=datetime.now, description="Timestamp of when the score was calculated.")
+
+
+class TransportOption(BaseModel):
+    """Represents a single transport option with mode and estimated time."""
+    mode: TransportMode = Field(..., description="The mode of transport.")
+    estimated_time_minutes: float = Field(..., description="Estimated travel time in minutes.", ge=0)
+    cost: Optional[float] = Field(None, description="Estimated cost of this transport option.", ge=0)
+    availability_details: Optional[str] = Field(None, description="Notes on the availability of this transport option.")
+
+
 class WeatherData(BaseModel):
     """Contains current weather information relevant for transport decisions."""
 
@@ -328,27 +353,21 @@ class WeatherData(BaseModel):
         description="List of any adverse weather conditions (e.g., 'FOG', 'THUNDERSTORM').",
     )
 
-    class Config:
-        # Allow getting the actual temperature regardless of which field was used
-        @validator("temperature_celsius", pre=True, always=True)
-        def set_temp_celsius(cls, v, values):
-            if (
-                v is None
-                and "temperature_c" in values
-                and values["temperature_c"] is not None
-            ):
-                return values["temperature_c"]
-            return v
+    @field_validator("temperature_celsius", mode='before')
+    @classmethod
+    def set_temp_celsius(cls, v, info: FieldValidationInfo):
+        """Ensure temperature_celsius is set from temperature_c if not provided."""
+        if v is None and info.data and "temperature_c" in info.data and info.data["temperature_c"] is not None:
+            return info.data["temperature_c"]
+        return v
 
-        @validator("temperature_c", pre=True, always=True)
-        def set_temp_c(cls, v, values):
-            if (
-                v is None
-                and "temperature_celsius" in values
-                and values["temperature_celsius"] is not None
-            ):
-                return values["temperature_celsius"]
-            return v
+    @field_validator("temperature_c", mode='before')
+    @classmethod
+    def set_temp_c(cls, v, info: FieldValidationInfo):
+        """Ensure temperature_c is set from temperature_celsius if not provided."""
+        if v is None and info.data and "temperature_celsius" in info.data and info.data["temperature_celsius"] is not None:
+            return info.data["temperature_celsius"]
+        return v
 
 
 class TransferRequest(BaseModel):
@@ -385,6 +404,9 @@ class TransferRequest(BaseModel):
     )
     preferred_transport_mode: Optional[TransportMode] = Field(
         None, description="Preferred transport mode, if any."
+    )
+    processed_scoring_results: List[ScoringResult] = Field(
+        default_factory=list, description="List of processed ScoringResult objects."
     )
     
     # Property accessors for transport_info dictionary values
@@ -430,7 +452,8 @@ class TransferRequest(BaseModel):
         if value is not None:
             self.sending_location = value
     
-    @validator("transport_info", pre=True, always=True)
+    @field_validator("transport_info", mode='before')
+    @classmethod
     def ensure_transport_info(cls, v):
         """Ensure transport_info is always a dictionary."""
         if v is None:
@@ -490,50 +513,29 @@ class Recommendation(BaseModel):
         default_factory=list,
         description="Comprehensive log of notes from the decision-making process.",
     )
+    simple_explanation: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="A basic, rule-based explanation for the recommendation."
+    )
+    final_travel_time_minutes: Optional[float] = Field(None, description="Final calculated travel time in minutes for the recommended option.")
+    chosen_transport_mode: Optional[str] = Field(None, description="The transport mode chosen for the recommendation.")
+    scoring_results: List[ScoringResult] = Field(default_factory=list, description="List of scoring results considered.")
     
-    @validator("confidence_score")
+    @field_validator("confidence_score")
+    @classmethod
     def validate_confidence_score(cls, v):
         """Ensure confidence score is a valid percentage."""
         if v is None:
             return 0.0
-        # Clamp the value between 0 and 100
-        result = float(v)
-        if result < 0.0:
-            return 0.0
-        if result > 100.0:
-            return 100.0
-        return result
+        if not 0.0 <= v <= 100.0:
+            raise ValueError("Confidence score must be between 0.0 and 100.0")
+        return float(v)
     
-    # @validator("explainability_details", pre=True, always=True)
-    # def ensure_explainability_details(cls, v, values):
-    #     """Ensure explainability_details is an instance of LLMReasoningDetails or can be converted."""
-    #     if isinstance(v, LLMReasoningDetails):
-    #         return v
-    #     if isinstance(v, dict):
-    #         try:
-    #             # Ensure 'main_recommendation_reason' is present if creating from dict
-    #             if "main_recommendation_reason" not in v:
-    #                 # Provide a default if it's missing and other legacy fields are present
-    #                 if any(key in v for key in ["factors_considered", "alternative_options"]): # Heuristic for legacy
-    #                     v["main_recommendation_reason"] = "Reason not explicitly provided by LLM."
-    #                 # If it's a new-style dict missing the required field, this will fail as intended
-    #             return LLMReasoningDetails(**v)
-    #         except ValidationError as e: # Catch Pydantic validation error
-    #             # If conversion fails, return a default LLMReasoningDetails instance
-    #             # This path is taken if critical fields like main_recommendation_reason are missing
-    #             # and it's not clearly a legacy structure being auto-converted.
-    #             # Log the error for debugging.
-    #             print(f"Warning: Failed to parse explainability_details: {e}. Using default.")
-    #             return LLMReasoningDetails(main_recommendation_reason="Could not parse LLM reasoning.")
-    #     # If v is None or any other type, return a default instance
-    #     if v is None and not values.get('explainability_details_validated'): # Avoid recursion if already tried
-    #         return LLMReasoningDetails(main_recommendation_reason="No LLM reasoning provided.")
-        
-    #     # Fallback for unexpected types or if validation has already been attempted
-    #     return LLMReasoningDetails(main_recommendation_reason="Invalid or missing LLM reasoning structure.")
-
-    @validator("explainability_details", pre=True, always=True)
+    @field_validator("explainability_details", mode='before')
+    @classmethod
     def ensure_explainability_details(cls, v):
+        if v is None:
+            return LLMReasoningDetails(main_recommendation_reason="No LLM reasoning provided.")
         if isinstance(v, LLMReasoningDetails):
             return v
         if isinstance(v, dict):
@@ -543,21 +545,17 @@ class Recommendation(BaseModel):
             if "main_recommendation_reason" not in v and \
                any(k in v for k in ["factors_considered", "alternative_options", "decision_points", "score_utilization", "distance_factors", "exclusion_reasons"]):
                 # This looks like the old dictionary structure.
-                # We'll create a default LLMReasoningDetails and try to map old fields later if necessary,
-                # or simply accept that the old fields won't map directly.
-                # For now, just ensuring the new model can be initialized.
                 return LLMReasoningDetails(
                     main_recommendation_reason="Primary reason not specified in new format.",
                     key_factors_considered=v.get("factors_considered", []),
-                    # Note: 'alternative_reasons' needs specific mapping if old 'alternative_options' was structured differently
                 )
             try:
                 return LLMReasoningDetails(**v)
-            except Exception: # Broad exception to catch Pydantic errors during parsing
+            except Exception:  # Broad exception to catch Pydantic errors during parsing
                 # If parsing fails (e.g. missing main_recommendation_reason in a dict that's not the old format)
                 return LLMReasoningDetails(main_recommendation_reason="Could not parse LLM reasoning.")
-        # If it's None or some other incompatible type, return a default.
-        return LLMReasoningDetails(main_recommendation_reason="No LLM reasoning provided.")
+        # If it's some other incompatible type, return a default.
+        return LLMReasoningDetails(main_recommendation_reason="Invalid LLM reasoning format.")
 
     @property
     def has_transport_weather_info(self) -> bool:
@@ -591,21 +589,32 @@ class Recommendation(BaseModel):
         if patient_data.care_level and patient_data.care_level != "General":
             self.recommended_level_of_care = patient_data.care_level
             return self.recommended_level_of_care
-        
+            
         # Try to infer from explainability details
-        if isinstance(self.explainability_details, LLMReasoningDetails) and self.explainability_details.key_factors_considered:
-            factors = self.explainability_details.key_factors_considered
-            for factor in factors:
-                if isinstance(factor, str) and any(level in factor.upper() for level in ["ICU", "PICU", "NICU", "CRITICAL"]):
-                    if "PICU" in factor.upper():
-                        self.recommended_level_of_care = "PICU"
-                    elif "NICU" in factor.upper():
-                        self.recommended_level_of_care = "NICU"
-                    elif "ICU" in factor.upper() or "CRITICAL" in factor.upper():
-                        self.recommended_level_of_care = "ICU"
-                    return self.recommended_level_of_care
+        if hasattr(self, 'explainability_details') and self.explainability_details:
+            # Check main recommendation reason
+            if hasattr(self.explainability_details, 'main_recommendation_reason') and self.explainability_details.main_recommendation_reason:
+                reason = self.explainability_details.main_recommendation_reason.upper()
+                if "PICU" in reason:
+                    return "PICU"
+                if "NICU" in reason:
+                    return "NICU"
+                if "ICU" in reason or "INTENSIVE" in reason:
+                    return "ICU"
+                
+            # Check key factors
+            if hasattr(self.explainability_details, 'key_factors_considered') and self.explainability_details.key_factors_considered:
+                for factor in self.explainability_details.key_factors_considered:
+                    if isinstance(factor, str):
+                        factor_upper = factor.upper()
+                        if "PICU" in factor_upper:
+                            return "PICU"
+                        if "NICU" in factor_upper:
+                            return "NICU"
+                        if "ICU" in factor_upper or "INTENSIVE" in factor_upper:
+                            return "ICU"
         
-        return self.recommended_level_of_care
+        return self.recommended_level_of_care or "General"
 
 
 class LLMReasoningDetails(BaseModel):
@@ -627,10 +636,15 @@ class LLMReasoningDetails(BaseModel):
     )
 
     # Ensure that default_factory is used correctly for mutable types
-    @validator("alternative_reasons", "key_factors_considered", pre=True, always=True)
-    def ensure_defaults(cls, v, field):
+    @field_validator("alternative_reasons", "key_factors_considered", mode='before')
+    @classmethod
+    def ensure_defaults(cls, v, info):
         if v is None:
-            return field.default_factory() if field.default_factory else field.default
+            # For Pydantic v2, we'll just return empty defaults
+            if info.field_name == "alternative_reasons":
+                return {}
+            elif info.field_name == "key_factors_considered":
+                return []
         return v
 
 

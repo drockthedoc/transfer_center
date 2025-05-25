@@ -11,7 +11,7 @@ and provide comprehensive severity assessments for transfer decisions.
 import logging
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from src.core.models import PatientData
+from src.core.models import PatientData, ScoringResult
 from src.core.scoring.pediatric import (
     calculate_cameo2,
     calculate_chews,
@@ -275,10 +275,6 @@ def extract_vital_signs(patient_data: PatientData) -> Dict[str, Any]:
                 elif "unresponsive" in text_lower or "unconscious" in text_lower:
                     mental_status = "unresponsive"
                 break
-
-                    mental_status = desc # Use for both if found this way
-                    behavior = desc
-                    break
             if mental_status: break # Found it
 
     # Extract capillary refill
@@ -421,7 +417,7 @@ def calculate_all_scores(patient_data: PatientData) -> Dict[str, Any]:
     scores = {}
 
     # Calculate PEWS score
-    pews_result = calculate_pews(
+    pews_raw_result = calculate_pews(
         age_months=vitals["age_months"],
         respiratory_rate=vitals["respiratory_rate"],
         respiratory_effort=vitals["respiratory_effort"],
@@ -430,10 +426,15 @@ def calculate_all_scores(patient_data: PatientData) -> Dict[str, Any]:
         capillary_refill=vitals["capillary_refill"],
         behavior=vitals["mental_status"],
     )
-    scores["pews"] = pews_result
+    scores["pews"] = ScoringResult(
+        scorer_name="PEWS",
+        score_value=pews_raw_result.get("score"),
+        interpretation=pews_raw_result.get("interpretation"),
+        details={k: v for k, v in pews_raw_result.items() if k not in ["score", "interpretation"]}
+    )
 
     # Calculate TRAP score for transport risk
-    trap_result = calculate_trap(
+    trap_raw_result = calculate_trap(
         respiratory_support=vitals["oxygen_requirement"],
         respiratory_rate=vitals["respiratory_rate"],
         work_of_breathing=vitals["respiratory_effort"],
@@ -446,10 +447,15 @@ def calculate_all_scores(patient_data: PatientData) -> Dict[str, Any]:
         access_difficulty=None,  # Not directly available
         age_months=vitals["age_months"],
     )
-    scores["trap"] = trap_result
+    scores["trap"] = ScoringResult(
+        scorer_name="TRAP",
+        score_value=trap_raw_result.get("score"),
+        interpretation=trap_raw_result.get("interpretation"),
+        details={k: v for k, v in trap_raw_result.items() if k not in ["score", "interpretation"]}
+    )
 
     # Calculate CHEWS score
-    chews_result = calculate_chews(
+    chews_raw_result = calculate_chews(
         respiratory_rate=vitals["respiratory_rate"],
         respiratory_effort=vitals["respiratory_effort"],
         heart_rate=vitals["heart_rate"],
@@ -459,37 +465,57 @@ def calculate_all_scores(patient_data: PatientData) -> Dict[str, Any]:
         oxygen_saturation=vitals["oxygen_saturation"],
         age_months=vitals["age_months"],
     )
-    scores["chews"] = chews_result
+    scores["chews"] = ScoringResult(
+        scorer_name="CHEWS",
+        score_value=chews_raw_result.get("score"),
+        interpretation=chews_raw_result.get("interpretation"),
+        details={k: v for k, v in chews_raw_result.items() if k not in ["score", "interpretation"]}
+    )
 
     # Calculate TPS score for transport physiology
-    tps_result = calculate_tps(
+    tps_raw_result = calculate_tps(
         respiratory_status=vitals["respiratory_effort"],
         circulation_status=None,  # Not directly available
         neurologic_status=vitals["mental_status"],
     )
-    scores["tps"] = tps_result
+    scores["tps"] = ScoringResult(
+        scorer_name="TPS",
+        score_value=tps_raw_result.get("score"),
+        interpretation=tps_raw_result.get("interpretation"),
+        details={k: v for k, v in tps_raw_result.items() if k not in ["score", "interpretation"]}
+    )
 
     # Calculate Queensland scores based on trauma status
     if is_trauma:
         # For trauma cases
-        qld_result = calculate_queensland_trauma(
+        qld_trauma_raw_result = calculate_queensland_trauma(
             mechanism=None,  # Need more detailed parsing
             consciousness=vitals["mental_status"],
             airway=None,  # Need more detailed parsing
             breathing=vitals["respiratory_effort"],
             circulation=None,  # Need more detailed parsing
         )
-        scores["queensland_trauma"] = qld_result
+        scores["queensland_trauma"] = ScoringResult(
+            scorer_name="Queensland Trauma",
+            score_value=qld_trauma_raw_result.get("score"),
+            interpretation=qld_trauma_raw_result.get("interpretation"),
+            details={k: v for k, v in qld_trauma_raw_result.items() if k not in ["score", "interpretation"]}
+        )
     else:
         # For non-trauma cases
-        qld_result = calculate_queensland_non_trauma(
+        qld_non_trauma_raw_result = calculate_queensland_non_trauma(
             resp_rate=vitals["respiratory_rate"],
             HR=vitals["heart_rate"],
             mental_status=vitals["mental_status"],
             SpO2=vitals["oxygen_saturation"],
             age_months=vitals["age_months"],
         )
-        scores["queensland_non_trauma"] = qld_result
+        scores["queensland_non_trauma"] = ScoringResult(
+            scorer_name="Queensland Non-Trauma",
+            score_value=qld_non_trauma_raw_result.get("score"),
+            interpretation=qld_non_trauma_raw_result.get("interpretation"),
+            details={k: v for k, v in qld_non_trauma_raw_result.items() if k not in ["score", "interpretation"]}
+        )
 
     # Extract labs if available for PRISM III
     labs = {}
@@ -513,13 +539,18 @@ def calculate_all_scores(patient_data: PatientData) -> Dict[str, Any]:
         "temperature": None,  # Not directly available
     }
 
-    prism_result = calculate_prism3(
+    prism_raw_result = calculate_prism3(
         vitals=vitals_dict,
         labs=labs,
         age_months=vitals["age_months"],
         ventilated=ventilated,
     )
-    scores["prism3"] = prism_result
+    scores["prism3"] = ScoringResult(
+        scorer_name="PRISM III",
+        score_value=prism_raw_result.get("score"),
+        interpretation=prism_raw_result.get("interpretation"),
+        details={k: v for k, v in prism_raw_result.items() if k not in ["score", "interpretation"]}
+    )
 
     return scores
 
@@ -538,8 +569,8 @@ def determine_care_level(scores: Dict[str, Any]) -> Tuple[List[str], List[str]]:
     justifications = []
 
     # Check PEWS score
-    if scores["pews"] != "N/A" and isinstance(scores["pews"]["score"], int):
-        pews_score = scores["pews"]["score"]
+    if scores["pews"] != "N/A" and isinstance(scores["pews"].score_value, int):
+        pews_score = scores["pews"].score_value
         if pews_score >= 7:
             care_levels.append("PICU")
             justifications.append(f"PEWS score {pews_score} (Critical Risk)")
@@ -551,16 +582,16 @@ def determine_care_level(scores: Dict[str, Any]) -> Tuple[List[str], List[str]]:
             justifications.append(f"PEWS score {pews_score} (Medium Risk)")
 
     # Check TRAP score for transport considerations
-    if scores["trap"] != "N/A" and isinstance(scores["trap"]["score"], int):
-        trap_score = scores["trap"]["score"]
-        trap_risk = scores["trap"]["risk_level"]
+    if scores["trap"] != "N/A" and isinstance(scores["trap"].score_value, int):
+        trap_score = scores["trap"].score_value
+        trap_risk = scores["trap"].interpretation
         if "Critical" in trap_risk or "High" in trap_risk:
             care_levels.append("PICU")
             justifications.append(f"TRAP score {trap_score} ({trap_risk})")
 
     # Check CHEWS score
-    if scores["chews"] != "N/A" and isinstance(scores["chews"]["score"], int):
-        chews_score = scores["chews"]["score"]
+    if scores["chews"] != "N/A" and isinstance(scores["chews"].score_value, int):
+        chews_score = scores["chews"].score_value
         if chews_score >= 7:
             care_levels.append("PICU")
             justifications.append(f"CHEWS score {chews_score} (Critical Alert Level)")
@@ -572,8 +603,8 @@ def determine_care_level(scores: Dict[str, Any]) -> Tuple[List[str], List[str]]:
             justifications.append(f"CHEWS score {chews_score} (Medium Alert Level)")
 
     # Check PRISM III score
-    if scores["prism3"] != "N/A" and isinstance(scores["prism3"]["score"], int):
-        prism_score = scores["prism3"]["score"]
+    if scores["prism3"] != "N/A" and isinstance(scores["prism3"].score_value, int):
+        prism_score = scores["prism3"].score_value
         if prism_score >= 10:
             care_levels.append("PICU")
             justifications.append(
@@ -584,9 +615,9 @@ def determine_care_level(scores: Dict[str, Any]) -> Tuple[List[str], List[str]]:
     if (
         "queensland_trauma" in scores
         and scores["queensland_trauma"] != "N/A"
-        and isinstance(scores["queensland_trauma"]["score"], int)
+        and isinstance(scores["queensland_trauma"].score_value, int)
     ):
-        qld_score = scores["queensland_trauma"]["score"]
+        qld_score = scores["queensland_trauma"].score_value
         if qld_score >= 9:
             care_levels.append("PICU")
             justifications.append(
@@ -595,9 +626,9 @@ def determine_care_level(scores: Dict[str, Any]) -> Tuple[List[str], List[str]]:
     elif (
         "queensland_non_trauma" in scores
         and scores["queensland_non_trauma"] != "N/A"
-        and isinstance(scores["queensland_non_trauma"]["score"], int)
+        and isinstance(scores["queensland_non_trauma"].score_value, int)
     ):
-        qld_score = scores["queensland_non_trauma"]["score"]
+        qld_score = scores["queensland_non_trauma"].score_value
         if qld_score >= 7:
             care_levels.append("PICU")
             justifications.append(
@@ -605,8 +636,8 @@ def determine_care_level(scores: Dict[str, Any]) -> Tuple[List[str], List[str]]:
             )
 
     # Determine NICU need based on age and scores
-    if scores["pews"] != "N/A" and "age_months" in scores["pews"].get("vitals", {}):
-        age_months = scores["pews"]["vitals"]["age_months"]
+    if scores["pews"] != "N/A" and "age_months" in scores["pews"].details:
+        age_months = scores["pews"].details["age_months"]
         if age_months is not None and age_months < 1:  # Neonate
             care_levels.append("NICU")
             justifications.append(f"Neonate (age < 1 month)")
@@ -617,8 +648,8 @@ def determine_care_level(scores: Dict[str, Any]) -> Tuple[List[str], List[str]]:
         any_elevated = False
         if (
             scores["pews"] != "N/A"
-            and isinstance(scores["pews"]["score"], int)
-            and scores["pews"]["score"] >= 2
+            and isinstance(scores["pews"].score_value, int)
+            and scores["pews"].score_value >= 2
         ):
             any_elevated = True
 

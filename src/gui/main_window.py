@@ -45,7 +45,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from src.core.decision import recommend_campus
+from src.core.decision_engine import recommend_campus
 from src.core.models import (
     HospitalCampus,
     Location,
@@ -457,6 +457,46 @@ class TransferCenterMainWindow(QMainWindow):
         transport_layout.addWidget(self.transport_output)
         results_tabs.addTab(transport_tab, "Transport Analysis")
 
+        # Transport Details tab
+        transport_details_tab = QWidget()
+        transport_details_layout = QVBoxLayout(transport_details_tab)
+
+        self.transport_details_output = QTextEdit()
+        self.transport_details_output.setReadOnly(True)
+        self.transport_details_output.setStyleSheet(
+            "background-color: #f5f5f5; color: #333333; font-size: 10pt;"
+        )
+
+        transport_details_layout.addWidget(self.transport_details_output)
+        results_tabs.addTab(transport_details_tab, "Transport Details")
+
+        # Weather & Traffic tab
+        weather_traffic_tab = QWidget()
+        weather_traffic_layout = QVBoxLayout(weather_traffic_tab)
+        self.weather_traffic_output = QTextEdit()
+        self.weather_traffic_output.setReadOnly(True)
+        self.weather_traffic_output.setStyleSheet("background-color: #f5f5f5; color: #333333; font-size: 10pt;")
+        weather_traffic_layout.addWidget(self.weather_traffic_output)
+        results_tabs.addTab(weather_traffic_tab, "Weather & Traffic")
+
+        # Scoring Results tab
+        scoring_results_tab = QWidget()
+        scoring_results_layout = QVBoxLayout(scoring_results_tab)
+        self.scoring_results_output = QTextEdit()
+        self.scoring_results_output.setReadOnly(True)
+        self.scoring_results_output.setStyleSheet("background-color: #f5f5f5; color: #333333; font-size: 10pt;")
+        scoring_results_layout.addWidget(self.scoring_results_output)
+        results_tabs.addTab(scoring_results_tab, "Scoring Results")
+
+        # Alternative Hospitals tab
+        alternative_hospitals_tab = QWidget()
+        alternative_hospitals_layout = QVBoxLayout(alternative_hospitals_tab)
+        self.alternative_hospitals_output = QTextEdit()
+        self.alternative_hospitals_output.setReadOnly(True)
+        self.alternative_hospitals_output.setStyleSheet("background-color: #f5f5f5; color: #333333; font-size: 10pt;")
+        alternative_hospitals_layout.addWidget(self.alternative_hospitals_output)
+        results_tabs.addTab(alternative_hospitals_tab, "Alternative Hospitals")
+
         # Add components to right layout
         right_layout.addWidget(results_tabs)
 
@@ -713,17 +753,8 @@ class TransferCenterMainWindow(QMainWindow):
             # Log some info about the loaded hospitals to verify census data was applied
             for hospital in self.hospitals:
                 if hospital.campus_id == "TCH_NORTH_AUSTIN":
-                    logger.info(
-                        f"Austin hospital loaded: {
-                            hospital.name} with {
-                            hospital.bed_census.available_beds} general beds, {
-                            hospital.bed_census.icu_beds_available} ICU beds"
-                    )
-                    print(
-                        f"DEBUG: Austin hospital has {
-                            hospital.bed_census.available_beds} general beds, {
-                            hospital.bed_census.icu_beds_available} ICU beds"
-                    )
+                    logger.info(f"Austin hospital loaded: {hospital.name} with {hospital.bed_census.available_beds} general beds, {hospital.bed_census.icu_beds_available} ICU beds")
+                    print(f"DEBUG: Austin hospital has {hospital.bed_census.available_beds} general beds, {hospital.bed_census.icu_beds_available} ICU beds")
         except Exception as e:
             logger.error(f"Error loading hospital data: {str(e)}")
             print(f"DEBUG: Error loading hospital data: {str(e)}")
@@ -737,8 +768,12 @@ class TransferCenterMainWindow(QMainWindow):
         )
         try:
             with open(weather_file, "r") as f:
-                weather_data = json.load(f)
-                self.weather_data = WeatherData(**weather_data)
+                weather_data_list = json.load(f)
+                if weather_data_list: # Ensure the list is not empty
+                    self.weather_data = WeatherData(**weather_data_list[0])
+                else:
+                    logger.warning("Weather data file is empty.")
+                    self.weather_data = None # Or some default WeatherData object
         except Exception as e:
             logger.error(f"Error loading weather data: {str(e)}")
             self.weather_data = None
@@ -1036,9 +1071,7 @@ class TransferCenterMainWindow(QMainWindow):
                 transport_modes = [TransportMode.AIR_AMBULANCE]
 
         transfer_request = TransferRequest(
-            request_id=f"GUI_{
-                patient_data.patient_id}_{
-                datetime.now().strftime('%Y%m%d%H%M%S')}",
+            request_id=f"GUI_{patient_data.patient_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             patient_data=patient_data,
             sending_facility_name=self.sending_facility.text(),
             sending_facility_location=Location(
@@ -1190,6 +1223,10 @@ class TransferCenterMainWindow(QMainWindow):
         """Display the recommendation results."""
         self.recommendation_output.clear()
         self.explanation_output.clear()
+        self.transport_details_output.clear()
+        self.weather_traffic_output.clear()
+        self.scoring_results_output.clear()
+        self.alternative_hospitals_output.clear()
 
         if not recommendation:
             self.recommendation_output.append("<h3>No Recommendation Available</h3>")
@@ -1229,19 +1266,13 @@ class TransferCenterMainWindow(QMainWindow):
             )
             self.recommendation_output.append("<p><b>Bed Availability:</b></p><ul>")
             self.recommendation_output.append(
-                f"<li>General: {
-                    recommended_hospital.bed_census.available_beds}/{
-                    recommended_hospital.bed_census.total_beds}</li>"
+                f"<li>General: {recommended_hospital.bed_census.available_beds}/{recommended_hospital.bed_census.total_beds}</li>"
             )
             self.recommendation_output.append(
-                f"<li>ICU: {
-                    recommended_hospital.bed_census.icu_beds_available}/{
-                    recommended_hospital.bed_census.icu_beds_total}</li>"
+                f"<li>ICU: {recommended_hospital.bed_census.icu_beds_available}/{recommended_hospital.bed_census.icu_beds_total}</li>"
             )
             self.recommendation_output.append(
-                f"<li>NICU: {
-                    recommended_hospital.bed_census.nicu_beds_available}/{
-                    recommended_hospital.bed_census.nicu_beds_total}</li>"
+                f"<li>NICU: {recommended_hospital.bed_census.nicu_beds_available}/{recommended_hospital.bed_census.nicu_beds_total}</li>"
             )
             self.recommendation_output.append("</ul>")
 
@@ -1279,6 +1310,107 @@ class TransferCenterMainWindow(QMainWindow):
                 self.explanation_output.append(
                     f"<p>{str(recommendation.explainability_details)}</p>"
                 )
+
+        # Display Transport Details
+        if recommendation and recommendation.transport_details:
+            self.transport_details_output.append("<h3>Transport Details</h3>")
+            details = recommendation.transport_details
+            mode = recommendation.chosen_transport_mode or details.get("mode", "Not specified")
+            eta_minutes = recommendation.final_travel_time_minutes or details.get("estimated_time_minutes")
+            
+            self.transport_details_output.append(f"<p><b>Mode:</b> {mode}</p>")
+            
+            if eta_minutes is not None:
+                try:
+                    eta_str = recommendation.get_travel_time_estimate()
+                    self.transport_details_output.append(f"<p><b>Estimated Travel Time:</b> {eta_str}</p>")
+                except Exception as e:
+                    logger.warning(f"Could not format travel time: {e}")
+                    self.transport_details_output.append(f"<p><b>Estimated Travel Time (minutes):</b> {eta_minutes}</p>")
+            else:
+                self.transport_details_output.append("<p><b>Estimated Travel Time:</b> Not available</p>")
+
+            special_considerations = details.get("special_considerations")
+            if special_considerations:
+                if isinstance(special_considerations, list):
+                    self.transport_details_output.append("<p><b>Special Considerations:</b></p><ul>")
+                    for item in special_considerations:
+                        self.transport_details_output.append(f"<li>{item}</li>")
+                    self.transport_details_output.append("</ul>")
+                else:
+                    self.transport_details_output.append(f"<p><b>Special Considerations:</b> {special_considerations}</p>")
+        else:
+            self.transport_details_output.append("<p>No transport details available.</p>")
+
+        # Display Weather & Traffic Conditions
+        if recommendation and recommendation.conditions:
+            self.weather_traffic_output.append("<h3>Weather & Traffic Conditions</h3>")
+            conditions = recommendation.conditions
+            
+            if conditions.get("weather"):
+                self.weather_traffic_output.append("<h4>Weather</h4>")
+                weather = conditions["weather"]
+                if isinstance(weather, dict) and weather:
+                    self.weather_traffic_output.append("<ul>")
+                    for key, value in weather.items():
+                        self.weather_traffic_output.append(f"<li><b>{key.replace('_', ' ').title()}:</b> {value}</li>")
+                    self.weather_traffic_output.append("</ul>")
+                elif isinstance(weather, str):
+                     self.weather_traffic_output.append(f"<p>{weather}</p>")
+                else:
+                    self.weather_traffic_output.append("<p>Weather data not in expected format.</p>")
+            else:
+                self.weather_traffic_output.append("<p>No weather data available.</p>")
+
+            if conditions.get("traffic"):
+                self.weather_traffic_output.append("<h4>Traffic</h4>")
+                traffic = conditions["traffic"]
+                if isinstance(traffic, dict) and traffic:
+                    self.weather_traffic_output.append("<ul>")
+                    for key, value in traffic.items():
+                        self.weather_traffic_output.append(f"<li><b>{key.replace('_', ' ').title()}:</b> {value}</li>")
+                    self.weather_traffic_output.append("</ul>")
+                elif isinstance(traffic, str):
+                    self.weather_traffic_output.append(f"<p>{traffic}</p>")
+                else:
+                    self.weather_traffic_output.append("<p>Traffic data not in expected format.</p>")
+            else:
+                self.weather_traffic_output.append("<p>No traffic data available.</p>")
+        else:
+            self.weather_traffic_output.append("<p>No condition data available.</p>")
+
+        # Display Scoring Results
+        if recommendation and recommendation.scoring_results:
+            self.scoring_results_output.append("<h3>Clinical Scoring Results</h3>")
+            for sr in recommendation.scoring_results:
+                self.scoring_results_output.append(f"<h4>{sr.scorer_name}</h4>")
+                self.scoring_results_output.append("<ul>")
+                self.scoring_results_output.append(f"<li><b>Score:</b> {sr.score_value if sr.score_value is not None else 'N/A'}</li>")
+                if sr.interpretation:
+                    self.scoring_results_output.append(f"<li><b>Interpretation:</b> {sr.interpretation}</li>")
+                if sr.details:
+                    self.scoring_results_output.append("<li><b>Details:</b><ul>")
+                    for key, value in sr.details.items():
+                        self.scoring_results_output.append(f"<li><em>{key.replace('_', ' ').title()}:</em> {value}</li>")
+                    self.scoring_results_output.append("</ul></li>")
+                self.scoring_results_output.append(f"<li><b>Timestamp:</b> {sr.timestamp.strftime('%Y-%m-%d %H:%M:%S')}</li>")
+                self.scoring_results_output.append("</ul>")
+        else:
+            self.scoring_results_output.append("<p>No scoring results available.</p>")
+
+        # Display Alternative Hospitals
+        if recommendation and recommendation.explainability_details and recommendation.explainability_details.alternative_reasons:
+            self.alternative_hospitals_output.append("<h3>Alternative Hospitals Considered</h3>")
+            alternatives = recommendation.explainability_details.alternative_reasons
+            if alternatives:
+                self.alternative_hospitals_output.append("<ul>")
+                for hospital_name, reason in alternatives.items():
+                    self.alternative_hospitals_output.append(f"<li><b>{hospital_name}:</b> {reason}</li>")
+                self.alternative_hospitals_output.append("</ul>")
+            else:
+                self.alternative_hospitals_output.append("<p>No specific alternative hospitals detailed.</p>")
+        else:
+            self.alternative_hospitals_output.append("<p>No alternative hospital information available.</p>")
 
 
 def main():

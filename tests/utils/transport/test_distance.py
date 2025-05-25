@@ -12,25 +12,24 @@ import unittest
 from unittest.mock import patch, MagicMock
 
 from src.utils.transport.distance import (
-    calculate_straight_line_distance,
-    calculate_road_distance,
-    calculate_distance_matrix,
+    calculate_distance,
+    calculate_direct_travel_time,
 )
 
 
 class TestDistanceCalculator(unittest.TestCase):
     """Test cases for the distance calculator functionality"""
 
-    def test_calculate_straight_line_distance(self):
+    def test_calculate_distance(self):
         """Test calculation of straight-line (haversine) distance between coordinates"""
         # Test with known coordinates
         # Dallas to Fort Worth coordinates (approx)
-        dallas_lat, dallas_lng = 32.7767, -96.7970
-        fort_worth_lat, fort_worth_lng = 32.7555, -97.3308
+        from src.core.models import Location
         
-        distance = calculate_straight_line_distance(
-            dallas_lat, dallas_lng, fort_worth_lat, fort_worth_lng
-        )
+        dallas = Location(latitude=32.7767, longitude=-96.7970)
+        fort_worth = Location(latitude=32.7555, longitude=-97.3308)
+        
+        distance = calculate_distance(dallas, fort_worth)
         
         # Should be approximately 30 miles
         self.assertGreater(distance, 29)

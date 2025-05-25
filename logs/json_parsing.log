@@ -1,0 +1,657 @@
+
+
+=== PARSED JSON OBJECT 2025-05-24 23:41:37.987944 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus (MC)", 'care_level': 'PICU', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full spectrum of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a critically ill child requiring PICU level care.", 'alternative_reasons': {'TCH_WOODLANDS': 'Likely lacks PICU capabilities and the full range of required specialties.', 'TCH_WEST_KATY': 'Likely lacks PICU capabilities and the full range of required specialties.', 'TCH_NORTH_AUSTIN': 'Geographically distant and likely lacks PICU capabilities and the full range of required specialties.', 'TCH_PAVILION_WOMEN': 'Specialized facility for women and newborns; does not provide PICU care for this age group.'}, 'key_factors_considered': ['Required Care Level (PICU)', 'Availability of Required Specialties', 'Hospital Capability (Tertiary Care Center)', 'Bed Availability Heuristic (Main Campus typically has highest capacity)'], 'confidence_explanation': "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's role as the central hub for specialized pediatric services at Texas Children's."}, 'notes': ['Patient requires immediate transfer to a facility capable of providing PICU level care.', 'Coordination with receiving PICU team is essential.', 'Consideration for potential sepsis given fever and clinical presentation.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': 'Requires critical care transport team capable of managing a pediatric patient with respiratory distress and potential hemodynamic instability.'}, 'conditions': {'weather': 'Clear, 78F', 'traffic': 'Moderate traffic reported on major routes.'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full spectrum of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a critically ill child requiring PICU level care.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specialized facility for women and newborns; does not provide PICU care for this age group."
+    },
+    "key_factors_considered": [
+      "Required Care Level (PICU)",
+      "Availability of Required Specialties",
+      "Hospital Capability (Tertiary Care Center)",
+      "Bed Availability Heuristic (Main Campus typically has highest capacity)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's role as the central hub for specialized pediatric services at Texas Children's."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Consideration for potential sepsis given fever and clinical presentation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing a pediatric patient with respiratory distress and potential hemodynamic instability."
+  },
+  "conditions": {
+    "weather": "Clear, 78F",
+    "traffic": "Moderate traffic reported on major routes."
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-24 23:53:15.223727 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus (MC)", 'care_level': 'PICU', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have available PICU beds and the full range of required pediatric critical care specialties (Pediatric Critical Care Medicine, Pediatric Pulmonology, Pediatric Infectious Disease) needed for this complex case involving a high-risk patient with severe RSV bronchiolitis.", 'alternative_reasons': {'TCH_WOODLANDS': 'Likely lacks PICU capabilities and the full spectrum of required specialties.', 'TCH_WEST_KATY': 'Likely lacks PICU capabilities and the full spectrum of required specialties.', 'TCH_NORTH_AUSTIN': 'Geographically distant and likely lacks PICU capabilities and the full spectrum of required specialties.', 'TCH_PAVILION_WOMEN': "Specializes in women's and neonatal care; does not provide PICU services for pediatric patients."}, 'key_factors_considered': ['PICU requirement', 'Specialty availability (Pediatric Critical Care, Pulmonology, Infectious Disease)', 'Tertiary care center status', 'Bed availability heuristic (assuming MC has highest likelihood)'], 'confidence_explanation': "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's status as the central hub for specialized pediatric services within the TCH system."}, 'notes': ['Patient requires immediate transfer to a facility capable of providing PICU level care.', 'Coordination with receiving PICU team is essential.', 'Bed availability at TCH_MAIN_TMC needs to be confirmed prior to transport.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': 'Requires critical care transport team capable of managing a pediatric patient with respiratory distress and potential hemodynamic instability.'}, 'conditions': {'weather': 'Clear, 75F', 'traffic': 'Moderate traffic reported on major routes.'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have available PICU beds and the full range of required pediatric critical care specialties (Pediatric Critical Care Medicine, Pediatric Pulmonology, Pediatric Infectious Disease) needed for this complex case involving a high-risk patient with severe RSV bronchiolitis.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specializes in women's and neonatal care; does not provide PICU services for pediatric patients."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Specialty availability (Pediatric Critical Care, Pulmonology, Infectious Disease)",
+      "Tertiary care center status",
+      "Bed availability heuristic (assuming MC has highest likelihood)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's status as the central hub for specialized pediatric services within the TCH system."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Bed availability at TCH_MAIN_TMC needs to be confirmed prior to transport."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing a pediatric patient with respiratory distress and potential hemodynamic instability."
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Moderate traffic reported on major routes."
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 00:52:36.540058 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus (MC)", 'care_level': 'PICU', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "The Main Campus (TCH_MAIN_TMC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like severe RSV bronchiolitis in a child with a history of prematurity.", 'alternative_reasons': {'TCH_WOODLANDS': 'Likely lacks PICU capabilities and the full spectrum of required specialties.', 'TCH_WEST_KATY': 'Likely lacks PICU capabilities and the full spectrum of required specialties.', 'TCH_NORTH_AUSTIN': 'Geographically distant and likely lacks PICU capabilities and the full spectrum of required specialties.', 'TCH_PAVILION_WOMEN': "Specializes in women's and neonatal care; does not provide PICU services for pediatric patients."}, 'key_factors_considered': ['Required Care Level (PICU)', 'Required Specialties (Pediatric Critical Care, Pulmonology, Infectious Disease)', 'Hospital Capabilities (Tertiary Care Center)', 'Bed Availability Heuristic (Main Campus most likely to have PICU beds)'], 'confidence_explanation': "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's status as the central hub for specialized pediatric services at Texas Children's Hospital."}, 'notes': ['Patient requires immediate transfer to a facility capable of providing PICU level care.', 'Coordination with receiving PICU team is essential.', 'Consideration for potential need for mechanical ventilation.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': 'Requires critical care transport team capable of managing respiratory distress and potential deterioration.'}, 'conditions': {'weather': 'Clear, 78F', 'traffic': 'Moderate traffic reported on major highways.'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (TCH_MAIN_TMC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like severe RSV bronchiolitis in a child with a history of prematurity.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specializes in women's and neonatal care; does not provide PICU services for pediatric patients."
+    },
+    "key_factors_considered": [
+      "Required Care Level (PICU)",
+      "Required Specialties (Pediatric Critical Care, Pulmonology, Infectious Disease)",
+      "Hospital Capabilities (Tertiary Care Center)",
+      "Bed Availability Heuristic (Main Campus most likely to have PICU beds)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's status as the central hub for specialized pediatric services at Texas Children's Hospital."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Consideration for potential need for mechanical ventilation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing respiratory distress and potential deterioration."
+  },
+  "conditions": {
+    "weather": "Clear, 78F",
+    "traffic": "Moderate traffic reported on major highways."
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 01:05:53.399104 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus (MC)", 'care_level': 'PICU', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like this.", 'alternative_reasons': {'TCH_WOODLANDS': 'Likely lacks PICU capabilities and the full spectrum of required specialties.', 'TCH_WEST_KATY': 'Likely lacks PICU capabilities and the full spectrum of required specialties.', 'TCH_NORTH_AUSTIN': 'Geographically distant and likely lacks PICU capabilities and the full spectrum of required specialties.', 'TCH_PAVILION_WOMEN': 'Specialized facility for women and newborns; does not provide PICU care for this age group.'}, 'key_factors_considered': ['PICU requirement', 'Specialty availability (Critical Care, Pulmonology, ID)', 'Tertiary care center status', 'Bed availability heuristic (assuming MC has highest likelihood)'], 'confidence_explanation': "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's role as the central hub for specialized pediatric services."}, 'notes': ['Patient requires immediate transfer to a facility capable of providing PICU level care.', 'Coordination with receiving PICU team is essential.', 'Consideration for potential need for mechanical ventilation.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': 'Requires critical care transport team capable of managing pediatric respiratory distress and potential deterioration.'}, 'conditions': {'weather': 'Clear, 78F', 'traffic': 'Moderate traffic reported on major routes.'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full range of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like this.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full spectrum of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specialized facility for women and newborns; does not provide PICU care for this age group."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Specialty availability (Critical Care, Pulmonology, ID)",
+      "Tertiary care center status",
+      "Bed availability heuristic (assuming MC has highest likelihood)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's role as the central hub for specialized pediatric services."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Consideration for potential need for mechanical ventilation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing pediatric respiratory distress and potential deterioration."
+  },
+  "conditions": {
+    "weather": "Clear, 78F",
+    "traffic": "Moderate traffic reported on major routes."
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 01:10:30.986878 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus", 'care_level': 'PICU', 'confidence_score': 95, 'explainability_details': {'main_recommendation_reason': "The patient's clinical presentation – high fever, prematurity, previous PICU admission, and respiratory distress – strongly suggests a need for intensive care in a PICU setting. The ventilator and isolation protocols are essential for managing respiratory complications.", 'alternative_reasons': [{'campus_id': 'TCH_WOODLANDS', 'reason': "While the patient's clinical presentation is concerning, the Woodlands campus offers a slightly more accessible location for immediate transfer, potentially reducing the time to reach a specialized care team."}, {'campus_id': 'TCH_WEST_KATY', 'reason': "The West Campus location is further from the patient's current location, requiring additional transportation time and potentially impacting the speed of care."}, {'campus_id': 'TCH_NORTH_AUSTIN', 'reason': "The North Austin campus is further away, potentially increasing the time to reach the patient and potentially impacting the ability to quickly assess the patient's condition."}], 'key_factors_considered': ["Patient's clinical presentation (high fever, prematurity, PICU history)", "Distance from patient's current location", 'Specialty match (PICU)', 'Bed availability'], 'confidence_explanation': "High confidence due to the clear specialty match and readily available bed space in the PICU unit. The patient's history of PICU admission and respiratory distress strongly supports the need for intensive care."}, 'notes': ['Requires NICU-capable team for ventilator support.', 'Patient requires close monitoring of respiratory status.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 60, 'special_requirements': 'Requires a dedicated transport team with experience in managing patients with respiratory distress.'}, 'conditions': {'weather': 'Clear, 75F', 'traffic': 'Light traffic on I-10'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus",
+  "care_level": "PICU",
+  "confidence_score": 95,
+  "explainability_details": {
+    "main_recommendation_reason": "The patient's clinical presentation \u2013 high fever, prematurity, previous PICU admission, and respiratory distress \u2013 strongly suggests a need for intensive care in a PICU setting. The ventilator and isolation protocols are essential for managing respiratory complications.",
+    "alternative_reasons": [
+      {
+        "campus_id": "TCH_WOODLANDS",
+        "reason": "While the patient's clinical presentation is concerning, the Woodlands campus offers a slightly more accessible location for immediate transfer, potentially reducing the time to reach a specialized care team."
+      },
+      {
+        "campus_id": "TCH_WEST_KATY",
+        "reason": "The West Campus location is further from the patient's current location, requiring additional transportation time and potentially impacting the speed of care."
+      },
+      {
+        "campus_id": "TCH_NORTH_AUSTIN",
+        "reason": "The North Austin campus is further away, potentially increasing the time to reach the patient and potentially impacting the ability to quickly assess the patient's condition."
+      }
+    ],
+    "key_factors_considered": [
+      "Patient's clinical presentation (high fever, prematurity, PICU history)",
+      "Distance from patient's current location",
+      "Specialty match (PICU)",
+      "Bed availability"
+    ],
+    "confidence_explanation": "High confidence due to the clear specialty match and readily available bed space in the PICU unit. The patient's history of PICU admission and respiratory distress strongly supports the need for intensive care."
+  },
+  "notes": [
+    "Requires NICU-capable team for ventilator support.",
+    "Patient requires close monitoring of respiratory status."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 60,
+    "special_requirements": "Requires a dedicated transport team with experience in managing patients with respiratory distress."
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Light traffic on I-10"
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 01:19:31.860713 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus (MC)", 'care_level': 'PICU', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full spectrum of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like this.", 'alternative_reasons': {'TCH_WOODLANDS': 'Likely lacks PICU capabilities and the full range of required specialties.', 'TCH_WEST_KATY': 'Likely lacks PICU capabilities and the full range of required specialties.', 'TCH_NORTH_AUSTIN': 'Geographically distant and likely lacks PICU capabilities and the full range of required specialties.', 'TCH_PAVILION_WOMEN': 'Specialized facility for women and newborns; does not provide PICU care for this age group.'}, 'key_factors_considered': ['PICU requirement', 'Specialty availability (Critical Care, Pulmonology, ID)', 'Tertiary care center status', 'Bed availability heuristic (assuming MC has highest likelihood)'], 'confidence_explanation': "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's role as the central hub for specialized pediatric services."}, 'notes': ['Patient requires immediate transfer to a facility capable of providing PICU level care.', 'Coordination with receiving PICU team is essential.', 'Bed availability at TCH_MAIN_TMC is assumed but needs confirmation.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': 'Requires critical care transport team capable of managing a pediatric patient with respiratory distress and potential deterioration.'}, 'conditions': {'weather': 'Clear, 75F', 'traffic': 'Moderate traffic reported on major routes'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The Main Campus (MC) is the primary tertiary care center for Texas Children's Hospital, most likely to have PICU bed availability and the full spectrum of required pediatric specialties (Critical Care, Pulmonology, Infectious Disease) readily available for a complex case like this.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_WEST_KATY": "Likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities and the full range of required specialties.",
+      "TCH_PAVILION_WOMEN": "Specialized facility for women and newborns; does not provide PICU care for this age group."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Specialty availability (Critical Care, Pulmonology, ID)",
+      "Tertiary care center status",
+      "Bed availability heuristic (assuming MC has highest likelihood)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus's role as the central hub for specialized pediatric services."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with receiving PICU team is essential.",
+    "Bed availability at TCH_MAIN_TMC is assumed but needs confirmation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing a pediatric patient with respiratory distress and potential deterioration."
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Moderate traffic reported on major routes"
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 03:57:16.037009 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'CAMPUS_007', 'recommended_campus_name': "Children's Regional Medical Center", 'care_level': 'PICU', 'confidence_score': 95, 'explainability_details': {'main_recommendation_reason': 'CAMPUS_007 is the closest facility with a dedicated PICU and required specialties (Pediatric Critical Care Medicine, Pediatric Pulmonology, Pediatric Infectious Disease) readily available.', 'alternative_reasons': {'CAMPUS_012': 'CAMPUS_012 has a PICU but lacks immediate availability of Pediatric Pulmonology specialists.', 'CAMPUS_003': 'CAMPUS_003 is further away and does not have a dedicated PICU, only a general pediatric ICU.'}, 'key_factors_considered': ['PICU requirement', 'Specialty availability (Pediatric Critical Care Medicine, Pulmonology, Infectious Disease)', 'Proximity', 'Bed availability heuristic'], 'confidence_explanation': "High confidence due to the strong match between patient needs (PICU level care, specific specialties) and CAMPUS_007's capabilities, combined with favorable proximity and estimated bed availability."}, 'notes': ['Patient requires immediate transfer due to respiratory distress and systemic illness.', 'History of prematurity and prior severe RSV increases risk for complications.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 45, 'special_requirements': 'Requires pediatric critical care transport team capable of managing respiratory distress.'}, 'conditions': {'weather': 'Clear, 72F', 'traffic': 'Moderate traffic reported on main routes.'}}
+JSON DUMP: {
+  "recommended_campus_id": "CAMPUS_007",
+  "recommended_campus_name": "Children's Regional Medical Center",
+  "care_level": "PICU",
+  "confidence_score": 95,
+  "explainability_details": {
+    "main_recommendation_reason": "CAMPUS_007 is the closest facility with a dedicated PICU and required specialties (Pediatric Critical Care Medicine, Pediatric Pulmonology, Pediatric Infectious Disease) readily available.",
+    "alternative_reasons": {
+      "CAMPUS_012": "CAMPUS_012 has a PICU but lacks immediate availability of Pediatric Pulmonology specialists.",
+      "CAMPUS_003": "CAMPUS_003 is further away and does not have a dedicated PICU, only a general pediatric ICU."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Specialty availability (Pediatric Critical Care Medicine, Pulmonology, Infectious Disease)",
+      "Proximity",
+      "Bed availability heuristic"
+    ],
+    "confidence_explanation": "High confidence due to the strong match between patient needs (PICU level care, specific specialties) and CAMPUS_007's capabilities, combined with favorable proximity and estimated bed availability."
+  },
+  "notes": [
+    "Patient requires immediate transfer due to respiratory distress and systemic illness.",
+    "History of prematurity and prior severe RSV increases risk for complications."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 45,
+    "special_requirements": "Requires pediatric critical care transport team capable of managing respiratory distress."
+  },
+  "conditions": {
+    "weather": "Clear, 72F",
+    "traffic": "Moderate traffic reported on main routes."
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 04:01:13.010267 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'CAMPUS_A', 'recommended_campus_name': "Children's Hospital Main Campus", 'care_level': 'PICU', 'confidence_score': 95, 'explainability_details': {'main_recommendation_reason': 'Campus A is the only facility within a reasonable transport distance (estimated <60 minutes) with a dedicated PICU and the required specialties (Pediatric Critical Care Medicine, Pediatric Pulmonology, Pediatric Infectious Disease).', 'alternative_reasons': {'CAMPUS_B': 'CAMPUS_B does not have a PICU; only a general pediatric ward.', 'CAMPUS_C': 'CAMPUS_C is too far (estimated >120 minutes transport time) and lacks Pediatric Pulmonology.'}, 'key_factors_considered': ['PICU requirement', 'Specialty match (Pediatric Critical Care, Pulmonology, Infectious Disease)', 'Distance/Transport Time', 'Bed Availability Heuristic (High likelihood based on current system status)'], 'confidence_explanation': "High confidence due to the patient's critical condition requiring PICU level care and Campus A being the only nearby facility equipped to provide it."}, 'notes': ['Patient requires immediate transfer due to respiratory distress and potential sepsis.', 'Confirm bed availability with receiving PICU prior to transport initiation.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 45, 'special_requirements': "Requires NICU-capable team due to patient's age and critical condition. Continuous monitoring needed during transport."}, 'conditions': {'weather': 'Clear, 72F', 'traffic': 'Moderate traffic reported on main routes'}}
+JSON DUMP: {
+  "recommended_campus_id": "CAMPUS_A",
+  "recommended_campus_name": "Children's Hospital Main Campus",
+  "care_level": "PICU",
+  "confidence_score": 95,
+  "explainability_details": {
+    "main_recommendation_reason": "Campus A is the only facility within a reasonable transport distance (estimated <60 minutes) with a dedicated PICU and the required specialties (Pediatric Critical Care Medicine, Pediatric Pulmonology, Pediatric Infectious Disease).",
+    "alternative_reasons": {
+      "CAMPUS_B": "CAMPUS_B does not have a PICU; only a general pediatric ward.",
+      "CAMPUS_C": "CAMPUS_C is too far (estimated >120 minutes transport time) and lacks Pediatric Pulmonology."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Specialty match (Pediatric Critical Care, Pulmonology, Infectious Disease)",
+      "Distance/Transport Time",
+      "Bed Availability Heuristic (High likelihood based on current system status)"
+    ],
+    "confidence_explanation": "High confidence due to the patient's critical condition requiring PICU level care and Campus A being the only nearby facility equipped to provide it."
+  },
+  "notes": [
+    "Patient requires immediate transfer due to respiratory distress and potential sepsis.",
+    "Confirm bed availability with receiving PICU prior to transport initiation."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 45,
+    "special_requirements": "Requires NICU-capable team due to patient's age and critical condition. Continuous monitoring needed during transport."
+  },
+  "conditions": {
+    "weather": "Clear, 72F",
+    "traffic": "Moderate traffic reported on main routes"
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 04:15:40.079916 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus (MC)", 'care_level': 'PICU', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "The patient requires PICU level care due to respiratory distress and history of severe illness. The Main Campus is the primary tertiary care center for Texas Children's Hospital, most likely equipped to handle complex pediatric critical care cases requiring multiple specialties.", 'alternative_reasons': {'TCH_WOODLANDS': 'Likely does not have PICU capabilities or the full range of required specialties.', 'TCH_WEST_KATY': 'Likely does not have PICU capabilities or the full range of required specialties.', 'TCH_NORTH_AUSTIN': 'Geographically distant and likely lacks PICU capabilities.', 'TCH_PAVILION_WOMEN': "Specialized facility for women's health, not equipped for pediatric critical care."}, 'key_factors_considered': ['PICU requirement', 'Availability of multiple specialties (Pediatric Critical Care, Pulmonology, Infectious Disease)', 'Tertiary care center status', 'Bed availability heuristic (assuming Main Campus has highest likelihood)'], 'confidence_explanation': "High confidence based on the patient's critical condition requiring PICU and specialized pediatric services typically concentrated at the main tertiary campus."}, 'notes': ['Patient requires immediate transfer to a facility capable of providing PICU level care.', 'Coordination with Pediatric Critical Care Medicine, Pulmonology, and Infectious Disease is recommended upon arrival.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 60, 'special_requirements': 'Requires critical care transport team capable of managing pediatric respiratory distress and monitoring vital signs during transit.'}, 'conditions': {'weather': 'Clear, 78F', 'traffic': 'Moderate traffic reported on major highways.'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The patient requires PICU level care due to respiratory distress and history of severe illness. The Main Campus is the primary tertiary care center for Texas Children's Hospital, most likely equipped to handle complex pediatric critical care cases requiring multiple specialties.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely does not have PICU capabilities or the full range of required specialties.",
+      "TCH_WEST_KATY": "Likely does not have PICU capabilities or the full range of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities.",
+      "TCH_PAVILION_WOMEN": "Specialized facility for women's health, not equipped for pediatric critical care."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Availability of multiple specialties (Pediatric Critical Care, Pulmonology, Infectious Disease)",
+      "Tertiary care center status",
+      "Bed availability heuristic (assuming Main Campus has highest likelihood)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU and specialized pediatric services typically concentrated at the main tertiary campus."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU level care.",
+    "Coordination with Pediatric Critical Care Medicine, Pulmonology, and Infectious Disease is recommended upon arrival."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 60,
+    "special_requirements": "Requires critical care transport team capable of managing pediatric respiratory distress and monitoring vital signs during transit."
+  },
+  "conditions": {
+    "weather": "Clear, 78F",
+    "traffic": "Moderate traffic reported on major highways."
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 04:21:55.063932 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus (MC)", 'care_level': 'PICU', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "The patient requires PICU level care due to significant respiratory distress and instability. The Main Campus is the primary tertiary care center for Texas Children's Hospital, most likely equipped to handle complex pediatric critical care cases, including those requiring Pediatric Critical Care Medicine, Pulmonology, and Infectious Disease consultation.", 'alternative_reasons': {'TCH_WOODLANDS': 'Likely does not have PICU capabilities or the full range of required specialties.', 'TCH_WEST_KATY': 'Likely does not have PICU capabilities or the full range of required specialties.', 'TCH_NORTH_AUSTIN': 'Geographically distant and likely lacks PICU capabilities.', 'TCH_PAVILION_WOMEN': "Specialized facility for women and newborns; inappropriate for this patient's needs."}, 'key_factors_considered': ['Required Care Level (PICU)', 'Availability of Required Specialties', 'Hospital Capability Heuristic (Main Campus as primary tertiary center)'], 'confidence_explanation': "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus being the most likely location for comprehensive pediatric specialty services."}, 'notes': ['Patient requires immediate transfer due to respiratory distress.', 'Confirm bed availability in PICU at TCH_MAIN_TMC prior to transport.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': 'Requires critical care transport team capable of managing pediatric respiratory distress and potential intubation.'}, 'conditions': {'weather': 'Clear, 78F', 'traffic': 'Moderate traffic reported on major routes.'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The patient requires PICU level care due to significant respiratory distress and instability. The Main Campus is the primary tertiary care center for Texas Children's Hospital, most likely equipped to handle complex pediatric critical care cases, including those requiring Pediatric Critical Care Medicine, Pulmonology, and Infectious Disease consultation.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely does not have PICU capabilities or the full range of required specialties.",
+      "TCH_WEST_KATY": "Likely does not have PICU capabilities or the full range of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities.",
+      "TCH_PAVILION_WOMEN": "Specialized facility for women and newborns; inappropriate for this patient's needs."
+    },
+    "key_factors_considered": [
+      "Required Care Level (PICU)",
+      "Availability of Required Specialties",
+      "Hospital Capability Heuristic (Main Campus as primary tertiary center)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's critical condition requiring PICU level care and the Main Campus being the most likely location for comprehensive pediatric specialty services."
+  },
+  "notes": [
+    "Patient requires immediate transfer due to respiratory distress.",
+    "Confirm bed availability in PICU at TCH_MAIN_TMC prior to transport."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": "Requires critical care transport team capable of managing pediatric respiratory distress and potential intubation."
+  },
+  "conditions": {
+    "weather": "Clear, 78F",
+    "traffic": "Moderate traffic reported on major routes."
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 04:44:56.429943 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus (MC)", 'care_level': 'PICU', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "The patient requires PICU level care due to critical vital signs and history. The Main Campus is the primary tertiary care center for Texas Children's Hospital, most likely equipped to handle complex pediatric critical care cases, including those requiring Pediatric Critical Care Medicine, Pulmonology, and Infectious Disease consultation.", 'alternative_reasons': {'TCH_WOODLANDS': 'Likely does not have PICU capabilities or the full range of required specialties.', 'TCH_WEST_KATY': 'Likely does not have PICU capabilities or the full range of required specialties.', 'TCH_NORTH_AUSTIN': 'Geographically distant and likely lacks PICU capabilities.', 'TCH_PAVILION_WOMEN': "Specialized facility for women's health, not equipped for pediatric critical care."}, 'key_factors_considered': ['PICU requirement', 'Availability of required specialties (Pediatric Critical Care Medicine, Pulmonology, Infectious Disease)', 'Tertiary care center status', 'Bed availability heuristic (assuming Main Campus has highest likelihood)'], 'confidence_explanation': "High confidence based on the patient's clear need for PICU level care and the assumption that the Main Campus is best equipped to provide this, including necessary specialties. Confidence slightly reduced due to lack of specific data on care levels/specialties at each campus."}, 'notes': ['Patient requires immediate transfer to a facility capable of providing PICU care.', 'Consultation with Pediatric Critical Care Medicine, Pulmonology, and Infectious Disease is recommended upon arrival.'], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 60, 'special_requirements': 'Requires critical care transport team capable of managing a pediatric patient with respiratory distress and hemodynamic instability.'}, 'conditions': {'weather': 'Clear, 78F', 'traffic': 'Moderate traffic reported on major highways.'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The patient requires PICU level care due to critical vital signs and history. The Main Campus is the primary tertiary care center for Texas Children's Hospital, most likely equipped to handle complex pediatric critical care cases, including those requiring Pediatric Critical Care Medicine, Pulmonology, and Infectious Disease consultation.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "Likely does not have PICU capabilities or the full range of required specialties.",
+      "TCH_WEST_KATY": "Likely does not have PICU capabilities or the full range of required specialties.",
+      "TCH_NORTH_AUSTIN": "Geographically distant and likely lacks PICU capabilities.",
+      "TCH_PAVILION_WOMEN": "Specialized facility for women's health, not equipped for pediatric critical care."
+    },
+    "key_factors_considered": [
+      "PICU requirement",
+      "Availability of required specialties (Pediatric Critical Care Medicine, Pulmonology, Infectious Disease)",
+      "Tertiary care center status",
+      "Bed availability heuristic (assuming Main Campus has highest likelihood)"
+    ],
+    "confidence_explanation": "High confidence based on the patient's clear need for PICU level care and the assumption that the Main Campus is best equipped to provide this, including necessary specialties. Confidence slightly reduced due to lack of specific data on care levels/specialties at each campus."
+  },
+  "notes": [
+    "Patient requires immediate transfer to a facility capable of providing PICU care.",
+    "Consultation with Pediatric Critical Care Medicine, Pulmonology, and Infectious Disease is recommended upon arrival."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 60,
+    "special_requirements": "Requires critical care transport team capable of managing a pediatric patient with respiratory distress and hemodynamic instability."
+  },
+  "conditions": {
+    "weather": "Clear, 78F",
+    "traffic": "Moderate traffic reported on major highways."
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 05:00:59.867440 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus (MC)", 'care_level': 'PICU', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "The patient's symptoms and history suggest a need for specialized pediatric care, which the PICU at Texas Children's Hospital - Main Campus (MC) can provide. This hospital is equipped with advanced respiratory care capabilities and has experience managing severe respiratory distress in young patients.", 'alternative_reasons': {'TCH_WOODLANDS': 'While this campus offers good proximity and some pediatric care, it lacks the advanced respiratory services needed for a patient of this severity.', 'TCH_WEST_KATY': 'This location is farther away and may not have the same level of specialized pediatric ICU care as the Main Campus.', 'TCH_NORTH_AUSTIN': "This hospital is quite far from the patient's location, making it less practical for immediate transfer.", 'TCH_PAVILION_WOMEN': 'Although this campus offers good proximity, it primarily focuses on maternal and neonatal care rather than pediatric respiratory services.'}, 'key_factors_considered': ['proximity', 'specialty_match', 'bed_availability_heuristic'], 'confidence_explanation': "High confidence due to the hospital's advanced capabilities in managing severe respiratory distress and its location being relatively close to the patient."}, 'notes': ['Patient is a 3-year-old male with symptoms of severe respiratory distress requiring PICU care.', "Texas Children's Hospital - Main Campus (MC) has experience managing RSV bronchiolitis and offers advanced pediatric ICU services."], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 's special_requirements': ''}, 'conditions': {'weather': 'Clear, 75F', 'traffic': 'Light traffic on I-10'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The patient's symptoms and history suggest a need for specialized pediatric care, which the PICU at Texas Children's Hospital - Main Campus (MC) can provide. This hospital is equipped with advanced respiratory care capabilities and has experience managing severe respiratory distress in young patients.",
+    "alternative_reasons": {
+      "TCH_WOODLANDS": "While this campus offers good proximity and some pediatric care, it lacks the advanced respiratory services needed for a patient of this severity.",
+      "TCH_WEST_KATY": "This location is farther away and may not have the same level of specialized pediatric ICU care as the Main Campus.",
+      "TCH_NORTH_AUSTIN": "This hospital is quite far from the patient's location, making it less practical for immediate transfer.",
+      "TCH_PAVILION_WOMEN": "Although this campus offers good proximity, it primarily focuses on maternal and neonatal care rather than pediatric respiratory services."
+    },
+    "key_factors_considered": [
+      "proximity",
+      "specialty_match",
+      "bed_availability_heuristic"
+    ],
+    "confidence_explanation": "High confidence due to the hospital's advanced capabilities in managing severe respiratory distress and its location being relatively close to the patient."
+  },
+  "notes": [
+    "Patient is a 3-year-old male with symptoms of severe respiratory distress requiring PICU care.",
+    "Texas Children's Hospital - Main Campus (MC) has experience managing RSV bronchiolitis and offers advanced pediatric ICU services."
+  ],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "s special_requirements": ""
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Light traffic on I-10"
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 05:05:02.087982 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_NORTH_AUSTIN', 'recommended_campus_name': "Texas Children's Hospital - North Austin Campus", 'care_level': 'PICU', 'confidence_score': 70, 'explainability_details': {'main_recommendation_reason': "The North Austin Campus is the closest to the patient's location and may offer PICU-level care, though this is not explicitly confirmed.", 'alternative_reasons': {}, 'key_factors_considered': ['proximity', 'PICU_capability'], 'confidence_explanation': 'Moderate confidence due to proximity and potential PICU capabilities.'}, 'notes': [], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': ''}, 'conditions': {'weather': 'Clear, 75F', 'traffic': 'Light traffic on I-10'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_NORTH_AUSTIN",
+  "recommended_campus_name": "Texas Children's Hospital - North Austin Campus",
+  "care_level": "PICU",
+  "confidence_score": 70,
+  "explainability_details": {
+    "main_recommendation_reason": "The North Austin Campus is the closest to the patient's location and may offer PICU-level care, though this is not explicitly confirmed.",
+    "alternative_reasons": {},
+    "key_factors_considered": [
+      "proximity",
+      "PICU_capability"
+    ],
+    "confidence_explanation": "Moderate confidence due to proximity and potential PICU capabilities."
+  },
+  "notes": [],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": ""
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Light traffic on I-10"
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 05:13:18.984131 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_PAVILION_WOMEN', 'recommended_campus_name': "Texas Children's Hospital - Pavilion for Women", 'care_level': 'General', 'confidence_score': 70, 'explainability_details': {'main_recommendation_reason': "Pavilion for Women is a nearby option that fits the patient's general medical care needs and is close to his current location.", 'alternative_reasons': {}, 'key_factors_considered': ['proximity', 'general_medical_care'], 'confidence_explanation': 'Moderate confidence due to reasonable proximity and general medical capabilities.'}, 'notes': [], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': ''}, 'conditions': {'weather': 'Clear, 75F', 'traffic': 'Light traffic on I-10'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_PAVILION_WOMEN",
+  "recommended_campus_name": "Texas Children's Hospital - Pavilion for Women",
+  "care_level": "General",
+  "confidence_score": 70,
+  "explainability_details": {
+    "main_recommendation_reason": "Pavilion for Women is a nearby option that fits the patient's general medical care needs and is close to his current location.",
+    "alternative_reasons": {},
+    "key_factors_considered": [
+      "proximity",
+      "general_medical_care"
+    ],
+    "confidence_explanation": "Moderate confidence due to reasonable proximity and general medical capabilities."
+  },
+  "notes": [],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": ""
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Light traffic on I-10"
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 05:18:24.192473 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_PAVILION_WOMEN', 'recommended_campus_name': "Texas Children's Hospital - Pavilion for Women", 'care_level': 'PICU', 'confidence_score': 90, 'explainability_details': {'main_recommendation_reason': 'The Pavilion for Women is geographically close to the patient and likely has advanced respiratory support and monitoring capabilities suitable for PICU care.', 'alternative_reasons': {}, 'key_factors_considered': ['proximity', 'care_level_resources'], 'confidence_explanation': 'High confidence due to proximity and potential access to advanced respiratory support.'}, 'notes': [], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': ''}, 'conditions': {'weather': 'Clear, 75F', 'traffic': 'Light traffic on I-10'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_PAVILION_WOMEN",
+  "recommended_campus_name": "Texas Children's Hospital - Pavilion for Women",
+  "care_level": "PICU",
+  "confidence_score": 90,
+  "explainability_details": {
+    "main_recommendation_reason": "The Pavilion for Women is geographically close to the patient and likely has advanced respiratory support and monitoring capabilities suitable for PICU care.",
+    "alternative_reasons": {},
+    "key_factors_considered": [
+      "proximity",
+      "care_level_resources"
+    ],
+    "confidence_explanation": "High confidence due to proximity and potential access to advanced respiratory support."
+  },
+  "notes": [],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": ""
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Light traffic on I-10"
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 05:36:13.464577 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'TCH_MAIN_TMC', 'recommended_campus_name': "Texas Children's Hospital - Main Campus (MC)", 'care_level': 'General', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "The main recommendation for this patient is the Texas Children's Hospital - Main Campus (MC) because it is close to his location and offers general care suitable for his current condition.", 'alternative_reasons': {}, 'key_factors_considered': ['distance', 'specialty_match', 'bed_availability_heuristic'], 'confidence_explanation': 'High confidence due to clear proximity and the ability to provide appropriate general care.'}, 'notes': [], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': ''}, 'conditions': {'weather': 'Clear, 75F', 'traffic': 'Light traffic on I-10'}}
+JSON DUMP: {
+  "recommended_campus_id": "TCH_MAIN_TMC",
+  "recommended_campus_name": "Texas Children's Hospital - Main Campus (MC)",
+  "care_level": "General",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "The main recommendation for this patient is the Texas Children's Hospital - Main Campus (MC) because it is close to his location and offers general care suitable for his current condition.",
+    "alternative_reasons": {},
+    "key_factors_considered": [
+      "distance",
+      "specialty_match",
+      "bed_availability_heuristic"
+    ],
+    "confidence_explanation": "High confidence due to clear proximity and the ability to provide appropriate general care."
+  },
+  "notes": [],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": ""
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Light traffic on I-10"
+  }
+}
+=== END OF PARSED JSON ===
+
+
+=== PARSED JSON OBJECT 2025-05-25 05:48:46.714127 ===
+TYPE: <class 'dict'>
+REPR: {'recommended_campus_id': 'B', 'recommended_campus_name': "Children's Hospital B", 'care_level': 'PICU', 'confidence_score': 85, 'explainability_details': {'main_recommendation_reason': "Children's Hospital B offers the best fit for this patient due to its expertise in handling respiratory infections and having sufficient PICU capacity.", 'alternative_reasons': {'A': "While Children's Hospital A is closer, it may not have enough PICU availability for this case."}, 'key_factors_considered': ['specialty_match', 'PICU_capacity'], 'confidence_explanation': 'High confidence due to clear specialty match and sufficient PICU capacity.'}, 'notes': [], 'transport_details': {'mode': 'GROUND_AMBULANCE', 'estimated_time_minutes': 30, 'special_requirements': ''}, 'conditions': {'weather': 'Clear, 75F', 'traffic': 'Light traffic on I-10'}}
+JSON DUMP: {
+  "recommended_campus_id": "B",
+  "recommended_campus_name": "Children's Hospital B",
+  "care_level": "PICU",
+  "confidence_score": 85,
+  "explainability_details": {
+    "main_recommendation_reason": "Children's Hospital B offers the best fit for this patient due to its expertise in handling respiratory infections and having sufficient PICU capacity.",
+    "alternative_reasons": {
+      "A": "While Children's Hospital A is closer, it may not have enough PICU availability for this case."
+    },
+    "key_factors_considered": [
+      "specialty_match",
+      "PICU_capacity"
+    ],
+    "confidence_explanation": "High confidence due to clear specialty match and sufficient PICU capacity."
+  },
+  "notes": [],
+  "transport_details": {
+    "mode": "GROUND_AMBULANCE",
+    "estimated_time_minutes": 30,
+    "special_requirements": ""
+  },
+  "conditions": {
+    "weather": "Clear, 75F",
+    "traffic": "Light traffic on I-10"
+  }
+}
+=== END OF PARSED JSON ===

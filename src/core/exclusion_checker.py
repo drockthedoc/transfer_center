@@ -103,20 +103,16 @@ def matches_weight_restriction(
     if "minimum" in restrictions and patient_weight < restrictions["minimum"]:
         return (
             True,
-            f"Patient weight {
-                patient_weight:.1f}kg is below minimum weight {
-                restrictions['minimum']:.1f}kg",
+            f"Patient weight {patient_weight:.1f}kg is below minimum weight {restrictions['minimum']:.1f}kg",
         )
 
     if "maximum" in restrictions and patient_weight > restrictions["maximum"]:
         return (
             True,
-            f"Patient weight {
-                patient_weight:.1f}kg exceeds maximum weight {
-                restrictions['maximum']:.1f}kg",
+            f"Patient weight {patient_weight:.1f}kg exceeds maximum weight {restrictions['maximum']:.1f}kg",
         )
 
-    return False, ""
+    return False, "Patient weight within acceptable range"
 
 
 def check_keyword_match(text: str, keywords: List[str]) -> bool:
@@ -211,10 +207,7 @@ def check_department_exclusions(
     Returns:
         List of CampusExclusion objects for matched exclusions
     """
-    met_exclusions = []
-    patient_text = (
-        f"{patient_data.chief_complaint} {patient_data.clinical_history}".lower()
-    )
+    met_exclusions: List[CampusExclusion] = []
 
     # Extract specialty needs from patient text
     for condition in department_data.get("conditions", []):
@@ -233,6 +226,9 @@ def check_department_exclusions(
             )
 
         # Check if any condition terms appear in the patient text
+        patient_text = (
+            f"{patient_data.chief_complaint} {patient_data.clinical_history}".lower()
+        )
         if any(term in patient_text for term in condition_terms):
             # Check exclusions first
             for exclusion in department_data.get("exclusions", []):
@@ -246,40 +242,45 @@ def check_department_exclusions(
                 # Check if any key phrase appears in the patient text
                 for phrase in key_phrases:
                     if phrase in patient_text:
+                        # Generate criteria_id and criteria_name
+                        exclusion_id_part = re.sub(
+                            r'[^a-z0-9_]', '', phrase.lower().replace(' ', '_')[:25]
+                        )
+                        gen_criteria_id = f"dept_match_{department_name.lower()}_{exclusion_id_part}"
+                        gen_criteria_name = f"{department_name.title()} Rule: {phrase.title()}"
+
                         met_exclusions.append(
                             CampusExclusion(
-                                name=f"{
-                                    department_name.title()} Exclusion",
-                                description=f"Patient with {condition} condition matches exclusion: {exclusion}",
-                                affected_keywords_in_complaint=[condition],
-                                affected_keywords_in_history=[condition],
+                                criteria_id=gen_criteria_id,
+                                criteria_name=gen_criteria_name,
+                                description=f"Patient text matches department rule '{phrase}' for condition '{condition}' within {department_name}.",
+                                affected_keywords_in_complaint=[phrase],
+                                affected_keywords_in_history=[phrase],
                             )
                         )
                         break
 
             # If no specific exclusion matched but the condition is present,
             # add a general note about the department's specialty needs
-            if not any(
-                excl.name.startswith(f"{department_name.title()} Exclusion")
-                for excl in met_exclusions
+            if (
+                "clinical_team_decision" in department_data
+                or "ac_exclusion_picu_accept" in department_data
             ):
-                # Check if there are any notes about clinical team decisions
-                if (
-                    "clinical_team_decision" in department_data
-                    or "ac_exclusion_picu_accept" in department_data
-                ):
-                    met_exclusions.append(
-                        CampusExclusion(
-                            name=f"{
-                                department_name.title()} Special Case",
-                            description=(
-                                f"Patient with {condition} condition may require clinical team review "
-                                + f"or special consideration for this campus."
-                            ),
-                            affected_keywords_in_complaint=[condition],
-                            affected_keywords_in_history=[condition],
-                        )
+                # Generate criteria_id and criteria_name for special case
+                gen_criteria_id = f"dept_special_{department_name.lower()}_{condition.replace(' ', '_')}"
+                gen_criteria_name = f"{department_name.title()} Review Note: {condition.title()}"
+                met_exclusions.append(
+                    CampusExclusion(
+                        criteria_id=gen_criteria_id,
+                        criteria_name=gen_criteria_name,
+                        description=(
+                            f"Patient with condition '{condition}' may require clinical team review "
+                            + f"or special consideration for {department_name} at this campus."
+                        ),
+                        affected_keywords_in_complaint=[condition],
+                        affected_keywords_in_history=[condition],
                     )
+                )
 
     return met_exclusions
 
@@ -304,8 +305,12 @@ def check_exclusions(
     # Load exclusion criteria
     criteria = load_exclusion_criteria()
 
+    # Safe campus identifiers for use in generating criteria IDs/names
+    safe_campus_id = campus.campus_id if campus.campus_id else "unknown_campus"
+    safe_campus_name = campus.name if campus.name else "Unknown Campus"
+
     # Find the campus in the criteria (use a case-insensitive match)
-    campus_id = campus.campus_id.lower() if campus.campus_id else ""
+    campus_id_lower = campus.campus_id.lower() if campus.campus_id else ""
     campus_name = campus.name.lower() if campus.name else ""
 
     # Try to match campus by ID or name
@@ -313,22 +318,18 @@ def check_exclusions(
     for key in criteria.get("campuses", {}).keys():
         campus_display = criteria["campuses"][key].get("display_name", "").lower()
         if (
-            key.lower() in campus_id
+            key.lower() in campus_id_lower
             or key.lower() in campus_name
-            or campus_id in key.lower()
+            or campus_id_lower in key.lower()
             or campus_name in key.lower()
-            or campus_id in campus_display
+            or campus_id_lower in campus_display
             or campus_name in campus_display
         ):
             campus_key = key
             break
 
     if not campus_key:
-        logger.warning(
-            f"No exclusion criteria found for campus: {
-                campus.name} (ID: {
-                campus.campus_id})"
-        )
+        logger.warning(f"No exclusion criteria found for campus: {campus.name} (ID: {campus.campus_id})")
         return met_exclusions
 
     campus_criteria = criteria["campuses"][campus_key]
@@ -339,9 +340,12 @@ def check_exclusions(
             patient_data.age, campus_criteria["age_restrictions"]
         )
         if matches:
+            gen_criteria_id = f"age_restriction_{safe_campus_id}"
+            gen_criteria_name = f"Age Restriction: {safe_campus_name}"
             met_exclusions.append(
                 CampusExclusion(
-                    name=f"Age Restriction",
+                    criteria_id=gen_criteria_id,
+                    criteria_name=gen_criteria_name,
                     description=reason,
                     affected_keywords_in_complaint=["age"],
                     affected_keywords_in_history=["age"],
@@ -356,9 +360,12 @@ def check_exclusions(
             patient_data.weight_kg, campus_criteria["weight_restrictions"]
         )
         if matches:
+            gen_criteria_id = f"weight_restriction_{safe_campus_id}"
+            gen_criteria_name = f"Weight Restriction: {safe_campus_name}"
             met_exclusions.append(
                 CampusExclusion(
-                    name=f"Weight Restriction",
+                    criteria_id=gen_criteria_id,
+                    criteria_name=gen_criteria_name,
                     description=reason,
                     affected_keywords_in_complaint=["weight"],
                     affected_keywords_in_history=["weight"],
@@ -381,9 +388,15 @@ def check_exclusions(
         # Check for phrase matches
         for phrase in key_phrases:
             if phrase in patient_text:
+                phrase_id_part = re.sub(
+                    r'[^a-z0-9_]', '', phrase.lower().replace(' ', '_')[:25]
+                )
+                gen_criteria_id = f"general_exclusion_{safe_campus_id}_{phrase_id_part}"
+                gen_criteria_name = f"General Exclusion ({phrase.title()}): {safe_campus_name}"
                 met_exclusions.append(
                     CampusExclusion(
-                        name=f"General Exclusion",
+                        criteria_id=gen_criteria_id,
+                        criteria_name=gen_criteria_name,
                         description=f"Matched general exclusion: {exclusion}",
                         affected_keywords_in_complaint=[phrase],
                         affected_keywords_in_history=[phrase],
@@ -407,10 +420,13 @@ def check_exclusions(
                 and len(met_exclusions) > 0
             ):
                 # Only add the first relevant note to avoid cluttering
-                if not any(excl.name == "Campus Note" for excl in met_exclusions):
+                gen_criteria_id = f"campus_note_{safe_campus_id}_{note_key}"
+                gen_criteria_name = f"Campus Note ({note_key}): {safe_campus_name}"
+                if not any(excl.criteria_id == gen_criteria_id for excl in met_exclusions):
                     met_exclusions.append(
                         CampusExclusion(
-                            name="Campus Note",
+                            criteria_id=gen_criteria_id,
+                            criteria_name=gen_criteria_name,
                             description=note_text,
                             affected_keywords_in_complaint=[],
                             affected_keywords_in_history=[],

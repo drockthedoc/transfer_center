@@ -178,41 +178,64 @@ class LLMClassifier:
     def process_text(
         self,
         text: str,
+        patient_data: Optional[Dict] = None,
+        sending_facility_location: Optional[Dict] = None,
+        available_hospitals: Optional[List[Dict]] = None,
+        census_data: Optional[Dict] = None,
         human_suggestions: Optional[Dict] = None,
         scoring_results: Optional[Dict] = None,
-        context: Optional[Dict] = None,
     ) -> Dict[str, Any]:
         """
         Process clinical text to extract structured information using a multi-step prompting approach.
 
         Args:
             text: The clinical text to process
+            patient_data: Optional dictionary of patient demographic and related data.
+            sending_facility_location: Optional dictionary with 'latitude' and 'longitude' of sending facility.
+            available_hospitals: Optional list of available hospital dictionaries.
+            census_data: Optional dictionary of census data.
             human_suggestions: Optional dictionary of human suggestions to consider
             scoring_results: Optional dictionary containing pediatric scoring system results
 
         Returns:
             Dictionary with structured information including:
-            - demographics: Patient demographics
-            - clinical_info: Extracted clinical information
-            - care_needs: Required care level and specialties
-            - recommended_campus: Recommended campus ID if available
-            - exclusion_matches: List of exclusion criteria matches with evidence
-            - explainability: Detailed explanation of reasoning
-            - scoring_results: Pediatric scoring system results if provided
+            - success: Boolean indicating if processing was successful.
+            - extracted_entities: Patient demographics and extracted clinical information.
+            - specialty_assessment: Required care level and specialties.
+            - exclusion_evaluation: Results of exclusion criteria evaluation.
+            - final_recommendation: Recommendation object.
+            - llm_error_message: String message if an error occurred, else None.
         """
         try:
-            # Ensure client and model are set up
             if not self.client or not self.model or self.model == "fallback_model":
-                logger.warning("LLM not properly configured, using fallback processing")
-                return self._fallback_process_text(
-                    text, context
-                )
+                logger.warning("LLM not properly configured, using fallback processing via process_text")
+                fallback_data = self._fallback_process_text(text, human_suggestions, scoring_results)
+                return {
+                    "success": False,
+                    "extracted_entities": fallback_data.get("extracted_entities", {}),
+                    "specialty_assessment": fallback_data.get("specialty_assessment", {}),
+                    "exclusion_evaluation": None,
+                    "final_recommendation": None,
+                    "llm_error_message": "LLM not configured; fallback processing used."
+                }
 
             logger.info(f"Processing text with model: {self.model}")
 
-            # Step 1: Extract entities
+            # Step 1: Extract entities from clinical text
             extracted_entities = self.entity_extractor.extract_entities(text)
             logger.info("Entity extraction complete")
+
+            # Merge patient_data into extracted_entities if provided and not already handled by extractor
+            if patient_data:
+                extracted_entities.update(patient_data)
+                logger.info("Merged patient_data into extracted_entities")
+
+            # Add sending facility location to extracted_entities if provided
+            if sending_facility_location:
+                extracted_entities['sending_facility_location'] = sending_facility_location
+                logger.info(f"Added sending_facility_location to extracted_entities: {sending_facility_location}")
+            else:
+                logger.warning("sending_facility_location not provided to process_text.")
 
             # Step 2: Assess specialty needs
             specialty_assessment = self.specialty_assessor.assess_specialties(
@@ -220,70 +243,62 @@ class LLMClassifier:
             )
             logger.info("Specialty assessment complete")
 
-            # Include scoring results in the output if provided
+            # Include scoring results in the specialty_assessment if provided (already done by assessor? check)
             if scoring_results:
-                logger.info("Including pediatric scoring results in assessment")
                 specialty_assessment["scoring_results"] = scoring_results
 
-            # Step 3: Generate final recommendation with context
-            # Extract the hospital options from context if available
-            available_hospitals = []
-            if context and 'available_hospitals' in context and context['available_hospitals']:
-                available_hospitals = context['available_hospitals']
-                logger.info(f"Using {len(available_hospitals)} hospitals from context for recommendation")
-                # Log the hospital names for debugging
-                hospital_names = [h.get('name', 'Unknown') for h in available_hospitals]
-                logger.info(f"Available hospitals: {hospital_names}")
+            # Step 3: Evaluate exclusion criteria
+            exclusion_evaluation = self.exclusion_evaluator.evaluate_exclusions(
+                extracted_entities, specialty_assessment
+            )
+            logger.info("Exclusion criteria evaluation complete")
+
+            # Step 4: Generate final recommendation
+            if not available_hospitals:
+                logger.warning("No available_hospitals provided for recommendation generation.")
             
-            # Get census data if available
-            census_data = None
-            if context and 'census_data' in context:
-                census_data = context['census_data']
-                logger.info("Using census data from context for recommendation")
-            
-            # Generate recommendation with available hospitals
-            final_recommendation = (
+            final_recommendation_obj = (
                 self.recommendation_generator.generate_recommendation(
-                    extracted_entities, 
-                    specialty_assessment,
-                    available_hospitals=available_hospitals,
+                    extracted_entities=extracted_entities, 
+                    specialty_assessment=specialty_assessment,
+                    exclusion_evaluation=exclusion_evaluation,
+                    available_hospitals=available_hospitals if available_hospitals else [],
                     census_data=census_data
                 )
             )
-            logger.info(
-                f"Final recommendation complete: {final_recommendation.recommended_campus_id} with confidence {final_recommendation.confidence_score}%"
-            )
-
-            # Combine all results
-            result = {
-                **extracted_entities,
-                "specialty_assessment": specialty_assessment,
-                "final_recommendation": final_recommendation,  # Store the Recommendation object directly
-                "note": "Generated by LLM",
-                # Add recommendation_data in the format the GUI expects
-                "recommendation_data": {
-                    "transfer_request_id": final_recommendation.transfer_request_id if hasattr(final_recommendation, 'transfer_request_id') else "llm_generated",
-                    "recommended_campus_id": final_recommendation.recommended_campus_id if hasattr(final_recommendation, 'recommended_campus_id') else "UNKNOWN",
-                    "reason": final_recommendation.reason if hasattr(final_recommendation, 'reason') else "No reason provided",
-                    "confidence_score": final_recommendation.confidence_score if hasattr(final_recommendation, 'confidence_score') else 0.0,
-                    "notes": final_recommendation.notes if hasattr(final_recommendation, 'notes') else []
+            
+            if final_recommendation_obj:
+                logger.info(
+                    f"Final recommendation generated: {final_recommendation_obj.recommended_campus_id} with confidence {final_recommendation_obj.confidence_score}%"
+                )
+                return {
+                    "success": True,
+                    "extracted_entities": extracted_entities,
+                    "specialty_assessment": specialty_assessment,
+                    "exclusion_evaluation": exclusion_evaluation,
+                    "final_recommendation": final_recommendation_obj,
+                    "llm_error_message": None
                 }
-            }
+            else:
+                logger.error("Recommendation generator returned None.")
+                return {
+                    "success": False,
+                    "extracted_entities": extracted_entities,
+                    "specialty_assessment": specialty_assessment,
+                    "exclusion_evaluation": exclusion_evaluation,
+                    "final_recommendation": None,
+                    "llm_error_message": "Recommendation generation failed to produce a result."
+                }
 
-            # Incorporate human suggestions if provided
-            if human_suggestions:
-                result["human_suggestions"] = human_suggestions
-
-            return result
-
+        except openai.APIConnectionError as e:
+            logger.error(f"LLM API Connection Error in process_text: {str(e)}")
+            return {"success": False, "final_recommendation": None, "llm_error_message": f"LLM Connection Error: {str(e)}"}
+        except openai.APIStatusError as e:
+            logger.error(f"LLM API Status Error in process_text: {e.status_code} - {e.response}")
+            return {"success": False, "final_recommendation": None, "llm_error_message": f"LLM API Error: {e.status_code}"}
         except Exception as e:
-            logger.error(f"Error processing text with LLM: {str(e)}")
-            logger.error(traceback.format_exc())
-            logger.error(
-                "LLM processing failed and no fallback is allowed - propagating error"
-            )
-            # No fallback - propagate the error upward
-            raise e
+            logger.error(f"Unexpected error in LLMClassifier.process_text: {str(e)}", exc_info=True)
+            return {"success": False, "final_recommendation": None, "llm_error_message": f"Unexpected error: {str(e)}"}
 
     def _fallback_process_text(
         self,

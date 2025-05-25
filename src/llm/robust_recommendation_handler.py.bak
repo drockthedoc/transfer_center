@@ -173,111 +173,22 @@ class RecommendationHandler:
         logger.info(f"Available data keys: {data_keys}")
         print(f"ALL AVAILABLE KEYS: {data_keys}")
         
-        # Helper function to extract JSON from markdown code blocks if needed
-        def extract_json_if_needed(possible_json):
-            if isinstance(possible_json, str) and '```' in possible_json:
-                try:
-                    import re
-                    # Extract content between triple backticks
-                    pattern = r'```(?:json)?\n([\s\S]*?)\n```'
-                    match = re.search(pattern, possible_json)
-                    if match:
-                        json_content = match.group(1).strip()
-                        return json.loads(json_content)
-                except Exception as e:
-                    logger.warning(f"Error extracting JSON from markdown: {e}")
-            return possible_json
-            
-        # Check if we need to extract JSON from output field
-        if 'output' in extracted_data and isinstance(extracted_data['output'], str):
-            extracted_json = extract_json_if_needed(extracted_data['output'])
-            if isinstance(extracted_json, dict):
-                # We successfully extracted JSON from markdown
-                logger.info("Extracted JSON from markdown in output field")
-                # Add this as recommendation_data to ensure it's processed correctly
-                extracted_data['recommendation_data'] = extracted_json
-        
         # APPROACH 1: Check for recommendation_data (preferred format)
         final_recommendation = None
         
         if "recommendation_data" in extracted_data:
             try:
-                data = extract_json_if_needed(extracted_data["recommendation_data"])
+                data = extracted_data["recommendation_data"]
                 print(f"Found recommendation_data: {type(data)}")
                 
                 if isinstance(data, dict):
                     print(f"Recommendation data keys: {list(data.keys())}")
-                    # Get explainability details if available
-                    explainability = data.get("explainability_details")
-                    
-                    # Extract and normalize transport details
-                    transport_details = data.get("transport_details", {})
-                    if not isinstance(transport_details, dict):
-                        logger.warning(f"transport_details is not a dict: {type(transport_details)}")
-                        transport_details = {}
-                    
-                    # Ensure transport details have all required fields
-                    if "mode" not in transport_details:
-                        transport_details["mode"] = data.get("transport_mode", "GROUND_AMBULANCE")
-                        logger.info(f"Added missing mode to transport_details: {transport_details['mode']}")
-                    
-                    if "estimated_time_minutes" not in transport_details:
-                        # Try alternate keys
-                        time_keys = ["estimated_time", "time_minutes", "duration_minutes", "travel_time"]
-                        for key in time_keys:
-                            if key in transport_details:
-                                transport_details["estimated_time_minutes"] = transport_details[key]
-                                logger.info(f"Used alternate key {key} for estimated_time_minutes")
-                                break
-                        else:
-                            # If not found in transport_details, check main data
-                            for key in time_keys:
-                                if key in data:
-                                    transport_details["estimated_time_minutes"] = data[key]
-                                    logger.info(f"Used main data key {key} for estimated_time_minutes")
-                                    break
-                    
-                    # Extract and normalize conditions
-                    conditions = data.get("conditions", {})
-                    if not isinstance(conditions, dict):
-                        logger.warning(f"conditions is not a dict: {type(conditions)}")
-                        conditions = {}
-                    
-                    # Ensure conditions have weather and traffic
-                    if "weather" not in conditions and "weather" in data:
-                        conditions["weather"] = data["weather"]
-                        logger.info(f"Added missing weather to conditions: {conditions['weather']}")
-                    
-                    if "traffic" not in conditions and "traffic" in data:
-                        conditions["traffic"] = data["traffic"]
-                        logger.info(f"Added missing traffic to conditions: {conditions['traffic']}")
-                    
-                    # Add default values if still missing
-                    if "weather" not in conditions:
-                        conditions["weather"] = "Clear conditions"
-                    if "traffic" not in conditions:
-                        conditions["traffic"] = "Normal traffic conditions"
-                    
-                    # Get recommended campus name if available
-                    campus_name = data.get("recommended_campus_name", "")
-                    
-                    # Get care level with fallbacks
-                    care_level = data.get("care_level", data.get("recommended_level_of_care", "General"))
-                    if not care_level:
-                        care_level = "General"  # Default to General if not specified
-                    
-                    # Create the recommendation with enhanced data
                     final_recommendation = Recommendation(
                         transfer_request_id=data.get("transfer_request_id", request_id),
                         recommended_campus_id=data.get("recommended_campus_id", "UNKNOWN"),
-                        recommended_campus_name=campus_name,
                         reason=data.get("reason", "No reason provided"),
                         confidence_score=data.get("confidence_score", 50.0),
-                        notes=data.get("notes", []),
-                        explainability_details=explainability,
-                        recommended_level_of_care=care_level,
-                        transport_details=transport_details,
-                        conditions=conditions
+                        notes=data.get("notes", [])
                     )
                     logger.info("Successfully created Recommendation from recommendation_data")
             except Exception as parse_error:

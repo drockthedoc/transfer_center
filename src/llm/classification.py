@@ -8,7 +8,11 @@ more sophisticated NLP/LLM capabilities.
 """
 
 import re
-from typing import Dict, List
+from typing import Dict, List, Optional
+from rich import print as rprint
+
+def hello_from_classification():
+    print("\n<<<< DEBUG: HELLO FROM classification.py >>>>\n", flush=True)
 
 # (Keep PREDEFINED_KEYWORDS_TO_CONDITIONS from previous version)
 PREDEFINED_KEYWORDS_TO_CONDITIONS: Dict[str, List[str]] = {
@@ -77,7 +81,21 @@ VITAL_SIGN_PATTERNS = {
     "o2_sat": r"(?:o2|sats|oxygen saturation)\s*:?\s*(\d{1,3})%?",
 }
 
-# Basic regex for location cues (examples)
+# Regex patterns for extracting structured information
+AGE_YEARS_PATTERN = r"(\d+)(?:\s*y\.o\.|\s*yo|-year-old|-years-old|\s+year\s+old|\s+years\s+old)\b"    # REVISED
+AGE_MONTHS_PATTERN = r"(\d+)(?:\s*mos|-month-old|-months-old|\s+month\s+old|\s+months\s+old)\b" # REVISED
+AGE_DAYS_PATTERN = r"(\d+)(?:-day-old|-days-old|\s+day\s+old|\s+days\s+old)\b"              # REVISED
+SEX_PATTERN = r"\b(male|female|boy|girl)\b"
+
+# Regex for basic demographic extraction
+DEMOGRAPHIC_PATTERNS = {
+    "age_years": AGE_YEARS_PATTERN,
+    "age_months": AGE_MONTHS_PATTERN,
+    "age_days": AGE_DAYS_PATTERN,
+    "sex": SEX_PATTERN,
+}
+
+# Regex for basic location cues (examples)
 # IMPORTANT: These are simple regex patterns for simulation and not robust
 # for production use.
 LOCATION_CUE_PATTERNS = [
@@ -109,6 +127,11 @@ def parse_patient_text(text: str) -> Dict:
             - "mentioned_location_cues": List of location-related phrases found.
             - "raw_text_summary": A brief summary of the input text (e.g., first
                                   two sentences).
+            - "age_years": Extracted age in years.
+            - "age_months": Extracted age in months.
+            - "age_days": Extracted age in days.
+            - "sex": Extracted sex.
+            - "primary_diagnosis": First potential condition as primary diagnosis.
     """
     if not text:
         return {
@@ -117,7 +140,15 @@ def parse_patient_text(text: str) -> Dict:
             "extracted_vital_signs": {},
             "mentioned_location_cues": [],
             "raw_text_summary": "",
+            "age_years": None,
+            "age_months": None,
+            "age_days": None,
+            "sex": None,
+            "primary_diagnosis": None
         }
+
+    print("\n<<<< DEBUG: INSIDE parse_patient_text IN classification.py >>>>", flush=True) # Prominent print
+    print(f"DEBUG: parse_patient_text received text: {text[:100]}...", flush=True) # Print first 100 chars
 
     text_lower = text.lower()  # Used for keyword matching
 
@@ -143,6 +174,28 @@ def parse_patient_text(text: str) -> Dict:
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             extracted_vital_signs[vital] = match.group(1).strip()
+
+    # 2b. Demographic Extraction (Regex-based simulation)
+    print("DEBUG: Attempting demographic extraction...", flush=True)
+    extracted_demographics: Dict[str, Optional[str]] = {
+        "age_years": None,
+        "age_months": None,
+        "age_days": None,
+        "sex": None
+    }
+    for demo_key, pattern in DEMOGRAPHIC_PATTERNS.items():
+        match = re.search(pattern, text_lower, re.IGNORECASE)
+        if match:
+            value = match.group(1).strip().lower() # group(1) is the captured digits for age, or the sex string
+            if demo_key == "sex": # Specific handling for sex mapping
+                if value == "boy":
+                    value = "male"
+                elif value == "girl":
+                    value = "female"
+            extracted_demographics[demo_key] = value
+            rprint(f"DEBUG CLASSIFICATION: Demographic extraction: {demo_key} = {value} from '{match.group(0)}' using pattern: {pattern}") # ADDED
+    
+    rprint(f"DEBUG: Final extracted_demographics: {extracted_demographics}", flush=True)
 
     # 3. Location Cues Extraction (Regex-based simulation)
     mentioned_location_cues: List[str] = []
@@ -172,7 +225,10 @@ def parse_patient_text(text: str) -> Dict:
     summary_sentences = re.split(r"(?<=[.!?])\s+", text.strip())
     raw_text_summary = " ".join(summary_sentences[:2])  # Take first two "sentences"
 
-    return {
+    # Determine primary diagnosis (simple heuristic)
+    primary_diagnosis = potential_conditions[0] if potential_conditions else None
+
+    final_output_dict = {
         "identified_keywords": sorted(list(set(identified_keywords))),
         "potential_conditions": sorted(list(set(potential_conditions))),
         "extracted_vital_signs": extracted_vital_signs,
@@ -180,7 +236,14 @@ def parse_patient_text(text: str) -> Dict:
             list(set(mentioned_location_cues))
         ),  # Deduplicate and sort
         "raw_text_summary": raw_text_summary.strip(),
+        "age_years": extracted_demographics.get("age_years"),
+        "age_months": extracted_demographics.get("age_months"),
+        "age_days": extracted_demographics.get("age_days"),
+        "sex": extracted_demographics.get("sex"),
+        "primary_diagnosis": primary_diagnosis
     }
+    print(f"DEBUG: parse_patient_text returning: {final_output_dict}", flush=True)
+    return final_output_dict
 
 
 # Future Consideration:

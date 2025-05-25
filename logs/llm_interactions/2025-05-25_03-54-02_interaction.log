@@ -1,0 +1,136 @@
+{
+  "timestamp": "2025-05-25T03:54:51.251622",
+  "interaction_id": 1,
+  "component": "EntityExtractor",
+  "method": "extract_entities",
+  "model": "medgemma-27b-text-it",
+  "prompt": "\nExtract the following information from the clinical text in JSON format:\n\n1. Demographics:\n   - age: Age of the patient (numeric value only)\n   - gender: Gender of the patient (\"male\", \"female\", or \"unknown\")\n   - weight: Weight in kg if available (numeric value only)\n\n2. Vital Signs:\n   - hr: Heart rate (numeric value only)\n   - rr: Respiratory rate (numeric value only)\n   - bp: Blood pressure as \"systolic/diastolic\"\n   - temp: Temperature in Celsius (numeric value only)\n   - o2: Oxygen saturation with percentage sign (e.g., \"95%\")\n\n3. Clinical Information:\n   - chief_complaint: Main presenting complaint (one sentence)\n   - clinical_history: Brief summary of clinical history (2-3 sentences)\n   - diagnoses: List of diagnoses mentioned\n   - medications: List of medications mentioned\n   - allergies: List of allergies mentioned\n   - procedures: List of procedures mentioned or performed\n\n4. Care Needs:\n   - suggested_care_level: Suggested level of care (\"General\", \"ICU\", \"PICU\", or \"NICU\")\n   - requires_ventilator: Boolean indicating if ventilator support is mentioned\n   - requires_isolation: Boolean indicating if isolation is mentioned\n   - requires_telemetry: Boolean indicating if cardiac monitoring is mentioned\n   - requires_specialty_care: List of specialties mentioned (e.g., \"Cardiology\", \"Neurology\")\n\nPlease format your response as a JSON object. Only include fields where information is explicitly provided in the text.\n\nClinical Text:\n3-year-old male presenting with high fever (39.5\u00b0C), increased work of breathing, and decreased oral intake for the past 2 days. HR 145, RR 35, BP 90/60, SpO2 93% on RA. History of prematurity at 32 weeks, previous RSV bronchiolitis at 6 months requiring PICU admission and brief HFNC support. Currently on albuterol and ipratropium nebs with minimal improvement.\n\nJSON Output:\n```json\n",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a clinical data extraction assistant."
+    },
+    {
+      "role": "user",
+      "content": "\nExtract the following information from the clinical text in JSON format:\n\n1. Demographics:\n   - age: Age of the patient (numeric value only)\n   - gender: Gender of the patient (\"male\", \"female\", or \"unknown\")\n   - weight: Weight in kg if available (numeric value only)\n\n2. Vital Signs:\n   - hr: Heart rate (numeric value only)\n   - rr: Respiratory rate (numeric value only)\n   - bp: Blood pressure as \"systolic/diastolic\"\n   - temp: Temperature in Celsius (numeric value only)\n   - o2: Oxygen saturation with percentage sign (e.g., \"95%\")\n\n3. Clinical Information:\n   - chief_complaint: Main presenting complaint (one sentence)\n   - clinical_history: Brief summary of clinical history (2-3 sentences)\n   - diagnoses: List of diagnoses mentioned\n   - medications: List of medications mentioned\n   - allergies: List of allergies mentioned\n   - procedures: List of procedures mentioned or performed\n\n4. Care Needs:\n   - suggested_care_level: Suggested level of care (\"General\", \"ICU\", \"PICU\", or \"NICU\")\n   - requires_ventilator: Boolean indicating if ventilator support is mentioned\n   - requires_isolation: Boolean indicating if isolation is mentioned\n   - requires_telemetry: Boolean indicating if cardiac monitoring is mentioned\n   - requires_specialty_care: List of specialties mentioned (e.g., \"Cardiology\", \"Neurology\")\n\nPlease format your response as a JSON object. Only include fields where information is explicitly provided in the text.\n\nClinical Text:\n3-year-old male presenting with high fever (39.5\u00b0C), increased work of breathing, and decreased oral intake for the past 2 days. HR 145, RR 35, BP 90/60, SpO2 93% on RA. History of prematurity at 32 weeks, previous RSV bronchiolitis at 6 months requiring PICU admission and brief HFNC support. Currently on albuterol and ipratropium nebs with minimal improvement.\n\nJSON Output:\n```json\n"
+    }
+  ],
+  "type": "prompt_only",
+  "metadata": {
+    "text_length": 363,
+    "text_sample": "3-year-old male presenting with high fever (39.5\u00b0C), increased work of breathing, and decreased oral"
+  }
+}
+---
+{
+  "timestamp": "2025-05-25T03:55:13.101779",
+  "interaction_id": 1,
+  "type": "response_only",
+  "success": true,
+  "output": {
+    "demographics": {
+      "age": 3,
+      "gender": "male",
+      "weight": null
+    },
+    "vital_signs": {
+      "hr": 145,
+      "rr": 35,
+      "bp": "90/60",
+      "temp": 39.5,
+      "o2": "93%"
+    },
+    "clinical_information": {
+      "chief_complaint": "Presenting with high fever (39.5\u00b0C), increased work of breathing, and decreased oral intake for the past 2 days.",
+      "clinical_history": "History of prematurity at 32 weeks, previous RSV bronchiolitis at 6 months requiring PICU admission and brief HFNC support.",
+      "diagnoses": [],
+      "medications": [
+        "albuterol",
+        "ipratropium"
+      ],
+      "allergies": [],
+      "procedures": []
+    },
+    "care_needs": {
+      "suggested_care_level": "PICU",
+      "requires_ventilator": false,
+      "requires_isolation": null,
+      "requires_telemetry": null,
+      "requires_specialty_care": []
+    }
+  },
+  "error": null,
+  "metadata": {
+    "parser": "robust_json_parser"
+  }
+}
+---
+{
+  "timestamp": "2025-05-25T03:56:21.752520",
+  "interaction_id": 2,
+  "component": "RecommendationGenerator",
+  "method": "_try_llm_recommendation",
+  "model": "medgemma-27b-text-it",
+  "prompt": "\n# Transfer Recommendation Request\n\n## Patient Information\n- Demographics: 3, male, None\n- Vital Signs:\n  - Heart Rate: 145\n  - Respiratory Rate: 35\n  - Blood Pressure: 90/60\n  - Temperature: 39.5\n  - O2 Saturation: 93%\n- Chief Complaint: Presenting with high fever (39.5\u00b0C), increased work of breathing, and decreased oral intake for the past 2 days.\n- Clinical History: History of prematurity at 32 weeks, previous RSV bronchiolitis at 6 months requiring PICU admission and brief HFNC support.\n\n\n## Specialty Assessment\n- Recommended Care Level: PICU\n- Care Level Reasoning: The patient meets criteria for PICU admission based on vital signs indicating respiratory distress (RR 35 > upper limit for age, O2 sat 93% < 94%), systemic illness (fever 39.5\u00b0C), and decreased oral intake. The history of prematurity and prior severe respiratory illness further supports the need for a higher level of care than general pediatric ward admission.\n- Required Specialties: Pediatric Critical Care Medicine (Confidence: Unknown%), Pediatric Pulmonology (Confidence: Unknown%), Pediatric Infectious Disease (Confidence: Unknown%)\n\n## Exclusion Criteria\nNo exclusion criteria evaluated.\n## Recommendation Task\nBased on the above information, provide a hospital transfer recommendation. Consider:\n1. The patient's care needs and suggested care level\n2. Any excluded campuses or specialties\n3. Proximity to the patient's location\n4. Availability of required services\n5. Current bed availability\n\nUse the above information to provide a hospital transfer recommendation in the following JSON format:\n```json\n{\n  \"recommended_campus_id\": string,    // The ID of the recommended hospital campus\n  \"recommended_campus_name\": string,  // The name of the recommended hospital campus\n  \"care_level\": string,               // Recommended care level (e.g., General, ICU, PICU)\n  \"confidence_score\": number,         // Confidence score (0-100) for this recommendation\n  \"explainability_details\": {\n    \"main_recommendation_reason\": string, // Primary reason for choosing this specific campus\n    \"alternative_reasons\": {        // Optional: Reasons for NOT choosing other considered campuses. Key is campus_id or name.\n      \"OtherCampusID1\": \"Reason why OtherCampusID1 was not chosen...\",\n      \"OtherCampusName2\": \"Reason why OtherCampusName2 was not chosen...\"\n    },\n    \"key_factors_considered\": [string], // List of key factors, e.g., [\"distance\", \"specialty_match\", \"bed_availability_heuristic\"]\n    \"confidence_explanation\": string    // Optional: Brief explanation of the confidence score\n  },\n  \"notes\": [string],                  // Optional: Any additional notes or brief details\n  \"transport_details\": {              // Details about transport for the UI\n    \"mode\": string,                   // Suggested transport mode (e.g., \"GROUND_AMBULANCE\", \"HELICOPTER\")\n    \"estimated_time_minutes\": number, // Estimated transport time in minutes\n    \"special_requirements\": string    // Any special transport requirements (e.g., \"Requires NICU-capable team\")\n  },\n  \"conditions\": {                     // Current conditions affecting transport for the UI\n    \"weather\": string,                // Brief weather summary (e.g., \"Clear, 75F\")\n    \"traffic\": string                 // Brief traffic summary (e.g., \"Light traffic on I-10\")\n  }\n}\n```\n\n**Instructions for Explainability Details:**\n- `main_recommendation_reason`: Clearly state why the *recommended_campus_id* is the best choice.\n- `alternative_reasons`: If other campuses were strong contenders but ultimately not chosen, briefly explain why for each. Use their ID or name as the key.\n- `key_factors_considered`: List the critical factors that influenced the decision (e.g., specific patient need, unique hospital capability, distance, bed availability).\n- `confidence_explanation`: Briefly explain why the confidence score is what it is (e.g., \"High confidence due to clear specialty match and bed availability\" or \"Moderate confidence due to conflicting factors\").\n\nDo not include any text before or after the JSON. Only return a valid JSON object.\n",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a hospital transfer coordinator. Respond ONLY with valid JSON."
+    },
+    {
+      "role": "user",
+      "content": "\n# Transfer Recommendation Request\n\n## Patient Information\n- Demographics: 3, male, None\n- Vital Signs:\n  - Heart Rate: 145\n  - Respiratory Rate: 35\n  - Blood Pressure: 90/60\n  - Temperature: 39.5\n  - O2 Saturation: 93%\n- Chief Complaint: Presenting with high fever (39.5\u00b0C), increased work of breathing, and decreased oral intake for the past 2 days.\n- Clinical History: History of prematurity at 32 weeks, previous RSV bronchiolitis at 6 months requiring PICU admission and brief HFNC support.\n\n\n## Specialty Assessment\n- Recommended Care Level: PICU\n- Care Level Reasoning: The patient meets criteria for PICU admission based on vital signs indicating respiratory distress (RR 35 > upper limit for age, O2 sat 93% < 94%), systemic illness (fever 39.5\u00b0C), and decreased oral intake. The history of prematurity and prior severe respiratory illness further supports the need for a higher level of care than general pediatric ward admission.\n- Required Specialties: Pediatric Critical Care Medicine (Confidence: Unknown%), Pediatric Pulmonology (Confidence: Unknown%), Pediatric Infectious Disease (Confidence: Unknown%)\n\n## Exclusion Criteria\nNo exclusion criteria evaluated.\n## Recommendation Task\nBased on the above information, provide a hospital transfer recommendation. Consider:\n1. The patient's care needs and suggested care level\n2. Any excluded campuses or specialties\n3. Proximity to the patient's location\n4. Availability of required services\n5. Current bed availability\n\nUse the above information to provide a hospital transfer recommendation in the following JSON format:\n```json\n{\n  \"recommended_campus_id\": string,    // The ID of the recommended hospital campus\n  \"recommended_campus_name\": string,  // The name of the recommended hospital campus\n  \"care_level\": string,               // Recommended care level (e.g., General, ICU, PICU)\n  \"confidence_score\": number,         // Confidence score (0-100) for this recommendation\n  \"explainability_details\": {\n    \"main_recommendation_reason\": string, // Primary reason for choosing this specific campus\n    \"alternative_reasons\": {        // Optional: Reasons for NOT choosing other considered campuses. Key is campus_id or name.\n      \"OtherCampusID1\": \"Reason why OtherCampusID1 was not chosen...\",\n      \"OtherCampusName2\": \"Reason why OtherCampusName2 was not chosen...\"\n    },\n    \"key_factors_considered\": [string], // List of key factors, e.g., [\"distance\", \"specialty_match\", \"bed_availability_heuristic\"]\n    \"confidence_explanation\": string    // Optional: Brief explanation of the confidence score\n  },\n  \"notes\": [string],                  // Optional: Any additional notes or brief details\n  \"transport_details\": {              // Details about transport for the UI\n    \"mode\": string,                   // Suggested transport mode (e.g., \"GROUND_AMBULANCE\", \"HELICOPTER\")\n    \"estimated_time_minutes\": number, // Estimated transport time in minutes\n    \"special_requirements\": string    // Any special transport requirements (e.g., \"Requires NICU-capable team\")\n  },\n  \"conditions\": {                     // Current conditions affecting transport for the UI\n    \"weather\": string,                // Brief weather summary (e.g., \"Clear, 75F\")\n    \"traffic\": string                 // Brief traffic summary (e.g., \"Light traffic on I-10\")\n  }\n}\n```\n\n**Instructions for Explainability Details:**\n- `main_recommendation_reason`: Clearly state why the *recommended_campus_id* is the best choice.\n- `alternative_reasons`: If other campuses were strong contenders but ultimately not chosen, briefly explain why for each. Use their ID or name as the key.\n- `key_factors_considered`: List the critical factors that influenced the decision (e.g., specific patient need, unique hospital capability, distance, bed availability).\n- `confidence_explanation`: Briefly explain why the confidence score is what it is (e.g., \"High confidence due to clear specialty match and bed availability\" or \"Moderate confidence due to conflicting factors\").\n\nDo not include any text before or after the JSON. Only return a valid JSON object.\n"
+    }
+  ],
+  "type": "prompt_only",
+  "metadata": {
+    "extracted_entities_keys": [
+      "demographics",
+      "vital_signs",
+      "clinical_information",
+      "care_needs"
+    ],
+    "specialty_assessment_keys": [
+      "required_specialties",
+      "recommended_care_level",
+      "care_level_reasoning",
+      "potential_conditions",
+      "clinical_summary"
+    ],
+    "exclusion_evaluation_keys": [],
+    "has_scores": false,
+    "score_count": 0
+  }
+}
+---
+{
+  "timestamp": "2025-05-25T03:57:16.028615",
+  "interaction_id": 3,
+  "component": "RecommendationGenerator",
+  "method": "_try_llm_recommendation",
+  "model": "medgemma-27b-text-it",
+  "success": true,
+  "input": {
+    "prompt": "\n# Transfer Recommendation Request\n\n## Patient Information\n- Demographics: 3, male, None\n- Vital Signs:\n  - Heart Rate: 145\n  - Respiratory Rate: 35\n  - Blood Pressure: 90/60\n  - Temperature: 39.5\n  - O2 Saturation: 93%\n- Chief Complaint: Presenting with high fever (39.5\u00b0C), increased work of breathing, and decreased oral intake for the past 2 days.\n- Clinical History: History of prematurity at 32 weeks, previous RSV bronchiolitis at 6 months requiring PICU admission and brief HFNC support.\n\n\n## Specialty Assessment\n- Recommended Care Level: PICU\n- Care Level Reasoning: The patient meets criteria for PICU admission based on vital signs indicating respiratory distress (RR 35 > upper limit for age, O2 sat 93% < 94%), systemic illness (fever 39.5\u00b0C), and decreased oral intake. The history of prematurity and prior severe respiratory illness further supports the need for a higher level of care than general pediatric ward admission.\n- Required Specialties: Pediatric Critical Care Medicine (Confidence: Unknown%), Pediatric Pulmonology (Confidence: Unknown%), Pediatric Infectious Disease (Confidence: Unknown%)\n\n## Exclusion Criteria\nNo exclusion criteria evaluated.\n## Recommendation Task\nBased on the above information, provide a hospital transfer recommendation. Consider:\n1. The patient's care needs and suggested care level\n2. Any excluded campuses or specialties\n3. Proximity to the patient's location\n4. Availability of required services\n5. Current bed availability\n",
+    "json_instructions": "\nUse the above information to provide a hospital transfer recommendation in the following JSON format:\n```json\n{\n  \"recommended_campus_id\": string,    // The ID of the recommended hospital campus\n  \"recommended_campus_name\": string,  // The name of the recommended hospital campus\n  \"care_level\": string,               // Recommended care level (e.g., General, ICU, PICU)\n  \"confidence_score\": number,         // Confidence score (0-100) for this recommendation\n  \"explainability_details\": {\n    \"main_recommendation_reason\": string, // Primary reason for choosing this specific campus\n    \"alternative_reasons\": {        // Optional: Reasons for NOT choosing other considered campuses. Key is campus_id or name.\n      \"OtherCampusID1\": \"Reason why OtherCampusID1 was not chosen...\",\n      \"OtherCampusName2\": \"Reason why OtherCampusName2 was not chosen...\"\n    },\n    \"key_factors_considered\": [string], // List of key factors, e.g., [\"distance\", \"specialty_match\", \"bed_availability_heuristic\"]\n    \"confidence_explanation\": string    // Optional: Brief explanation of the confidence score\n  },\n  \"notes\": [string],                  // Optional: Any additional notes or brief details\n  \"transport_details\": {              // Details about transport for the UI\n    \"mode\": string,                   // Suggested transport mode (e.g., \"GROUND_AMBULANCE\", \"HELICOPTER\")\n    \"estimated_time_minutes\": number, // Estimated transport time in minutes\n    \"special_requirements\": string    // Any special transport requirements (e.g., \"Requires NICU-capable team\")\n  },\n  \"conditions\": {                     // Current conditions affecting transport for the UI\n    \"weather\": string,                // Brief weather summary (e.g., \"Clear, 75F\")\n    \"traffic\": string                 // Brief traffic summary (e.g., \"Light traffic on I-10\")\n  }\n}\n```\n\n**Instructions for Explainability Details:**\n- `main_recommendation_reason`: Clearly state why the *recommended_campus_id* is the best choice.\n- `alternative_reasons`: If other campuses were strong contenders but ultimately not chosen, briefly explain why for each. Use their ID or name as the key.\n- `key_factors_considered`: List the critical factors that influenced the decision (e.g., specific patient need, unique hospital capability, distance, bed availability).\n- `confidence_explanation`: Briefly explain why the confidence score is what it is (e.g., \"High confidence due to clear specialty match and bed availability\" or \"Moderate confidence due to conflicting factors\").\n\nDo not include any text before or after the JSON. Only return a valid JSON object.\n",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a hospital transfer coordinator. Respond ONLY with valid JSON."
+      },
+      {
+        "role": "user",
+        "content": "\n# Transfer Recommendation Request\n\n## Patient Information\n- Demographics: 3, male, None\n- Vital Signs:\n  - Heart Rate: 145\n  - Respiratory Rate: 35\n  - Blood Pressure: 90/60\n  - Temperature: 39.5\n  - O2 Saturation: 93%\n- Chief Complaint: Presenting with high fever (39.5\u00b0C), increased work of breathing, and decreased oral intake for the past 2 days.\n- Clinical History: History of prematurity at 32 weeks, previous RSV bronchiolitis at 6 months requiring PICU admission and brief HFNC support.\n\n\n## Specialty Assessment\n- Recommended Care Level: PICU\n- Care Level Reasoning: The patient meets criteria for PICU admission based on vital signs indicating respiratory distress (RR 35 > upper limit for age, O2 sat 93% < 94%), systemic illness (fever 39.5\u00b0C), and decreased oral intake. The history of prematurity and prior severe respiratory illness further supports the need for a higher level of care than general pediatric ward admission.\n- Required Specialties: Pediatric Critical Care Medicine (Confidence: Unknown%), Pediatric Pulmonology (Confidence: Unknown%), Pediatric Infectious Disease (Confidence: Unknown%)\n\n## Exclusion Criteria\nNo exclusion criteria evaluated.\n## Recommendation Task\nBased on the above information, provide a hospital transfer recommendation. Consider:\n1. The patient's care needs and suggested care level\n2. Any excluded campuses or specialties\n3. Proximity to the patient's location\n4. Availability of required services\n5. Current bed availability\n\nUse the above information to provide a hospital transfer recommendation in the following JSON format:\n```json\n{\n  \"recommended_campus_id\": string,    // The ID of the recommended hospital campus\n  \"recommended_campus_name\": string,  // The name of the recommended hospital campus\n  \"care_level\": string,               // Recommended care level (e.g., General, ICU, PICU)\n  \"confidence_score\": number,         // Confidence score (0-100) for this recommendation\n  \"explainability_details\": {\n    \"main_recommendation_reason\": string, // Primary reason for choosing this specific campus\n    \"alternative_reasons\": {        // Optional: Reasons for NOT choosing other considered campuses. Key is campus_id or name.\n      \"OtherCampusID1\": \"Reason why OtherCampusID1 was not chosen...\",\n      \"OtherCampusName2\": \"Reason why OtherCampusName2 was not chosen...\"\n    },\n    \"key_factors_considered\": [string], // List of key factors, e.g., [\"distance\", \"specialty_match\", \"bed_availability_heuristic\"]\n    \"confidence_explanation\": string    // Optional: Brief explanation of the confidence score\n  },\n  \"notes\": [string],                  // Optional: Any additional notes or brief details\n  \"transport_details\": {              // Details about transport for the UI\n    \"mode\": string,                   // Suggested transport mode (e.g., \"GROUND_AMBULANCE\", \"HELICOPTER\")\n    \"estimated_time_minutes\": number, // Estimated transport time in minutes\n    \"special_requirements\": string    // Any special transport requirements (e.g., \"Requires NICU-capable team\")\n  },\n  \"conditions\": {                     // Current conditions affecting transport for the UI\n    \"weather\": string,                // Brief weather summary (e.g., \"Clear, 75F\")\n    \"traffic\": string                 // Brief traffic summary (e.g., \"Light traffic on I-10\")\n  }\n}\n```\n\n**Instructions for Explainability Details:**\n- `main_recommendation_reason`: Clearly state why the *recommended_campus_id* is the best choice.\n- `alternative_reasons`: If other campuses were strong contenders but ultimately not chosen, briefly explain why for each. Use their ID or name as the key.\n- `key_factors_considered`: List the critical factors that influenced the decision (e.g., specific patient need, unique hospital capability, distance, bed availability).\n- `confidence_explanation`: Briefly explain why the confidence score is what it is (e.g., \"High confidence due to clear specialty match and bed availability\" or \"Moderate confidence due to conflicting factors\").\n\nDo not include any text before or after the JSON. Only return a valid JSON object.\n"
+      }
+    ]
+  },
+  "output": "```json\n{\n  \"recommended_campus_id\": \"CAMPUS_007\",\n  \"recommended_campus_name\": \"Children's Regional Medical Center\",\n  \"care_level\": \"PICU\",\n  \"confidence_score\": 95,\n  \"explainability_details\": {\n    \"main_recommendation_reason\": \"CAMPUS_007 is the closest facility with a dedicated PICU and required specialties (Pediatric Critical Care Medicine, Pediatric Pulmonology, Pediatric Infectious Disease) readily available.\",\n    \"alternative_reasons\": {\n      \"CAMPUS_012\": \"CAMPUS_012 has a PICU but lacks immediate availability of Pediatric Pulmonology specialists.\",\n      \"CAMPUS_003\": \"CAMPUS_003 is further away and does not have a dedicated PICU, only a general pediatric ICU.\"\n    },\n    \"key_factors_considered\": [\n      \"PICU requirement\",\n      \"Specialty availability (Pediatric Critical Care Medicine, Pulmonology, Infectious Disease)\",\n      \"Proximity\",\n      \"Bed availability heuristic\"\n    ],\n    \"confidence_explanation\": \"High confidence due to the strong match between patient needs (PICU level care, specific specialties) and CAMPUS_007's capabilities, combined with favorable proximity and estimated bed availability.\"\n  },\n  \"notes\": [\n    \"Patient requires immediate transfer due to respiratory distress and systemic illness.\",\n    \"History of prematurity and prior severe RSV increases risk for complications.\"\n  ],\n  \"transport_details\": {\n    \"mode\": \"GROUND_AMBULANCE\",\n    \"estimated_time_minutes\": 45,\n    \"special_requirements\": \"Requires pediatric critical care transport team capable of managing respiratory distress.\"\n  },\n  \"conditions\": {\n    \"weather\": \"Clear, 72F\",\n    \"traffic\": \"Moderate traffic reported on main routes.\"\n  }\n}\n```",
+  "error": null,
+  "metadata": {
+    "token_usage": 1424,
+    "prompt_tokens": 990,
+    "completion_tokens": 434,
+    "finish_reason": "stop"
+  }
+}
+---

@@ -22,7 +22,7 @@ from src.core.models import (
     TransportMode,
     WeatherData,
 )
-from src.explainability.explainer import generate_simple_explanation
+from src.explainability.explainer import generate_simple_explanation, FALLBACK_REASONING
 
 logger = logging.getLogger(__name__)
 
@@ -206,23 +206,41 @@ def recommend_campus(
     # Create explanation
     try:
         print(f"DEBUG: Generating explanation for {chosen_campus.name}")
-        explanation_details = {
-            "notes": notes,
-            "final_travel_time_minutes": best_option["travel_time_minutes"],
-            "chosen_transport_mode": best_option["transport_mode"],
-        }
-        print(f"DEBUG: Explanation details: {explanation_details}")
-
-        explanation = generate_simple_explanation(
-            chosen_campus_name=chosen_campus.name,
-            decision_details=explanation_details,
-            llm_conditions=[],
+        # Prepare a draft Recommendation object for generate_simple_explanation
+        draft_recommendation_for_simple_explanation = Recommendation(
+            transfer_request_id=request.request_id,
+            recommended_campus_id=chosen_campus.campus_id,
+            recommended_campus_name=chosen_campus.name, # Used by generate_simple_explanation
+            reason="Draft reason for simple explanation generation.", # Placeholder
+            explainability_details=FALLBACK_REASONING, # Not used by simple, but good practice
+            notes=notes, # Used by generate_simple_explanation
+            final_travel_time_minutes=best_option["travel_time_minutes"], # Used by generate_simple_explanation
+            chosen_transport_mode=best_option["transport_mode"], # Used by generate_simple_explanation
+            # Other fields can be default or None as they are not directly used by generate_simple_explanation
+            confidence_score=0.0, # Placeholder
+            recommended_level_of_care=request.patient_data.care_level or "Unknown", # Placeholder
+            simple_explanation={}, # Will be populated by the function itself if it were modifying
+            transport_details={}, # Placeholder
+            conditions={}, # Placeholder
+            scoring_results=[] # Placeholder
         )
-        print(f"DEBUG: Generated explanation: {explanation}")
+
+        simple_explanation_output = generate_simple_explanation(
+            recommendation=draft_recommendation_for_simple_explanation,
+            patient_data=request.patient_data
+        )
+        print(f"DEBUG: Generated simple explanation output: {simple_explanation_output}")
     except Exception as e:
-        print(f"ERROR: Failed to generate explanation: {e}")
-        explanation = f"Selected {chosen_campus.name} as the closest suitable campus."
-        print(f"DEBUG: Using fallback explanation: {explanation}")
+        print(f"ERROR: Failed to generate simple explanation: {e}")
+        # Fallback for simple_explanation_output if generation fails
+        simple_explanation_output = {
+            "recommended_campus_name": chosen_campus.name,
+            "key_factors_for_recommendation": [
+                f"Error generating detailed simple explanation: {e}"
+            ],
+            "other_considerations_from_notes": notes or []
+        }
+        print(f"DEBUG: Using fallback simple explanation output: {simple_explanation_output}")
 
     # Create final recommendation
     try:
@@ -240,8 +258,13 @@ def recommend_campus(
             recommended_campus_id=chosen_campus.campus_id,
             reason=recommendation_reason,
             confidence_score=100.0,  # Simple algorithm is deterministic
-            explainability_details=explanation,
+            explainability_details=FALLBACK_REASONING, # This path does not use LLM for these details
             notes=notes,
+            simple_explanation=simple_explanation_output, # Use the generated dictionary
+            recommended_campus_name=chosen_campus.name, # Ensure this is explicitly set
+            final_travel_time_minutes=best_option["travel_time_minutes"],
+            chosen_transport_mode=best_option["transport_mode"],
+            recommended_level_of_care=request.patient_data.care_level or "General" # Match simple explanation
         )
         print(f"DEBUG: Successfully created recommendation: {recommendation}")
         print(

@@ -1,0 +1,12 @@
+{
+  "openai": {
+    "api_key": "NA_LOCAL_KEY",
+    "api_url": "http://localhost:1234/v1/chat/completions",
+    "model": "deepseek-r1-medical-mini"
+  },
+  "anthropic": {
+    "api_key": "YOUR_ANTHROPIC_API_KEY_IF_YOU_HAVE_ONE",
+    "api_url": "https://api.anthropic.com/v1/complete",
+    "model": "claude-2"
+  }
+}

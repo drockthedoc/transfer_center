@@ -28,7 +28,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from src.core.decision import recommend_campus
+from src.core.decision_engine import recommend_campus
 from src.core.models import (
     HospitalCampus,
     Location,
@@ -38,6 +38,7 @@ from src.core.models import (
     TransferRequest,
     TransportMode,
     WeatherData,
+    LLMReasoningDetails # Added import
 )
 from src.gui.widgets.census_data import CensusDataWidget
 from src.gui.widgets.hospital_search_widget import HospitalSearchWidget
@@ -488,154 +489,78 @@ class TransferCenterMainWindow(QMainWindow):
         self.recommendation_widget.clear()
         self.statusBar.showMessage("Generating recommendation...")
         
-        # Get clinical text from transport_info or patient_data
-        clinical_text = ""
-        if hasattr(request, 'transport_info') and request.transport_info and 'clinical_text' in request.transport_info:
-            clinical_text = request.transport_info['clinical_text']
-        elif hasattr(request.patient_data, 'clinical_text'):
-            clinical_text = request.patient_data.clinical_text
-        if not clinical_text:
-            self._display_recommendation(RecommendationHandler.create_error_recommendation(
-                request_id=request.request_id,
-                error_message="No clinical text found in the request."
-            ))
-            return
-
-        final_recommendation = None
         try:
-            logger.info(f"Processing transfer request {request.request_id} with {len(clinical_text)} characters")
-            
-            # Get LLM settings for this run
-            api_url = self.llm_settings_widget.api_url_input.text()
-            model = self.llm_settings_widget.model_input.currentText()
-            self.llm_classifier.set_api_url(api_url)
-            self.llm_classifier.set_model(model)
+            # Prepare data for LLM processing
+            clinical_text = request.clinical_notes
+            human_suggestions = request.human_suggestions
+            scoring_results = request.scoring_results
+            patient_data_for_llm = request.patient_data # This is already a dict or None
 
-            # Get scoring results from transport_info if available
-            scoring_results = None
-            if hasattr(request, 'transport_info') and request.transport_info and 'scoring_results' in request.transport_info:
-                scoring_results = request.transport_info['scoring_results']
-                
-            # Rule-based extraction as a fallback
-            rule_based_rec = RecommendationHandler.extract_rule_based_recommendation(
-                clinical_text=clinical_text,
-                request_id=request.request_id,
+            sending_facility_location_dict = None
+            if request.sending_facility_location:
+                sending_facility_location_dict = {
+                    'latitude': request.sending_facility_location.latitude,
+                    'longitude': request.sending_facility_location.longitude
+                }
+                logger.info(f"Prepared sending_facility_location_dict: {sending_facility_location_dict}")
+            else:
+                logger.warning("sending_facility_location not available in request for LLM processing.")
+
+            # hospital_options and census_data are prepared earlier in this method
+            logger.info(f"Passing {len(self.hospitals)} available hospitals (hospital_options) to LLMClassifier.process_text")
+            logger.info(f"Passing census_data to LLMClassifier.process_text: {'present' if self.census_widget.census_data else 'absent'}")
+
+            # Single call to the refactored LLMClassifier.process_text
+            llm_data = self.llm_classifier.process_text(
+                text=clinical_text,
+                patient_data=patient_data_for_llm,
+                sending_facility_location=sending_facility_location_dict,
+                available_hospitals=self.hospitals, # Use hospital_options directly
+                census_data=self.census_widget.census_data,
+                human_suggestions=human_suggestions,
                 scoring_results=scoring_results
             )
-            logger.info(f"Generated rule-based recommendation as fallback: {rule_based_rec.recommended_campus_id}")
 
-            try:
-                # Get human suggestions from transport_info if available
-                human_suggestions = None
-                if hasattr(request, 'transport_info') and request.transport_info and 'human_suggestions' in request.transport_info:
-                    human_suggestions = request.transport_info['human_suggestions']
-                
-                # Get available hospitals to pass to the LLM
-                available_hospitals = self.hospitals
-                
-                # Get census data if available
-                census_data = None
-                try:
-                    if hasattr(self, 'census_data_widget') and self.census_data_widget:
-                        census_data = self.census_data_widget.get_census_data()
-                except Exception as e:
-                    logger.warning(f"Could not get census data: {e}")
-                
-                # Format hospital options for the LLM
-                hospital_options = []
-                if available_hospitals:
-                    for hospital in available_hospitals:
-                        # Build hospital info with safety checks
-                        hospital_info = {
-                            "campus_id": getattr(hospital, 'campus_id', 'unknown'),
-                            "name": getattr(hospital, 'name', 'Unknown Hospital')
-                        }
-                        
-                        # Add care levels if available
-                        if hasattr(hospital, 'care_levels'):
-                            hospital_info['care_levels'] = hospital.care_levels
-                        elif hasattr(hospital, 'level_of_care'):
-                            hospital_info['care_levels'] = [hospital.level_of_care]
-                        else:
-                            hospital_info['care_levels'] = []
-                            
-                        # Add specialties if available
-                        if hasattr(hospital, 'specialties'):
-                            hospital_info['specialties'] = hospital.specialties
-                        else:
-                            hospital_info['specialties'] = []
-                            
-                        # Add location data if available
-                        location = {}
-                        if hasattr(hospital, 'location'):
-                            location['latitude'] = getattr(hospital.location, 'latitude', None)
-                            location['longitude'] = getattr(hospital.location, 'longitude', None)
-                        else:
-                            # Try direct lat/lng properties
-                            location['latitude'] = getattr(hospital, 'latitude', None)
-                            location['longitude'] = getattr(hospital, 'longitude', None)
-                            
-                        hospital_info['location'] = location
-                        hospital_options.append(hospital_info)
-                
-                # Create context dictionary with all relevant information
-                context = {
-                    "available_hospitals": hospital_options,
-                    "census_data": census_data,
-                    "human_suggestions": human_suggestions,
-                    "scoring_results": scoring_results
-                }
-                
-                # Log what we're sending to the LLM
-                logger.info(f"Passing {len(hospital_options)} hospitals to LLM for recommendation")
-                
-                # Attempt LLM processing with comprehensive context
-                extracted_llm_data = self.llm_classifier.process_text(
-                    clinical_text,
-                    context=context
+            llm_processing_successful = llm_data.get("success", False)
+            final_recommendation = llm_data.get("final_recommendation") # This is now the Recommendation object or None
+            llm_error_message = llm_data.get("llm_error_message")
+
+            if llm_processing_successful and final_recommendation:
+                logger.info("LLM processing successful, using final recommendation from LLMClassifier.")
+                # The final_recommendation object is already what we need.
+                # No need to call recommendation_generator.generate_recommendation again.
+            else:
+                logger.warning(f"LLM processing failed or returned no recommendation. Error: {llm_error_message}. Falling back to rule-based.")
+                # Fallback logic: Use rule-based recommendation
+                # This part of the fallback might need to be adjusted if it relied on data
+                # that was previously prepared differently.
+                final_recommendation = RecommendationHandler.create_rule_based_recommendation(
+                    request=request,
+                    available_hospitals=self.hospitals, # Use self.hospitals for rule-based
+                    reason=f"LLM processing failed ({llm_error_message if llm_error_message else 'unknown error'}); rule-based fallback used."
                 )
-                
-                if extracted_llm_data:
-                    # Note: extract_recommendation only accepts extracted_data and request_id parameters
-                    final_recommendation = RecommendationHandler.extract_recommendation(
-                        extracted_data=extracted_llm_data,
-                        request_id=request.request_id
-                    )
-                    # Augment notes if needed
-                    current_notes = getattr(final_recommendation, 'notes', []) or []
-                    current_notes.append("Generated using LLM processing.")
-                    final_recommendation.notes = current_notes
+                if final_recommendation:
+                    logger.info(f"Generated rule-based fallback recommendation: {final_recommendation.recommended_campus_id}")
                 else:
-                    logger.warning("LLM returned empty data. Falling back to rule-based.")
-                    final_recommendation = rule_based_rec
-                    current_notes = getattr(final_recommendation, 'notes', []) or []
-                    current_notes.append("LLM processing failed or returned no data; rule-based fallback used.")
-                    final_recommendation.notes = current_notes
+                    logger.error("Rule-based fallback also failed to generate a recommendation.")
+                    # Handle critical failure - perhaps display an error message to the user
+                    self.update_recommendation_display(None, error_message="Critical error: Could not generate any recommendation.")
+                    return
 
-            except Exception as llm_error:
-                logger.error(f"LLM processing error: {llm_error}\n{traceback.format_exc()}")
-                logger.info("Falling back to rule-based recommendation due to LLM error.")
-                final_recommendation = rule_based_rec
+            # Augment notes if needed (final_recommendation is now the Recommendation object)
+            if final_recommendation:
                 current_notes = getattr(final_recommendation, 'notes', []) or []
-                current_notes.append(f"LLM error ({str(llm_error)}); rule-based fallback used.")
+                if llm_error_message and not llm_processing_successful:
+                    current_notes.append(f"LLM Error: {llm_error_message}")
+                # Add other relevant notes if necessary
                 final_recommendation.notes = current_notes
-            
-        except Exception as outer_error:
-            logger.error(f"Error during recommendation extraction: {outer_error}\n{traceback.format_exc()}")
-            final_recommendation = RecommendationHandler.create_error_recommendation(
-                request_id=request.request_id,
-                error_message=f"Core extraction error: {str(outer_error)}"
-            )
-        
-        if final_recommendation:
-            self._display_recommendation(final_recommendation)
-            self.statusBar.showMessage("Recommendation generated.")
-        else:
-            # This case should ideally not be reached if error recommendations are created
-            self.statusBar.showMessage("Failed to generate recommendation.")
-            self._display_recommendation(RecommendationHandler.create_error_recommendation(
-                 request_id=request.request_id, error_message="Unknown error led to no recommendation."
-            ))
+
+            # Update the display with the final recommendation (either LLM or rule-based)
+            self.update_recommendation_display(final_recommendation)
+
+        except Exception as e:
+            logger.error(f"Error in _process_recommendation: {e}", exc_info=True)
+            self.update_recommendation_display(None, error_message=f"Error processing recommendation: {e}")
 
     def _display_recommendation(self, recommendation: Recommendation) -> None:
         logger.info(f"Displaying recommendation for: {getattr(recommendation, 'recommended_campus_id', 'N/A')}")
@@ -659,12 +584,14 @@ class TransferCenterMainWindow(QMainWindow):
             'main': self._format_main_recommendation(recommendation, method_text),
             'transport': self._format_transport_info(recommendation),
             'conditions': self._format_conditions_info(recommendation),
-            'exclusions': self._format_exclusions_info(recommendation), # Changed to pass recommendation
+            'exclusions': self._format_exclusions_info(recommendation),
             'alternatives': self._format_alternatives_info(recommendation),
+            'scoring': self._format_scoring_results(recommendation),
             'urgency': self._determine_urgency(recommendation)
         }
         
-        self.recommendation_widget.set_recommendation(formatted_output)
+        # Updated call to set_recommendation
+        self.recommendation_widget.set_recommendation(formatted_data=formatted_output, raw_recommendation=recommendation)
         
         # Format and set explanation tab
         explanation_html = self._format_explanation_html(recommendation)
@@ -673,6 +600,33 @@ class TransferCenterMainWindow(QMainWindow):
         # Optionally set raw data if your Recommendation object or handler provides it
         # raw_data_html = self._format_raw_data_html(recommendation) # Example
         # self.recommendation_widget.set_raw_data(raw_data_html)
+
+    def _format_scoring_results(self, recommendation: Recommendation) -> str:
+        """Format clinical scoring results into an HTML string."""
+        if not getattr(recommendation, 'scoring_results', None):
+            return "<p>No clinical scoring results available for this recommendation.</p>"
+
+        scoring_html = "<div style='margin-bottom: 10px;'>"
+        scoring_html += "<h4 style='color: #2c3e50; margin-bottom: 5px;'>Clinical Scoring Details:</h4>"
+        
+        for sr in recommendation.scoring_results:
+            scoring_html += "<div style='border: 1px solid #e0e0e0; padding: 8px; margin-bottom: 8px; border-radius: 4px; background-color: #f9f9f9;'>"
+            scoring_html += f"<p style='margin: 2px 0;'><b>Scorer:</b> {sr.scorer_name}</p>"
+            score_value_display = sr.score_value if sr.score_value is not None else 'N/A'
+            scoring_html += f"<p style='margin: 2px 0;'><b>Score:</b> {score_value_display}</p>"
+            if sr.interpretation:
+                scoring_html += f"<p style='margin: 2px 0;'><b>Interpretation:</b> {sr.interpretation}</p>"
+            if sr.details:
+                scoring_html += "<p style='margin: 2px 0;'><b>Details:</b></p><ul style='margin-top: 2px; padding-left: 20px;'>"
+                for key, value in sr.details.items():
+                    scoring_html += f"<li><em>{key.replace('_', ' ').title()}:</em> {value}</li>"
+                scoring_html += "</ul>"
+            # Timestamp is available: sr.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            # Consider if timestamp needs to be displayed here or if it's too verbose for this section.
+            scoring_html += "</div>"
+        
+        scoring_html += "</div>"
+        return scoring_html
 
     def _format_main_recommendation(self, recommendation: Recommendation, method_text: str) -> str:
         """Format the main recommendation section."""
@@ -683,15 +637,17 @@ class TransferCenterMainWindow(QMainWindow):
         # Get campus ID
         campus_id = getattr(recommendation, 'recommended_campus_id', "N/A")
         
-        # Get care level and infer it from clinical reasoning if not set directly
-        care_level = "Unknown"
-        if hasattr(recommendation, 'recommended_level_of_care') and recommendation.recommended_level_of_care:
-            care_level = recommendation.recommended_level_of_care
-        # Try to extract from explainability details
-        elif hasattr(recommendation, 'explainability_details') and recommendation.explainability_details:
-            details = recommendation.explainability_details
-            if isinstance(details, dict) and 'care_level' in details:
-                care_level = details['care_level']
+        # Get care level primarily from the dedicated field
+        care_level = getattr(recommendation, 'recommended_level_of_care', "Unknown")
+
+        # Fallback to inferring from explainability_details if primary is missing or generic
+        if not care_level or care_level in ["Unknown", "General"]:
+            if hasattr(recommendation, 'explainability_details') and recommendation.explainability_details:
+                details = recommendation.explainability_details
+                # The LLM output uses 'care_level' in its JSON, which maps to 'recommended_level_of_care' in the Pydantic model.
+                # However, if 'explainability_details' somehow directly contains a 'care_level' key from a different source, check it.
+                if isinstance(details, dict) and 'care_level' in details and details['care_level'] and details['care_level'] not in ["Unknown", "General"]:
+                    care_level = details['care_level']
         
         # Get clinical reasoning
         reasoning = ""
@@ -700,10 +656,9 @@ class TransferCenterMainWindow(QMainWindow):
         elif hasattr(recommendation, 'reason') and recommendation.reason:
             reasoning = recommendation.reason
                 
-        # If care level still unknown, try to infer from clinical reasoning
-        if care_level == "Unknown":
-            # Look for care level mentions in the reasoning
-            reasoning_lower = reasoning.lower()
+        # If care level still unknown or generic after checking direct attribute and explainability_details, try to infer from clinical reasoning
+        if not care_level or care_level in ["Unknown", "General"]:
+            reasoning_lower = reasoning.lower() # Ensure reasoning is defined
             if "picu" in reasoning_lower or "pediatric intensive care" in reasoning_lower:
                 care_level = "PICU"
             elif "nicu" in reasoning_lower or "neonatal intensive care" in reasoning_lower:
@@ -730,51 +685,163 @@ class TransferCenterMainWindow(QMainWindow):
         """
     
     def _format_transport_info(self, recommendation: Recommendation) -> str:
-        transport_details = getattr(recommendation, 'transport_details', None)
+        logger.info("Formatting transport info for recommendation")
+        
+        # Get transport details from the recommendation object
+        transport_details = getattr(recommendation, 'transport_details', {})
+        logger.info(f"Transport details: {transport_details}")
+        
+        # Extract mode with fallbacks
+        mode = "Not specified"
+        if isinstance(transport_details, dict) and 'mode' in transport_details:
+            mode = transport_details['mode']
+            # Format mode nicely
+            if isinstance(mode, str):
+                mode = mode.replace('_', ' ').replace('GROUND_AMBULANCE', 'Ground Ambulance').replace('HELICOPTER', 'Helicopter').replace('FIXED_WING', 'Fixed Wing Aircraft').title()
+        
+        # Extract time with fallbacks
+        est_time = "Not specified"
+        for key in ['estimated_time_minutes', 'estimated_time', 'time_minutes', 'travel_time']:
+            if isinstance(transport_details, dict) and key in transport_details:
+                est_time_value = transport_details[key]
+                if isinstance(est_time_value, (int, float)):
+                    est_time = f"{est_time_value} minutes"
+                else:
+                    est_time = str(est_time_value)
+                break
+        
+        # Get distance from transport details if available
+        distance = "Not available"
+        for key in ['distance', 'distance_km', 'distance_miles']:
+            if isinstance(transport_details, dict) and key in transport_details:
+                distance_value = transport_details[key]
+                if isinstance(distance_value, (int, float)):
+                    distance = f"{distance_value} km"
+                else:
+                    distance = str(distance_value)
+                break
+        
+        # If distance not in transport details, calculate it
+        if distance == "Not available":
+            campus_id = getattr(recommendation, 'recommended_campus_id', None)
+            if hasattr(self, 'current_transfer_request') and campus_id:
+                try:
+                    from src.utils.travel_calculator import calculate_distance
+                    from src.utils.hospital_loader import load_hospitals
+                    
+                    # Get sender location
+                    sender_location = self.current_transfer_request.location
+                    
+                    # Find hospital with matching ID
+                    hospitals = load_hospitals()
+                    for hospital in hospitals:
+                        if hospital.campus_id == campus_id:
+                            # Calculate distance
+                            distance_km = calculate_distance(sender_location, hospital.location)
+                            distance = f"{distance_km:.1f} km"
+                            logger.info(f"Calculated distance to {campus_id}: {distance}")
+                            break
+                except Exception as e:
+                    logger.error(f"Error calculating distance: {e}")
+        
+        # Get special requirements with fallbacks
+        special_req = "None"
         if isinstance(transport_details, dict):
-            mode = transport_details.get('mode', 'Not specified')
-            est_time = transport_details.get('estimated_time', 'Not specified')
-            special_req = transport_details.get('special_requirements', 'None')
-            return f"""
-            <h3>Transport Information</h3>
-            <p><b>Mode:</b> {mode}</p>
-            <p><b>Estimated Time:</b> {est_time}</p>
-            <p><b>Special Requirements:</b> {special_req}</p>
-            """
-        return "<p>No specific transport details available.</p>"
+            special_req = transport_details.get('special_requirements', 
+                          transport_details.get('requirements', 
+                            transport_details.get('notes', 'None')))
+        
+        # Format with nice HTML
+        return f"""
+        <h3>Transport Information</h3>
+        <p><b>Mode:</b> {mode}</p>
+        <p><b>Estimated Time:</b> {est_time}</p>
+        <p><b>Distance:</b> {distance}</p>
+        <p><b>Special Requirements:</b> {special_req}</p>
+        """
     
     def _format_conditions_info(self, recommendation: Recommendation) -> str:
+        logger.info("Formatting conditions info for recommendation")
         conditions_data = getattr(recommendation, 'conditions', {})
+        
+        # Try to convert from string if needed
+        if isinstance(conditions_data, str):
+            try:
+                import json
+                conditions_data = json.loads(conditions_data)
+                logger.info("Successfully converted conditions string to dict")
+            except:
+                logger.warning("Failed to convert conditions string to dict")
+                conditions_data = {}
+
         if not isinstance(conditions_data, dict):
+            logger.warning(f"conditions is not a dict: {type(conditions_data)}")
             conditions_data = {}
 
-        weather_report = conditions_data.get('weather', 'Not specified')
+        # Extract weather with fallback
+        weather_report = conditions_data.get('weather', None)
+        if weather_report is None:
+            # Try to find weather in explainability details
+            explain_details = getattr(recommendation, 'explainability_details', {})
+            if isinstance(explain_details, dict):
+                weather_report = explain_details.get('weather', 'Not specified')
+            else:
+                weather_report = 'Not specified'
+                
+        logger.info(f"Weather report: {weather_report}")
+        
+        # Color-code the weather report
         weather_color = "#333333" 
         if isinstance(weather_report, str) and weather_report != 'Not specified':
             if any(c in weather_report.lower() for c in ["storm", "snow", "ice", "severe", "warning", "tornado", "hurricane"]):
-                weather_color = "#cc0000"
+                weather_color = "#cc0000"  # Red for severe weather
             elif any(c in weather_report.lower() for c in ["rain", "wind", "advisory", "fog", "thunder"]):
-                weather_color = "#e68a00"
+                weather_color = "#e68a00"  # Orange for moderate concerns
             else: # Fair, clear, sunny etc.
-                 weather_color = "#008800"
+                 weather_color = "#008800"  # Green for good conditions
         weather_html = f"<span style='color: {weather_color};'>{weather_report}</span>"
 
-        traffic_report = conditions_data.get('traffic', 'Not specified')
+        # Extract traffic with fallback
+        traffic_report = conditions_data.get('traffic', None)
+        if traffic_report is None:
+            # Try to find traffic in explainability details
+            explain_details = getattr(recommendation, 'explainability_details', {})
+            if isinstance(explain_details, dict):
+                traffic_report = explain_details.get('traffic', 'Not specified')
+            else:
+                traffic_report = 'Not specified'
+                
+        logger.info(f"Traffic report: {traffic_report}")
+        
+        # Color-code the traffic report
         traffic_color = "#333333"
         if isinstance(traffic_report, str) and traffic_report != 'Not specified':
             if any(level in traffic_report.lower() for level in ["heavy", "severe", "delay", "standstill", "accident", "closed"]):
-                traffic_color = "#cc0000" 
+                traffic_color = "#cc0000"  # Red for severe traffic
             elif any(level in traffic_report.lower() for level in ["moderate", "slow", "congestion"]):
-                traffic_color = "#e68a00"
+                traffic_color = "#e68a00"  # Orange for moderate traffic
             else: # Light, clear
-                traffic_color = "#008800"
+                traffic_color = "#008800"  # Green for good traffic
         traffic_html = f"<span style='color: {traffic_color};'>{traffic_report}</span>"
+        
+        # Add road condition if available
+        road_report = conditions_data.get('road_conditions', 'Not specified')
+        road_html = road_report
+        if road_report != 'Not specified':
+            road_html = f"<b>Road Conditions:</b> {road_report}</p>"
+        
+        # Add estimated arrival time if available
+        eta = conditions_data.get('estimated_arrival_time', None)
+        eta_html = ""
+        if eta:
+            eta_html = f"<p><b>Estimated Arrival Time:</b> {eta}</p>"
         
         if weather_report != 'Not specified' or traffic_report != 'Not specified':
             return f"""
             <h3>Conditions</h3>
             <p><b>Weather:</b> {weather_html}</p>
             <p><b>Traffic:</b> {traffic_html}</p>
+            {eta_html}
             """
         return "<p>No specific condition data available.</p>"
 
@@ -852,79 +919,60 @@ class TransferCenterMainWindow(QMainWindow):
         return 'normal'
         
     def _format_explanation_html(self, recommendation: Recommendation) -> str:
-        """Format the detailed explanation tab content."""
-        # This is the primary method for generating explanation HTML.
-        # The orphaned code block at the end of the class has been removed.
-        details = getattr(recommendation, 'explainability_details', None)
-        explanation_html = "<h2>Recommendation Explanation</h2>"
-
-        if not isinstance(details, dict) or not details:
-            explanation_html += "<p>No detailed explanation available.</p>"
-            return explanation_html
-
-        # Detailed Reasoning
-        detailed_reasoning = details.get('detailed_reasoning')
-        if detailed_reasoning:
-            explanation_html += f"<h3>Detailed Reasoning</h3><p>{str(detailed_reasoning)}</p>"
-
-        # Proximity Analysis
-        proximity_analysis = details.get('proximity_analysis')
-        if proximity_analysis:
-            explanation_html += f"<h3>Proximity Analysis</h3><p>{str(proximity_analysis)}</p>"
-
-        # Campus Scores
-        campus_scores_data = details.get('campus_scores')
-        if isinstance(campus_scores_data, dict):
-            explanation_html += "<h3>Detailed Campus Scoring</h3>"
-            for campus_key, scores in campus_scores_data.items(): # e.g. "primary", "backup_XYZ"
-                if isinstance(scores, dict):
-                    campus_name = scores.get('name', campus_key.replace('_', ' ').title())
-                    explanation_html += f"<h4>Scores for: {campus_name}</h4>"
-                    explanation_html += "<table border='1' cellpadding='5' style='border-collapse: collapse; width:100%;'>"
-                    explanation_html += "<tr style='background-color:#f0f0f0;'><th>Criteria</th><th>Score</th><th>Weight</th><th>Weighted Score</th><th>Notes</th></tr>"
-                    
-                    total_weighted_score = 0
-                    default_weights = {"location": 0.40, "care_level_match": 0.30, "capacity": 0.20, "specialty_availability": 0.10}
-                    
-                    for criteria_key, criteria_label in [
-                        ("location", "Location"), ("care_level_match", "Care Level Match"),
-                        ("capacity", "Capacity"), ("specialty_availability", "Specialty Availability"),
-                        ("overall_suitability", "Overall Suitability") # Example of another potential score
-                    ]:
-                        score_value = scores.get(criteria_key, "N/A")
-                        weight = scores.get(f"{criteria_key}_weight", default_weights.get(criteria_key))
-                        score_notes = scores.get(f"{criteria_key}_notes", "")
-
-                        weighted_score_str = "N/A"
-                        if isinstance(score_value, (int, float)) and isinstance(weight, (int, float)):
-                            weighted_val = score_value * weight
-                            weighted_score_str = f"{weighted_val:.2f}"
-                            total_weighted_score += weighted_val
-                        
-                        weight_str = f"{weight*100:.0f}%" if isinstance(weight, float) else (str(weight) if weight else "N/A")
-
-                        explanation_html += f"<tr><td>{criteria_label}</td><td>{score_value}</td><td>{weight_str}</td><td>{weighted_score_str}</td><td>{score_notes}</td></tr>"
-                    
-                    explanation_html += f"<tr><td colspan='3'><b>Total Weighted Score</b></td><td><b>{total_weighted_score:.2f}</b></td><td></td></tr>"
-                    explanation_html += "</table><br/>"
-
-        # Campus Comparison
-        campus_comparison = details.get('campus_comparison')
-        if campus_comparison:
-            explanation_html += f"<h3>Campus Comparison</h3><p>{str(campus_comparison)}</p>"
-
-        # Other generic details if any category was not specifically handled above
-        processed_keys = {'detailed_reasoning', 'proximity_analysis', 'campus_scores', 'campus_comparison', 'extraction_method'}
-        for category, cat_details in details.items():
-            if category not in processed_keys:
-                explanation_html += f"<h4>{category.replace('_', ' ').title()}</h4>"
-                if isinstance(cat_details, dict):
-                    explanation_html += "<ul>" + "".join([f"<li><b>{k.replace('_', ' ').title()}:</b> {v}</li>" for k, v in cat_details.items()]) + "</ul>"
-                elif isinstance(cat_details, list):
-                    explanation_html += "<ul>" + "".join([f"<li>{item}</li>" for item in cat_details]) + "</ul>"
-                else:
-                    explanation_html += f"<p>{str(cat_details)}</p>"
+        """Format the detailed explanation tab content with enhanced visual formatting."""
+        logger.info("Formatting explanation HTML for recommendation")
+        # explainability_details should be an LLMReasoningDetails object or None
+        # due to Pydantic model validation and the ensure_explainability_details validator.
+        details: Optional[LLMReasoningDetails] = getattr(recommendation, 'explainability_details', None)
         
+        explanation_html = """
+        <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+            <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">Recommendation Reasoning</h2>
+        """
+        
+        if not details or not isinstance(details, LLMReasoningDetails):
+            logger.warning(f"No valid LLMReasoningDetails found in recommendation. Details type: {type(details)}")
+            explanation_html += "<p style='color: #e74c3c; font-style: italic;'>No detailed explanation available or data is in an unexpected format.</p></div>"
+            return explanation_html
+        
+        # At this point, 'details' is a valid LLMReasoningDetails object.
+        main_reason = details.main_recommendation_reason
+        explanation_html += f"""
+        <div style="background-color: #f8f9fa; border-left: 4px solid #3498db; padding: 15px; margin: 15px 0;">
+            <h3 style="color: #2c3e50; margin-top: 0;">Primary Reason</h3>
+            <p style="font-size: 16px;">{main_reason}</p>
+        </div>
+        """
+        
+        if details.key_factors_considered:
+            explanation_html += """
+            <div style="margin: 15px 0;">
+                <h3 style="color: #2c3e50;">Key Factors Considered</h3>
+                <ul style="list-style-type: square;">
+            """
+            for factor in details.key_factors_considered:
+                explanation_html += f"<li style='margin-bottom: 8px;'>{factor}</li>"
+            explanation_html += "</ul></div>"
+        
+        if details.alternative_reasons:
+            explanation_html += """
+            <div style="margin: 15px 0;">
+                <h3 style="color: #2c3e50;">Alternative Considerations</h3>
+                <ul style="list-style-type: circle;">
+            """
+            for alt_campus_id, reason_text in details.alternative_reasons.items():
+                explanation_html += f"<li style='margin-bottom: 8px;'><b>{alt_campus_id}:</b> {reason_text}</li>"
+            explanation_html += "</ul></div>"
+
+        if details.confidence_explanation:
+            explanation_html += f"""
+            <div style="margin: 15px 0; background-color: #eafaf1; border-left: 4px solid #2ecc71; padding: 15px;">
+                <h3 style="color: #2c3e50; margin-top: 0;">Confidence Explanation</h3>
+                <p style="font-size: 16px;">{details.confidence_explanation}</p>
+            </div>
+            """
+            
+        explanation_html += "</div>"  # Close the main container
         return explanation_html
 
 

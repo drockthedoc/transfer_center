@@ -7,32 +7,42 @@ for patient transfers based on exclusions, bed availability, and distance.
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from src.core.exclusion_checker import check_exclusions
 from src.core.models import (
     HospitalCampus,
+    Location,
     PatientData,
     Recommendation,
-    TransferRequest,
     TransportMode,
     WeatherData,
+    LLMReasoningDetails,
+    BedAvailability, 
+    TransportOption, 
+    TransferRequest, 
+    ScoringResult
 )
 from src.core.scoring.score_processor import process_patient_scores
-from src.explainability.explainer import generate_simple_explanation
-from src.utils.travel_calculator import (
-    Location,
-    get_air_travel_info,
-    get_road_travel_info,
+from src.core.exclusion_checker import check_exclusions
+from src.utils.travel_calculator import get_air_travel_info, get_road_travel_info
+from src.utils.geolocation import calculate_distance
+from src.explainability.explainer import (
+    generate_simple_explanation,
+    generate_llm_explanation, 
+    FALLBACK_REASONING
 )
+import sys
+import traceback
+import logging
 
+logger = logging.getLogger(__name__)
 
 def recommend_campus(
     request: TransferRequest,
-    campuses: List[HospitalCampus],
-    current_weather: WeatherData,
+    campuses: List[HospitalCampus], 
     available_transport_modes: List[TransportMode],
-    transport_time_estimates: Optional[Dict[str, Dict[str, Any]]] = None,
-    human_suggestions: Optional[Dict[str, Any]] = None,
+    weather_data: Optional[WeatherData] = None,
+    traffic_conditions: Optional[Dict[str, Any]] = None,
 ) -> Optional[Recommendation]:
+
     import sys
     import traceback
 
@@ -76,27 +86,41 @@ def recommend_campus(
         score_justifications = []
 
         # Check if human suggestions have care levels
-        if human_suggestions and "care_levels" in human_suggestions:
-            care_levels = human_suggestions["care_levels"]
+        human_suggestions_data = request.transport_info.get("human_suggestions", {})
+        if human_suggestions_data and "care_levels" in human_suggestions_data:
+            care_levels = human_suggestions_data["care_levels"]
             print(f"Care levels requested by human: {care_levels}")
         else:
             # Use scoring systems to determine care levels automatically
             print("No human care level suggestions, using automatic scoring systems")
             try:
                 # Process patient scores to determine care level
-                scoring_results = process_patient_scores(request.patient_data)
-                care_levels = scoring_results["recommended_care_levels"]
-                score_justifications = scoring_results["justifications"]
+                scoring_results_dict = process_patient_scores(request.patient_data)
+                
+                # Extract ScoringResult objects for the LLM explainer and store in TransferRequest
+                if "scores" in scoring_results_dict and isinstance(scoring_results_dict["scores"], dict):
+                    request.processed_scoring_results = [
+                        item for item in scoring_results_dict["scores"].values() if isinstance(item, ScoringResult)
+                    ]
+                else:
+                    request.processed_scoring_results = []
+                
+                care_levels = scoring_results_dict.get("recommended_care_levels", ["General"])
+                score_justifications = scoring_results_dict.get("justifications", ["Default due to scoring error"])
 
                 print(f"Automatically determined care levels: {care_levels}")
                 print(f"Justifications: {score_justifications}")
+                print(f"Processed {len(request.processed_scoring_results)} ScoringResult objects.")
 
-                # Add scoring details to notes for transparency
-                for score_name, score_data in scoring_results["scores"].items():
-                    if score_data != "N/A" and isinstance(
-                        score_data.get("score"), (int, float)
-                    ):
-                        print(f"{score_name.upper()} Score: {score_data['score']}")
+                # Add scoring details to notes for transparency using the original dict structure
+                if "scores" in scoring_results_dict and isinstance(scoring_results_dict["scores"], dict):
+                    for score_name, score_data_obj in scoring_results_dict["scores"].items():
+                        # score_data_obj here is expected to be a ScoringResult object
+                        if isinstance(score_data_obj, ScoringResult) and score_data_obj.score_value is not None:
+                            print(f"{score_data_obj.score_name.upper()} Score: {score_data_obj.score_value} ({score_data_obj.interpretation})")
+                        elif isinstance(score_data_obj, dict): # Fallback for older dict structure if any
+                             if score_data_obj != "N/A" and isinstance(score_data_obj.get("score"), (int, float)):
+                                print(f"{score_name.upper()} Score: {score_data_obj['score']}")
             except Exception as e:
                 print(f"Error using scoring systems: {str(e)}")
                 print("Defaulting to General care level")
@@ -106,6 +130,7 @@ def recommend_campus(
         campuses_with_beds = []
         for campus in eligible_campuses:
             print(f"Checking beds for {campus.name}")
+            # Check ICU/PICU beds if needed
             if "ICU" in care_levels or "PICU" in care_levels:
                 if campus.bed_census.icu_beds_available > 0:
                     campuses_with_beds.append(
@@ -153,6 +178,7 @@ def recommend_campus(
         print(f"Origin location: {sending_facility}")
 
         # Find closest campus
+        transport_time_estimates = {} # Initialize the dictionary
         closest_campus_data = None
         closest_travel_time = float("inf")
 
@@ -179,10 +205,7 @@ def recommend_campus(
                         and "duration_minutes" in campus_estimates["ground"]
                     ):
                         time_minutes = campus_estimates["ground"]["duration_minutes"]
-                        print(
-                            f"  Ground travel (from estimates): {
-                                time_minutes:.1f} minutes"
-                        )
+                        print(f"  Ground travel (from estimates): {time_minutes:.1f} minutes")
                         if time_minutes < min_travel_time:
                             min_travel_time = time_minutes
                             best_mode = TransportMode.GROUND_AMBULANCE
@@ -194,9 +217,7 @@ def recommend_campus(
                         and "duration_minutes" in campus_estimates["air"]
                     ):
                         time_minutes = campus_estimates["air"]["duration_minutes"]
-                        print(
-                            f"  Air travel (from estimates): {time_minutes:.1f} minutes"
-                        )
+                        print(f"  Air travel (from estimates): {time_minutes:.1f} minutes")
                         if time_minutes < min_travel_time:
                             min_travel_time = time_minutes
                             best_mode = TransportMode.AIR_AMBULANCE
@@ -223,12 +244,15 @@ def recommend_campus(
                 # Air travel
                 if TransportMode.AIR_AMBULANCE in available_transport_modes:
                     try:
+                        if weather_data is None:
+                            print("  Warning: Weather data is not available, cannot accurately assess air travel viability.")
+                            # Optionally, consider air travel non-viable here or handle as per requirements
                         air_info = get_air_travel_info(
                             sending_facility,
                             campus_data["campus"].location,
-                            current_weather,
+                            weather_data,
                         )
-                        if air_info and "duration_minutes" in air_info:
+                        if air_info and air_info.get("viable") and "duration_minutes" in air_info:
                             time_minutes = air_info["duration_minutes"]
                             print(f"  Air travel: {time_minutes:.1f} minutes")
                             if time_minutes < min_travel_time:
@@ -267,9 +291,7 @@ def recommend_campus(
                     # Assume average speed of 60 km/h for ground transport
                     time_minutes = distance_km / 60 * 60  # Convert to minutes
                     print(
-                        f"  Fallback calculation: {
-                            distance_km:.1f} km, ~{
-                            time_minutes:.1f} minutes by ground"
+                        f"  Fallback calculation: {distance_km:.1f} km, ~{time_minutes:.1f} minutes by ground"
                     )
                     min_travel_time = time_minutes
                     best_mode = TransportMode.GROUND_AMBULANCE
@@ -284,8 +306,7 @@ def recommend_campus(
             # With our fallback mechanisms, we should always have a travel option now
             if best_mode is None:
                 print(
-                    f"  WARNING: No travel mode selected for {
-                        campus.name} despite fallbacks"
+                    f"  WARNING: No travel mode selected for {campus.name} despite fallbacks"
                 )
                 # Final fallback - force a value
                 best_mode = TransportMode.GROUND_AMBULANCE
@@ -309,78 +330,83 @@ def recommend_campus(
 
         # Create recommendation
         print(
-            f"\nFINAL STEP: Creating recommendation for {
-                closest_campus_data['campus'].name}"
+            f"\nFINAL STEP: Creating recommendation for {closest_campus_data['campus'].name}"
         )
-        campus = closest_campus_data["campus"]
+        campus: HospitalCampus = closest_campus_data["campus"] # This is the HospitalCampus object
+        logger.info(f"FINAL STEP: Creating recommendation for {campus.name}")
 
-        # Build explanation
+        # Initialize and populate the notes list for this recommendation
         notes = [
-            f"Campus passed exclusion checks",
-            f"Bed type: {
-                closest_campus_data['bed_type']}, {
-                closest_campus_data['beds_available']} available",
-            f"Transport mode: {
-                closest_campus_data['transport_mode']}, travel time: {
-                    closest_campus_data['travel_time_minutes']:.1f} minutes",
-            f"Selected as closest eligible campus with available beds",
+            f"Campus passed exclusion checks.",
+            f"Bed type: {closest_campus_data.get('bed_type', 'N/A')}, {closest_campus_data.get('beds_available', 'N/A')} available.",
+            f"Transport mode: {closest_campus_data.get('transport_mode', 'N/A')}, travel time: {closest_campus_data.get('travel_time_minutes', 0.0):.1f} minutes.",
+            f"Selected as closest eligible campus with available beds."
         ]
 
-        try:
-            # Simple explanation as a dictionary
-            explanation = {
-                "summary": f"Selected {
-                    campus.name} as the closest suitable campus with available {
-                    closest_campus_data['bed_type']} beds.",
-                "reasons": [
-                    "Passed all exclusion criteria checks",
-                    f"Has {
-                        closest_campus_data['beds_available']} {
-                        closest_campus_data['bed_type']} beds available",
-                    f"Travel time of {
-                        closest_campus_data['travel_time_minutes']:.1f} minutes is the shortest among eligible options",
-                ],
-                "travel_details": {
-                    "mode": str(closest_campus_data["transport_mode"]),
-                    "time_minutes": closest_campus_data["travel_time_minutes"],
-                },
-            }
+        # Prepare data for LLM explanation
+        current_bed_availability = BedAvailability(
+            campus_id=campus.campus_id if campus.campus_id else "unknown",
+            bed_type=closest_campus_data['bed_type'],
+            available_beds=closest_campus_data['beds_available'],
+            last_updated="N/A"  # Placeholder, ideally from actual data source
+        )
 
-            # Create recommendation object
-            recommendation = Recommendation(
-                transfer_request_id=request.request_id,
-                recommended_campus_id=campus.campus_id,
-                reason=f"Campus {
-                    campus.name} selected: passed exclusion checks, has {
-                    closest_campus_data['beds_available']} {
-                    closest_campus_data['bed_type']} beds available, and is the closest eligible campus at {
-                    closest_campus_data['travel_time_minutes']:.1f} minutes by {
-                        closest_campus_data['transport_mode']}.",
-                confidence_score=100.0,
-                explainability_details=explanation,
-                notes=notes,
-            )
+        current_transport_option = TransportOption(
+            mode=closest_campus_data['transport_mode'],
+            estimated_time_minutes=closest_campus_data['travel_time_minutes'],
+            viable=True  # Assumed viable if it's the best option
+        )
 
-            print("RECOMMENDATION CREATED SUCCESSFULLY!")
-            print(
-                f"Recommended: {
-                    campus.name} via {
-                    closest_campus_data['transport_mode']}"
-            )
-            sys.stdout.flush()
-            return recommendation
+        # Attempt to generate LLM-based explanation details
+        # Placeholder for actual exclusion reasons if needed by LLM prompt
+        # For now, passing None or an empty list for exclusion_reasons_for_llm
+        exclusion_reasons_for_llm = [] # Or None
+        # The 'notes' list collected earlier can be used for 'other_notes'
 
-        except Exception as e:
-            print(f"!!! ERROR CREATING RECOMMENDATION: {e} !!!")
-            traceback.print_exc()
-            sys.stdout.flush()
-            return None
+        llm_reasoning_details = generate_llm_explanation(
+            transfer_request=request,
+            recommended_campus=campus,
+            bed_availability=current_bed_availability,
+            best_transport_option=current_transport_option,
+            all_scoring_results=request.processed_scoring_results if request.processed_scoring_results else [],
+            exclusion_reasons=exclusion_reasons_for_llm, # Pass compiled exclusion reasons if available
+            other_notes=notes # Pass the 'notes' list collected during the process
+        )
+
+        # Create recommendation object
+        final_recommendation = Recommendation(
+            transfer_request_id=request.request_id,
+            recommended_campus_id=campus.campus_id,
+            reason=f"Campus {campus.name} selected: passed exclusion checks, has {closest_campus_data['beds_available']} {closest_campus_data['bed_type']} beds available, and is the closest eligible campus at {closest_campus_data['travel_time_minutes']:.1f} minutes by {closest_campus_data['transport_mode']}.",
+            confidence_score=100.0, # Placeholder, can be refined
+            explainability_details=llm_reasoning_details, # Use LLM generated details
+            notes=notes, # Overall notes for the recommendation
+            scoring_results=request.processed_scoring_results, # ADDED
+        )
+
+        # Set the final travel time and mode on the recommendation object
+        final_recommendation.final_travel_time_minutes = closest_campus_data.get("travel_time_minutes")
+        final_recommendation.chosen_transport_mode = closest_campus_data.get("transport_mode")
+
+        # Populate simple_explanation using the newly created final_recommendation and patient_data from the request
+        final_recommendation.simple_explanation = generate_simple_explanation(
+            recommendation=final_recommendation, 
+            patient_data=request.patient_data
+        )
+
+        print("RECOMMENDATION CREATED SUCCESSFULLY!")
+        print(
+            f"Recommended: {campus.name} via {closest_campus_data['transport_mode']}"
+        )
+        sys.stdout.flush()
+        return final_recommendation
 
     except Exception as e:
         print(f"!!! CRITICAL ERROR IN RECOMMENDATION ENGINE: {e} !!!")
         traceback.print_exc()
         sys.stdout.flush()
         return None
+
     """
     Recommends a hospital campus for patient transfer using a simple algorithm:
     1. Check for campus exclusions
@@ -407,11 +433,12 @@ def recommend_campus(
 
     # Get care level suggestions if available
     care_levels = []
-    if human_suggestions and "care_levels" in human_suggestions:
-        care_levels = human_suggestions["care_levels"]
+    human_suggestions_data = request.transport_info.get("human_suggestions", {})
+    if human_suggestions_data and "care_levels" in human_suggestions_data:
+        care_levels = human_suggestions_data["care_levels"]
         print(f"DEBUG: Found care level suggestions: {care_levels}")
     else:
-        print(f"DEBUG: No care level suggestions found in {human_suggestions}")
+        print(f"DEBUG: No care level suggestions found in {human_suggestions_data}")
 
     # Set up origin location for travel calculations
     sending_facility = request.sending_facility_location
@@ -499,8 +526,7 @@ def recommend_campus(
                         "duration_minutes"
                     ]
                     print(
-                        f"DEBUG: Ground travel time: {
-                            road_info['duration_minutes']} minutes"
+                        f"DEBUG: Ground travel time: {road_info['duration_minutes']} minutes"
                     )
             except Exception as e:
                 print(f"ERROR: Error calculating road travel to {campus.name}: {e}")
@@ -510,9 +536,9 @@ def recommend_campus(
             try:
                 print(f"DEBUG: Calculating air travel time to {campus.name}")
                 # Ensure we're getting the campus object correctly, whether it's directly a campus or inside a dict
-                campus_obj = campus["campus"] if isinstance(campus, dict) else campus
+                campus_obj = campus_data["campus"]
                 air_info = get_air_travel_info(
-                    sending_facility, campus_obj.location, current_weather
+                    sending_facility, campus_obj.location, weather_data
                 )
                 print(f"DEBUG: Air travel info: {air_info}")
                 if air_info and "duration_minutes" in air_info:
@@ -520,8 +546,7 @@ def recommend_campus(
                         "duration_minutes"
                     ]
                     print(
-                        f"DEBUG: Air travel time: {
-                            air_info['duration_minutes']} minutes"
+                        f"DEBUG: Air travel time: {air_info['duration_minutes']} minutes"
                     )
             except Exception as e:
                 print(f"ERROR: Error calculating air travel to {campus.name}: {e}")
@@ -557,9 +582,7 @@ def recommend_campus(
     # Sort by travel time (closest first)
     campuses_with_distance.sort(key=lambda x: x["travel_time_minutes"])
     print(
-        f"DEBUG: Sorted campuses by travel time: {
-            [
-                (c['campus'].name, c['travel_time_minutes']) for c in campuses_with_distance]}"
+        f"DEBUG: Sorted campuses by travel time: {[(c['campus'].name, c['travel_time_minutes']) for c in campuses_with_distance]}"
     )
 
     # Select the closest campus
@@ -567,9 +590,7 @@ def recommend_campus(
         best_option = campuses_with_distance[0]
         chosen_campus = best_option["campus"]
         print(
-            f"DEBUG: Selected best campus: {
-                chosen_campus.name} with travel time {
-                best_option['travel_time_minutes']} minutes"
+            f"DEBUG: Selected best campus: {chosen_campus.name} with travel time {best_option['travel_time_minutes']} minutes"
         )
     else:
         print(
@@ -585,66 +606,78 @@ def recommend_campus(
         f"Selected as closest eligible campus with available beds",
     ]
 
-    # Include scoring justifications if automatic scoring was used
-    if "score_justifications" in locals() and score_justifications:
-        notes.append("Automatic severity scoring results:")
-        for justification in score_justifications:
-            notes.append(f"  - {justification}")
-        print(
-            f"Added {len(score_justifications)} scoring justifications to explanation notes"
-        )
-
-    # Create explanation
     try:
-        print(f"DEBUG: Generating explanation for {chosen_campus.name}")
-        explanation_details = {
-            "notes": notes,
-            "final_travel_time_minutes": best_option["travel_time_minutes"],
-            "chosen_transport_mode": best_option["transport_mode"],
-        }
-        print(f"DEBUG: Explanation details: {explanation_details}")
-
-        explanation = generate_simple_explanation(
-            chosen_campus_name=chosen_campus.name,
-            decision_details=explanation_details,
-            llm_conditions=[],
+        # Construct Pydantic models for bed availability and transport option
+        current_bed_availability = BedAvailability(
+            campus_id=best_option["campus"].campus_id,
+            bed_type=best_option["bed_type"],
+            available_beds=best_option["beds_available"],
+            last_updated="N/A" # Assuming not immediately available here, or fetch if possible
         )
-        print(f"DEBUG: Generated explanation: {explanation}")
+        current_transport_option = TransportOption(
+            mode=TransportMode(best_option["transport_mode"]), # Ensure this is a valid TransportMode enum
+            estimated_time_minutes=best_option["travel_time_minutes"],
+            cost=0 # Assuming cost is not a factor here or not available
+        )
+
+        # If an LLM explainer is configured and available, use it
+        # This now expects more detailed inputs for a richer prompt
+        explainability_details = generate_llm_explanation(
+            transfer_request=request, # Full TransferRequest object
+            recommended_campus=best_option["campus"], # Campus object
+            bed_availability=current_bed_availability, # BedAvailability Pydantic model
+            best_transport_option=current_transport_option, # TransportOption Pydantic model
+            all_scoring_results=request.processed_scoring_results, # Pass the list of ScoringResult objects
+            exclusion_reasons=None, # Optional: reasons other campuses were excluded if relevant here
+            other_notes=notes # General notes from the decision process
+        )
+        logger.info(f"LLM explanation generated for {best_option['campus'].name}")
     except Exception as e:
-        print(f"ERROR: Failed to generate explanation: {e}")
-        explanation = f"Selected {chosen_campus.name} as the closest suitable campus."
-        print(f"DEBUG: Using fallback explanation: {explanation}")
+        logger.error(f"Failed to generate LLM explanation: {e}. Falling back to predefined reasoning.")
+        # Use the fallback from explainer.py directly if LLM fails
+        explainability_details = FALLBACK_REASONING # CORRECTED to use imported constant
+        logger.info(f"DEBUG: Using fallback LLMReasoningDetails: {explainability_details}")
 
     # Create final recommendation
     try:
         print(f"DEBUG: Creating recommendation object")
-        recommendation_reason = f"Campus {
-            chosen_campus.name} selected: passed exclusion checks, has {
-            best_option['beds_available']} {
-            best_option['bed_type']} beds available, and is the closest eligible campus at {
-                best_option['travel_time_minutes']:.1f} minutes by {
-                    best_option['transport_mode']}."
-        print(f"DEBUG: Recommendation reason: {recommendation_reason}")
-
-        recommendation = Recommendation(
+        final_recommendation = Recommendation(
             transfer_request_id=request.request_id,
-            recommended_campus_id=chosen_campus.campus_id,
-            reason=recommendation_reason,
+            recommended_campus_id=best_option["campus"].campus_id,
+            recommended_campus_name=best_option["campus"].name,
+            reason=f"Campus {best_option['campus'].name} selected: passed exclusion checks, has {best_option['beds_available']} {best_option['bed_type']} beds available, and is the closest eligible campus at {best_option['travel_time_minutes']:.1f} minutes by {best_option['transport_mode']}.",
             confidence_score=100.0,  # Simple algorithm is deterministic
-            explainability_details=explanation,
+            explainability_details=explainability_details,  # Use the new LLM-generated details
             notes=notes,
+            scoring_results=request.processed_scoring_results, # ADDED
+            transport_details={
+                "mode": str(best_option['transport_mode']),
+                "estimated_time_minutes": best_option['travel_time_minutes'],
+                "special_requirements": "None"
+            },
+            conditions={
+                "weather": "Clear",
+                "traffic": "Normal traffic conditions"
+            }
         )
-        print(f"DEBUG: Successfully created recommendation: {recommendation}")
+        print(f"DEBUG: Successfully created recommendation: {final_recommendation}")
+        print(f"DEBUG: Transport details: {final_recommendation.transport_details}")
+        print(f"DEBUG: Transport mode: {final_recommendation.transport_details.get('mode', 'Not in dict')}")
+        print(f"DEBUG: Estimated time: {final_recommendation.transport_details.get('estimated_time_minutes', 'Not in dict')} minutes")
         print(
-            f"Recommendation: {
-                chosen_campus.name}. Travel: {
-                best_option['travel_time_minutes']:.1f} min via {
-                best_option['transport_mode']}."
+            f"Recommendation: {best_option['campus'].name}. Travel: {best_option['travel_time_minutes']:.1f} min via {best_option['transport_mode']}."
         )
-        return recommendation
+        # Populate simple_explanation using the newly created final_recommendation and patient_data from the request
+        final_recommendation.simple_explanation = generate_simple_explanation(
+            recommendation=final_recommendation, 
+            patient_data=request.patient_data
+        )
+        return final_recommendation
     except Exception as e:
         print(f"ERROR: Failed to create recommendation: {e}")
         print(f"DEBUG: Request ID: {request.request_id}")
-        print(f"DEBUG: Campus ID: {chosen_campus.campus_id}")
+        print(f"DEBUG: Campus ID: {best_option['campus'].campus_id}")
         print(f"DEBUG: Notes: {notes}")
         return None
+
+# Helper function to find the best transport option (example)

@@ -8,7 +8,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QFont
 from PyQt5.QtWidgets import (QGroupBox, QHBoxLayout, QLabel, QScrollArea, QTabWidget, 
                              QTextEdit, QVBoxLayout, QWidget)
-
+from src.core.models import Recommendation
+import json
+from typing import Dict, Optional
 
 class RecommendationOutputWidget(QWidget):
     """Widget for displaying recommendation output."""
@@ -93,6 +95,21 @@ class RecommendationOutputWidget(QWidget):
         )
         conditions_layout.addWidget(self.conditions_info)
         scroll_layout.addWidget(conditions_group)
+        
+        # Clinical Scoring section
+        scoring_group = QGroupBox("Clinical Scoring Details")
+        scoring_group.setStyleSheet("QGroupBox { font-weight: bold; }")
+        scoring_layout = QVBoxLayout(scoring_group)
+        
+        self.scoring_info = QTextEdit()
+        self.scoring_info.setReadOnly(True)
+        self.scoring_info.setMinimumHeight(120)
+        self.scoring_info.setStyleSheet(
+            "background-color: #e6f2ff; border: 1px solid #adccef; border-radius: 5px; color: #000000; font-size: 11pt;"
+        )
+        self.scoring_info.setPlaceholderText("Clinical scoring results will appear here...")
+        scoring_layout.addWidget(self.scoring_info)
+        scroll_layout.addWidget(scoring_group)
         
         # Exclusions section
         exclusions_group = QGroupBox("Exclusion Criteria")
@@ -207,6 +224,7 @@ class RecommendationOutputWidget(QWidget):
         self.main_recommendation.clear()
         self.transport_info.clear()
         self.conditions_info.clear()
+        self.scoring_info.clear()
         self.exclusions_info.clear()
         self.alternatives_info.clear()
         self.explanation_output.clear() # Keep for now, might be removed later
@@ -233,131 +251,87 @@ class RecommendationOutputWidget(QWidget):
         self.lbl_no_alternatives.show()
 
 
-    def set_recommendation(self, recommendation_data):
-        """Set the recommendation content with enhanced formatting.
-        
+    def set_recommendation(self, formatted_data: Dict[str, str], raw_recommendation: Optional[Recommendation] = None):
+        """Set the recommendation content.
+
         Args:
-            recommendation_data: Dictionary containing recommendation sections.
-                                 Expected to be a Recommendation Pydantic model's dict() output.
+            formatted_data: Dictionary containing pre-formatted HTML sections for the main tab.
+            raw_recommendation: The raw Recommendation object for populating detailed tabs like LLM Reasoning.
         """
-        if not isinstance(recommendation_data, dict):
-            error_msg = f"Unexpected recommendation data type: {type(recommendation_data).__name__}"
-            if isinstance(recommendation_data, str):
-                error_msg = recommendation_data
-            elif recommendation_data is None:
-                error_msg = "No recommendation data provided"
-            
-            self.recommendation_header.setStyleSheet("color: #cc0000;")
-            self.main_recommendation.setHtml(
-                f"<p><b>Error Generating Recommendation</b></p><p>{error_msg}</p>"
-            )
-            self.clear_llm_reasoning_fields() # Clear specific LLM fields
-            return
+        self.clear() # Clear previous content
 
-        # Set header color (assuming 'urgency' might still be part of top-level or derived)
-        urgency = recommendation_data.get('urgency', 'normal') # This might need to come from elsewhere
-        if urgency == 'critical':
-            self.recommendation_header.setStyleSheet("color: #cc0000;")
-        elif urgency == 'high':
-            self.recommendation_header.setStyleSheet("color: #e68a00;")
+        # Populate the main Recommendation Tab with pre-formatted HTML
+        self.main_recommendation.setHtml(formatted_data.get('main', '<p>No main recommendation data available.</p>'))
+        self.transport_info.setHtml(formatted_data.get('transport', '<p>No transport information available.</p>'))
+        self.conditions_info.setHtml(formatted_data.get('conditions', '<p>No condition data available.</p>'))
+        self.scoring_info.setHtml(formatted_data.get('scoring', '<p>No scoring data available.</p>'))
+        self.exclusions_info.setHtml(formatted_data.get('exclusions', '<p>No exclusion data available.</p>'))
+        self.alternatives_info.setHtml(formatted_data.get('alternatives', '<p>No alternative data available.</p>'))
+
+        # Populate the LLM Reasoning Tab using the raw_recommendation object
+        if raw_recommendation and hasattr(raw_recommendation, 'explainability_details'):
+            details = getattr(raw_recommendation, 'explainability_details', None)
+            if isinstance(details, str):
+                try:
+                    details = json.loads(details)
+                except json.JSONDecodeError:
+                    details = None
+            
+            if isinstance(details, dict):
+                self.lbl_primary_reason.setText(str(details.get('main_recommendation_reason', details.get('main_reason', 'N/A'))))
+                
+                confidence_exp = details.get('confidence_explanation', details.get('confidence_reasoning', 'N/A'))
+                self.lbl_confidence_explanation.setText(str(confidence_exp))
+
+                # Key Factors
+                key_factors = details.get('key_factors_considered', details.get('key_factors', []))
+                # Clear previous factors
+                while self.factors_layout.count():
+                    child = self.factors_layout.takeAt(0)
+                    if child.widget():
+                        child.widget().deleteLater()
+                
+                if isinstance(key_factors, list) and key_factors:
+                    self.lbl_no_factors.hide()
+                    for factor in key_factors:
+                        factor_label = QLabel(f"- {factor}")
+                        factor_label.setWordWrap(True)
+                        self.factors_layout.addWidget(factor_label)
+                else:
+                    self.lbl_no_factors.setText("- No specific key factors provided.")
+                    self.factors_layout.addWidget(self.lbl_no_factors)
+                    self.lbl_no_factors.show()
+
+                # Alternative Reasons / Considerations
+                alt_reasons_data = details.get('alternative_reasons', details.get('alternative_considerations', {}))
+                # Clear previous alternatives
+                while self.alternatives_layout_group.count(): # Assuming alternatives_layout_group is the layout for these
+                    child = self.alternatives_layout_group.takeAt(0)
+                    if child.widget():
+                        child.widget().deleteLater()
+                
+                if isinstance(alt_reasons_data, dict) and alt_reasons_data:
+                    self.lbl_no_alternatives.hide()
+                    for reason_key, reason_val in alt_reasons_data.items():
+                        alt_label = QLabel(f"<b>{reason_key.replace('_', ' ').title()}:</b> {reason_val}")
+                        alt_label.setWordWrap(True)
+                        self.alternatives_layout_group.addWidget(alt_label)
+                elif isinstance(alt_reasons_data, list) and alt_reasons_data: # Handle if it's a list of strings
+                    self.lbl_no_alternatives.hide()
+                    for item in alt_reasons_data:
+                        alt_label = QLabel(f"- {item}")
+                        alt_label.setWordWrap(True)
+                        self.alternatives_layout_group.addWidget(alt_label)
+                else:
+                    self.lbl_no_alternatives.setText("- No alternative considerations provided.")
+                    self.alternatives_layout_group.addWidget(self.lbl_no_alternatives)
+                    self.lbl_no_alternatives.show()
+            else:
+                self.clear_llm_reasoning_fields()
         else:
-            self.recommendation_header.setStyleSheet("color: #006600;")
-
-        # Main recommendation text (using 'reason' from top level for now, which is main_recommendation_reason)
-        main_html = (
-            f"<h3>Recommended Campus: {recommendation_data.get('recommended_campus_name', 'N/A')} "
-            f"(ID: {recommendation_data.get('recommended_campus_id', 'N/A')})</h3>"
-            f"<p><b>Confidence:</b> {recommendation_data.get('confidence_score', 0.0):.1f}%</p>"
-            f"<p><b>Suggested Care Level:</b> {recommendation_data.get('recommended_level_of_care', 'N/A')}</p>"
-            f"<p><b>Primary Reason:</b> {recommendation_data.get('reason', 'N/A')}</p>" # 'reason' is now main_recommendation_reason
-        )
-        self.main_recommendation.setHtml(main_html)
-
-        # Populate LLM Reasoning Details
-        explainability = recommendation_data.get('explainability_details', {})
-        if isinstance(explainability, dict): # It should be a dict after Pydantic model_dump
-            self.lbl_primary_reason.setText(explainability.get('main_recommendation_reason', "N/A"))
-
-            key_factors = explainability.get('key_factors_considered', [])
-            # Clear previous factors
-            while self.factors_layout.count():
-                item = self.factors_layout.takeAt(0)
-                if item.widget():
-                    item.widget().deleteLater()
-            
-            if key_factors:
-                self.lbl_no_factors.hide()
-                for factor in key_factors:
-                    factor_label = QLabel(f"- {factor}")
-                    factor_label.setWordWrap(True)
-                    factor_label.setStyleSheet("font-size: 10pt; margin-left: 5px;")
-                    self.factors_layout.addWidget(factor_label)
-            else:
-                self.lbl_no_factors.setText("- No specific factors listed.")
-                self.lbl_no_factors.show()
-
-            alternative_reasons = explainability.get('alternative_reasons', {})
-            # Clear previous alternatives
-            while self.alternatives_layout_group.count():
-                item = self.alternatives_layout_group.takeAt(0)
-                if item.widget():
-                    item.widget().deleteLater()
-
-            if alternative_reasons and isinstance(alternative_reasons, dict) and alternative_reasons:
-                self.lbl_no_alternatives.hide()
-                for campus, reason in alternative_reasons.items():
-                    alt_label = QLabel(f"<b>{campus}:</b> {reason}")
-                    alt_label.setTextFormat(Qt.RichText)
-                    alt_label.setWordWrap(True)
-                    alt_label.setStyleSheet("font-size: 10pt; margin-left: 5px;")
-                    self.alternatives_layout_group.addWidget(alt_label)
-            else:
-                self.lbl_no_alternatives.setText("- No alternative considerations listed.")
-                self.lbl_no_alternatives.show()
-            
-            confidence_exp = explainability.get('confidence_explanation')
-            self.lbl_confidence_explanation.setText(confidence_exp if confidence_exp else "N/A")
-
-        else: # explainability_details might not be a dict if something went wrong
             self.clear_llm_reasoning_fields()
 
-
-        # Transport details
-        transport = recommendation_data.get('transport_details', {})
-        transport_html = "<ul>"
-        transport_html += f"<li><b>Mode:</b> {transport.get('mode', 'N/A')}</li>"
-        transport_html += f"<li><b>Estimated Time:</b> {transport.get('estimated_time_minutes', 'N/A')} minutes</li>"
-        transport_html += f"<li><b>Special Requirements:</b> {transport.get('special_requirements', 'N/A')}</li>"
-        transport_html += "</ul>"
-        self.transport_info.setHtml(transport_html)
-        
-        # Conditions
-        conditions = recommendation_data.get('conditions', {})
-        conditions_html = "<ul>"
-        conditions_html += f"<li><b>Weather:</b> {conditions.get('weather', 'N/A')}</li>"
-        conditions_html += f"<li><b>Traffic:</b> {conditions.get('traffic', 'N/A')}</li>"
-        conditions_html += "</ul>"
-        self.conditions_info.setHtml(conditions_html)
-        
-        # Exclusions (This might need to be structured differently if it's complex)
-        # Assuming 'exclusions_info' is a simple string or list of strings from recommendation_data for now.
-        # This part might need more elaborate handling if 'exclusions' field provides structured data.
-        exclusions_content = recommendation_data.get('exclusions_info', "N/A") # Placeholder for now
-        self.exclusions_info.setHtml(str(exclusions_content))
-
-        # Alternatives (This also might need more structured data)
-        # The new 'alternative_reasons' is now inside explainability_details.
-        # This legacy 'alternatives_info' QTextEdit might be redundant or used for other purposes.
-        # For now, clearing it or using a placeholder.
-        self.alternatives_info.setHtml(recommendation_data.get('legacy_alternatives_display', "Legacy alternatives: N/A"))
-
-        # Notes (now a list of strings in the new schema)
-        notes_list = recommendation_data.get('notes', [])
-        if isinstance(notes_list, list) and notes_list:
-            self.explanation_output.setHtml("<h3>Notes:</h3><ul>" + "".join([f"<li>{note}</li>" for note in notes_list]) + "</ul>")
-        else:
-            self.explanation_output.setHtml("<h3>Notes:</h3><p>N/A</p>") # Or keep legacy explanation content if any
-
+        # Ensure the first tab (Recommendation Tab) is selected by default
         self.output_tabs.setCurrentIndex(0)
 
     def clear_llm_reasoning_fields(self):

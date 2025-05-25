@@ -82,10 +82,7 @@ def get_road_travel_info(origin: Location, destination: Location) -> Dict[str, a
         )
     except requests.exceptions.HTTPError as e:
         # Specific handling for HTTP errors (e.g. 400, 404, 500)
-        print(
-            f"Warning: OSRM API request failed with HTTPError {
-                e.response.status_code} for route {origin} to {destination}. Using fallback."
-        )
+        print(f"Warning: OSRM API request failed with HTTPError {e.response.status_code} for route {origin} to {destination}. Using fallback.")
     except requests.exceptions.ConnectionError:
         print(
             f"Warning: OSRM API request failed due to connection error for route {origin} to {destination}. Using fallback."
@@ -183,8 +180,7 @@ def get_air_travel_info(
     if weather.visibility_km < MIN_VISIBILITY_KM_VFR:
         return {
             "viable": False,
-            "reason": f"Visibility {
-                weather.visibility_km}km < minimum {MIN_VISIBILITY_KM_VFR}km for VFR.",
+            "reason": f"Visibility {weather.visibility_km}km < minimum {MIN_VISIBILITY_KM_VFR}km for VFR.",
             "distance_km": 0,
             "time_minutes": 0,
             "source": "Air Travel Calculation",
@@ -193,8 +189,7 @@ def get_air_travel_info(
     if weather.wind_speed_kph > MAX_WIND_SPEED_KPH_AIR:
         return {
             "viable": False,
-            "reason": f"Wind speed {
-                weather.wind_speed_kph}kph > maximum {MAX_WIND_SPEED_KPH_AIR}kph.",
+            "reason": f"Wind speed {weather.wind_speed_kph}kph > maximum {MAX_WIND_SPEED_KPH_AIR}kph.",
             "distance_km": 0,
             "time_minutes": 0,
             "source": "Air Travel Calculation",

@@ -13,9 +13,10 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union
 # Import the LLM logger
 from src.llm.llm_logging import get_llm_logger
 
-from src.core.models import Recommendation
-from src.core.decision.confidence_estimator import calculate_recommendation_confidence
+from src.core.models import Recommendation, Location  # Added import
+from src.core.decision_bakup.confidence_estimator import calculate_recommendation_confidence
 from src.llm.utils import robust_json_parser
+from src.utils.geolocation import calculate_distance  # Added import
 
 logger = logging.getLogger(__name__)
 
@@ -481,8 +482,9 @@ Do not include any text before or after the JSON. Only return a valid JSON objec
                             logger.info("Direct parsing SUCCESS")
                             logger.info(f"Parsed JSON keys: {list(recommendation_json.keys()) if isinstance(recommendation_json, dict) else 'Not a dict'}")
                         except json.JSONDecodeError as direct_error:
+                            line_number = content[:direct_error.pos].count('\n') + 1
                             logger.error(f"Direct parsing FAILED: {str(direct_error)}")
-                            logger.error(f"Error position: character {direct_error.pos}, line {content[:direct_error.pos].count('\n')+1}")
+                            logger.error(f"Error position: character {direct_error.pos}, line {line_number}")
                             logger.error(f"Context around error: '{content[max(0, direct_error.pos-20):direct_error.pos+20]}'")
                             logger.error("All JSON parsing methods failed")
                             logger.error(f"UNPARSEABLE CONTENT:\n{content}")
@@ -821,6 +823,22 @@ Do not include any text before or after the JSON. Only return a valid JSON objec
         
         # Format available hospitals if provided
         hospitals_info = ""
+        sending_facility_loc_data = extracted_entities.get('sending_facility_location')
+        sending_facility_location_obj = None
+        if sending_facility_loc_data and isinstance(sending_facility_loc_data, dict):
+            s_lat = sending_facility_loc_data.get('latitude')
+            s_lon = sending_facility_loc_data.get('longitude')
+            if s_lat is not None and s_lon is not None:
+                try:
+                    sending_facility_location_obj = Location(latitude=float(s_lat), longitude=float(s_lon))
+                    logger.info(f"Created Location object for sending facility: {sending_facility_location_obj}")
+                except ValueError:
+                    logger.error(f"Could not convert sending facility lat/lon to float: {s_lat}, {s_lon}")
+            else:
+                logger.warning("Sending facility location data missing latitude or longitude.")
+        else:
+            logger.warning("Sending facility location not found or not in expected format in extracted_entities.")
+
         if available_hospitals and isinstance(available_hospitals, list) and len(available_hospitals) > 0:
             hospitals_info = "Available hospitals/campuses:\n"
             for i, hospital in enumerate(available_hospitals):
@@ -837,11 +855,26 @@ Do not include any text before or after the JSON. Only return a valid JSON objec
                 
                 # Format location info if available
                 location_info = ""
+                hospital_location_obj = None
                 if 'location' in hospital and hospital['location']:
                     lat = hospital['location'].get('latitude')
                     lng = hospital['location'].get('longitude')
                     if lat is not None and lng is not None:
-                        location_info = f"Location coordinates: {lat}, {lng}\n"
+                        try:
+                            hospital_location_obj = Location(latitude=float(lat), longitude=float(lng))
+                            location_info = f"Location coordinates: {lat}, {lng}"
+                            # Calculate and add distance if sending facility location is available
+                            if sending_facility_location_obj and hospital_location_obj:
+                                distance_km = calculate_distance(sending_facility_location_obj, hospital_location_obj)
+                                location_info += f" (Distance: {distance_km:.1f} km)"
+                            location_info += "\n"
+                        except ValueError:
+                            logger.error(f"Could not convert hospital lat/lon to float for {hospital.get('name', 'Unknown Hospital')}: {lat}, {lng}")
+                            location_info = f"Location coordinates: {lat}, {lng} (Error converting to float)\n"
+                    else:
+                        location_info = "Location coordinates: Not fully available\n"
+                else:
+                    location_info = "Location: Not available\n"
                 
                 hospitals_info += f"{i+1}. {name} (ID: {campus_id})\n"
                 hospitals_info += f"   Care Levels: {care_levels_str}\n"

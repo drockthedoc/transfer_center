@@ -1,4 +1,5 @@
 import json
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -10,7 +11,7 @@ from rich.console import Console
 from rich.json import JSON
 from rich.table import Table
 
-from src.core.decision import recommend_campus
+from src.core.decision_engine import recommend_campus
 from src.core.models import (
     HospitalCampus,
     Location,
@@ -19,13 +20,13 @@ from src.core.models import (
     TransportMode,
     WeatherData,
 )
-from src.llm.classification import parse_patient_text
+from src.llm.classification import parse_patient_text, hello_from_classification
 
 app = typer.Typer(help="Transfer Recommendation CLI Tool")
 
 
-@app.command(name="recommend")
-def recommend_transfer(
+@app.command()  # Command name will be 'recommend' by default
+def recommend(  # Renamed from recommend_transfer
     ctx: typer.Context,
     hospitals_file: Path = typer.Option(
         "data/sample_hospital_campuses.json",
@@ -98,6 +99,14 @@ def recommend_transfer(
     """
     Recommends a hospital campus for patient transfer based on various inputs.
     """
+    rprint(f"DEBUG: Python interpreter: {sys.executable}")
+    hello_from_classification() # Call the test function
+    print(f"DEBUG: parse_patient_text is loaded from: {parse_patient_text.__code__.co_filename}", flush=True)
+    test_notes = "Patient is a 6 months old infant with cough." # UPDATED for testing months
+    print(f"DEBUG: Directly calling parse_patient_text with: '{test_notes}'", flush=True)
+    direct_call_result = parse_patient_text(test_notes)
+    print(f"DEBUG: Direct call result: {direct_call_result}", flush=True)
+
     console = Console()
     rprint(
         f"[bold cyan]Starting recommendation process for patient: {patient_id}[/bold cyan]"
@@ -108,11 +117,7 @@ def recommend_transfer(
         with open(hospitals_file, "r") as f:
             hospitals_data = json.load(f)
             all_hospital_campuses = [HospitalCampus(**data) for data in hospitals_data]
-        rprint(
-            f":hospital: Loaded {
-                len(all_hospital_campuses)} hospital campuses from [italic]{hospitals_file}[/italic]"
-        )
-
+        rprint(f":hospital: Loaded {len(all_hospital_campuses)} hospital campuses from [italic]{hospitals_file}[/italic]")
         with open(weather_file, "r") as f:
             weather_data_list = json.load(f)
             # Use the first weather condition for simplicity in this CLI
@@ -134,18 +139,21 @@ def recommend_transfer(
 
     if patient_notes_file:
         rprint(
-            f":page_facing_up: Processing patient notes from [italic]{patient_notes_file}[/italic]..."
+            f":page_facing_up: Using patient notes from file: [italic]{patient_notes_file}[/italic]"
         )
         try:
-            notes_content = patient_notes_file.read_text()
-            llm_output = parse_patient_text(notes_content)
+            patient_notes_text = patient_notes_file.read_text()
+            rprint(f"DEBUG MAIN: About to call parse_patient_text with content from: {patient_notes_file}")
+            patient_data_obj = PatientData(patient_id=patient_id)
+            patient_data_obj.extracted_data = parse_patient_text(patient_notes_text)
+            rprint(f"DEBUG MAIN: Returned from parse_patient_text for notes_file. Extracted: {patient_data_obj.extracted_data}")
 
             # Prioritize CLI input for complaint/history if provided, else use LLM
             # summary
             final_complaint = (
                 chief_complaint
                 if chief_complaint
-                else llm_output.get(
+                else patient_data_obj.extracted_data.get(
                     "raw_text_summary", "Summary unavailable from notes."
                 )
             )
@@ -157,19 +165,16 @@ def recommend_transfer(
                 else "Clinical history not detailed in notes summary or CLI."
             )
 
-            llm_derived_complaint = llm_output.get(
+            llm_derived_complaint = patient_data_obj.extracted_data.get(
                 "raw_text_summary", "Summary unavailable."
             )
-            llm_vitals = llm_output.get("extracted_vital_signs", {})
+            llm_vitals = patient_data_obj.extracted_data.get("extracted_vital_signs", {})
 
-            patient_data_obj = PatientData(
-                patient_id=patient_id,
-                chief_complaint=final_complaint,
-                clinical_history=final_history,
-                vital_signs=llm_vitals,  # Use LLM extracted vitals if available
-                labs={},  # Labs usually not in initial notes
-                current_location=sending_facility_location,  # Assume patient is at sending facility
-            )
+            patient_data_obj.chief_complaint = final_complaint
+            patient_data_obj.clinical_history = final_history
+            patient_data_obj.vital_signs = llm_vitals  # Use LLM extracted vitals if available
+            patient_data_obj.labs = {}  # Labs usually not in initial notes
+            patient_data_obj.current_location = sending_facility_location  # Assume patient is at sending facility
             rprint(
                 f"  [green]:heavy_check_mark: Patient data constructed from notes file. LLM summary for complaint: '{llm_derived_complaint}'[/green]"
             )
@@ -199,10 +204,7 @@ def recommend_transfer(
                 # Use first patient in the list
                 patient_data_dict = structured_patient_list[0]
                 patient_data_obj = PatientData(**patient_data_dict)
-            rprint(
-                f"  [green]:heavy_check_mark: Patient data loaded from structured file for ID: {
-                    patient_data_obj.patient_id}[/green]"
-            )
+            rprint(f"  [green]:heavy_check_mark: Patient data loaded from structured file for ID: {patient_data_obj.patient_id}[/green]")
         except Exception as e:
             rprint(
                 f"[bold red]:x: Error loading structured patient data file: {e}[/bold red]"
@@ -219,10 +221,14 @@ def recommend_transfer(
         patient_data_obj = PatientData(
             patient_id=patient_id,
             chief_complaint=(
-                chief_complaint if chief_complaint else "Not specified via CLI."
+                chief_complaint
+                if chief_complaint
+                else "Not specified via CLI."
             ),
             clinical_history=(
-                clinical_history if clinical_history else "Not specified via CLI."
+                clinical_history
+                if clinical_history
+                else "Not specified via CLI."
             ),
             vital_signs={},  # No direct CLI input for these in this example
             labs={},
@@ -246,19 +252,14 @@ def recommend_transfer(
             try:
                 parsed_transport_modes.append(TransportMode[mode_str.strip().upper()])
             except KeyError:
-                rprint(
-                    f"[bold yellow]:warning: Invalid transport mode '{
-                        mode_str.strip()}' provided. Ignoring.[/bold yellow]"
-                )
+                rprint(f"[bold yellow]:warning: Invalid transport mode '{mode_str.strip()}' provided. Ignoring.[/bold yellow]")
     if not parsed_transport_modes:  # Default if none valid or provided
         parsed_transport_modes = [TransportMode.GROUND_AMBULANCE]  # Default to ground
         rprint(
             f"[yellow]:information_source: No valid transport modes provided or parsed. Defaulting to: {parsed_transport_modes}[/yellow]"
         )
     rprint(
-        f":ambulance::helicopter: Using available transport modes: {
-            [
-                mode.value for mode in parsed_transport_modes]}"
+        f":ambulance::helicopter: Using available transport modes: {[mode.value for mode in parsed_transport_modes]}"
     )
 
     # 4. Construct TransferRequest
@@ -266,7 +267,7 @@ def recommend_transfer(
         request_id="REQ_" + patient_data_obj.patient_id,  # Simple request ID
         patient_data=patient_data_obj,
         sending_facility_name=sending_facility_name,
-        sending_facility_location=sending_facility_location,
+        sending_location=sending_facility_location,
         preferred_transport_mode=None,  # Decision engine will determine best mode
     )
     rprint(
@@ -278,16 +279,15 @@ def recommend_transfer(
     recommendation = recommend_campus(
         request=transfer_request,
         campuses=all_hospital_campuses,
-        current_weather=current_weather_condition,
         available_transport_modes=parsed_transport_modes,
+        weather_data=current_weather_condition,
     )
 
     # 6. Print Results
     rprint("\n[bold magenta]----- Recommendation Result ----- [/bold magenta]")
     if recommendation:
         console.print(
-            f"[bold green]Recommendation for Request ID: {
-                recommendation.transfer_request_id}[/bold green]"
+            f"[bold green]Recommendation for Request ID: {recommendation.transfer_request_id}[/bold green]"
         )
 
         table = Table(
@@ -320,8 +320,9 @@ def recommend_transfer(
 
         if recommendation.explainability_details:
             console.print("\n[bold]Explainability Details:[/bold]")
+            details_json = recommendation.explainability_details.model_dump_json(indent=2)
             console.print(
-                JSON(json.dumps(recommendation.explainability_details, indent=2))
+                JSON(details_json)
             )
 
         if recommendation.notes:

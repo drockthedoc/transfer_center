@@ -18,6 +18,7 @@ from src.core.models import (
     BedCensus,
     CareLevel,
     HospitalCampus,
+    LLMReasoningDetails,
     Location,
     PatientData,
     Recommendation,
@@ -352,17 +353,14 @@ class TestRecommendation(unittest.TestCase):
 
     def test_explainability_details_structure(self):
         """Test that explainability_details has the proper structure."""
-        # Default structure should be initialized
-        self.assertIn("factors_considered", self.recommendation.explainability_details)
-        self.assertIn("alternative_options", self.recommendation.explainability_details)
-        self.assertIn("decision_points", self.recommendation.explainability_details)
-        self.assertIn("score_utilization", self.recommendation.explainability_details)
-        self.assertIn("distance_factors", self.recommendation.explainability_details)
-        self.assertIn("exclusion_reasons", self.recommendation.explainability_details)
-        
-        # Lists should be empty by default
-        self.assertEqual(self.recommendation.explainability_details["factors_considered"], [])
-        
+        # Default structure should be initialized with LLMReasoningDetails fields
+        self.assertIsNotNone(self.recommendation.explainability_details)
+        # Check default values
+        self.assertEqual(self.recommendation.explainability_details.alternative_reasons, {})
+        self.assertEqual(self.recommendation.explainability_details.key_factors_considered, [])
+        self.assertIsNotNone(self.recommendation.explainability_details.main_recommendation_reason)
+        self.assertIsNone(self.recommendation.explainability_details.confidence_explanation)
+    
         # Test initialization with None
         rec_none = Recommendation(
             transfer_request_id="REQ123",
@@ -370,7 +368,11 @@ class TestRecommendation(unittest.TestCase):
             reason="Test reason",
             explainability_details=None
         )
-        self.assertIn("factors_considered", rec_none.explainability_details)
+        # Should have been converted to default LLMReasoningDetails
+        self.assertIsNotNone(rec_none.explainability_details)
+        self.assertEqual(rec_none.explainability_details.main_recommendation_reason, "No LLM reasoning provided.")
+        self.assertEqual(rec_none.explainability_details.alternative_reasons, {})
+        self.assertEqual(rec_none.explainability_details.key_factors_considered, [])
         
         # Test initialization with partial data
         rec_partial = Recommendation(
@@ -378,14 +380,12 @@ class TestRecommendation(unittest.TestCase):
             recommended_campus_id="CAMPUS456",
             reason="Test reason",
             explainability_details={
-                "factors_considered": ["Factor 1", "Factor 2"]
+                "main_recommendation_reason": "Test reason",
+                "key_factors_considered": ["factor1", "factor2"]
             }
         )
-        self.assertEqual(
-            rec_partial.explainability_details["factors_considered"],
-            ["Factor 1", "Factor 2"]
-        )
-        self.assertIn("alternative_options", rec_partial.explainability_details)
+        self.assertEqual(rec_partial.explainability_details.main_recommendation_reason, "Test reason")
+        self.assertEqual(rec_partial.explainability_details.key_factors_considered, ["factor1", "factor2"])
 
     def test_transport_weather_traffic_info_properties(self):
         """Test the has_transport_weather_info and has_transport_traffic_info properties."""
@@ -452,9 +452,10 @@ class TestRecommendation(unittest.TestCase):
         # Infer from explainability factors
         self.recommendation.recommended_level_of_care = "General"
         self.patient_data.care_level = "General"
-        self.recommendation.explainability_details = {
-            "factors_considered": ["Patient requires PICU care due to respiratory distress"]
-        }
+        self.recommendation.explainability_details = LLMReasoningDetails(
+            main_recommendation_reason="Patient requires PICU care due to respiratory distress",
+            key_factors_considered=["PICU care required"]
+        )
         self.assertEqual(
             self.recommendation.infer_recommended_level_of_care(self.patient_data),
             "PICU"
@@ -462,9 +463,10 @@ class TestRecommendation(unittest.TestCase):
         
         # Test NICU inference
         self.recommendation.recommended_level_of_care = "General"
-        self.recommendation.explainability_details = {
-            "factors_considered": ["Newborn requires NICU monitoring"]
-        }
+        self.recommendation.explainability_details = LLMReasoningDetails(
+            main_recommendation_reason="Newborn requires NICU monitoring",
+            key_factors_considered=["NICU monitoring required"]
+        )
         self.assertEqual(
             self.recommendation.infer_recommended_level_of_care(self.patient_data),
             "NICU"

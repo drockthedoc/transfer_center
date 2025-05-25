@@ -2,7 +2,7 @@
   "version": "1.0",
   "last_updated": "2025-05-22",
   "campuses": {
-    "austin": {
+    "TCH_NORTH_AUSTIN": {
       "display_name": "Austin Transfer Exclusion Criteria",
       "departments": {
         "nicu": {
@@ -78,7 +78,7 @@
       },
       "weight_restrictions": null
     },
-    "community": {
+    "TCH_WOODLANDS": {
       "display_name": "Texas Children's Hospital Community Sites Admission Exclusion Criteria",
       "departments": {
         "monitoring": {
@@ -376,6 +376,227 @@
         "clinical_team": "The Clinical Team is defined as: Physician responsible for care, RN responsible for care, Physician receiving the patient, and NAC equivalent.",
         "trauma": "See the TCH Trauma Services SharePoint for full trauma exclusions and algorithms. Certain trauma patients involving only one organ system or with mild complications may be admitted to Acute Care at Community Sites to appropriate surgical service. All non-accidental trauma patients and all head trauma with complications should be transferred to the Medical Center Campus."
       }
+    },
+    "TCH_WEST_KATY": {
+      "display_name": "Texas Children's Hospital Community Sites Admission Exclusion Criteria - West Katy",
+      "departments": {
+        "monitoring": {
+          "exclusions": [
+            "Telemetry monitoring requirements",
+            "Non-rebreather mask for respiratory distress",
+            "Continuous beta agonist treatment",
+            "CRS - Score ≥6 (and not improving)",
+            "HFNC (max flow for cannula size and not improving)",
+            "Glasgow Coma Score <9 (non-trauma)",
+            "Hourly or q2 hr assessments/treatments without expected imminent improvement",
+            "Aggressive fluid resuscitation (> 60 cc/kg)",
+            "Continuous EEG monitoring",
+            "Hypothermia (<97F), q1 temp checks, Bare hugger warmer"
+          ],
+          "conditions": [
+            "respiratory",
+            "neurological",
+            "cardiac"
+          ],
+          "ac_exclusion_picu_accept": [
+            "CRS - Score 4-5",
+            "Glasgow Coma (non-trauma) - Score 10–14"
+          ]
+        },
+        "cardiology": {
+          "exclusions": [
+            "Specialty care not available at Community Site",
+            "PGE dependent lesions",
+            "Status post cardiac repair (<6wks)",
+            "Single ventricle (during inter-stage) awaiting Glenn",
+            "Congenital heart disease in the neonatal period, regardless of severity",
+            "Unstable congenital and acquired heart disease",
+            "Decompensated heart failure",
+            "Patients listed for heart transplant",
+            "Mechanical assist device",
+            "Kawasaki with evidence of toxic shock syndrome or moderate/severe coronary artery dilation",
+            "Evidence of myocardial ischemia",
+            "Endocarditis in patients not approved by CT surgery",
+            "New myocarditis/myopericarditis",
+            "SVT/arrhythmia requiring escalation of care",
+            "Need for procedures requiring CV anesthesia"
+          ],
+          "conditions": [
+            "cardiac"
+          ],
+          "accept": [
+            "Status post cardiac repair (>6wks), unless not approved by CT surgery",
+            "Unrepaired and stable biventricular heart disease (except in neonatal period)",
+            "Status post-transplant (with preserved systolic function) admitted for non-cardiac etiology",
+            "Kawasaki with no evidence of toxic shock syndrome"
+          ],
+          "clinical_team_decision": [
+            "Status post Glenn/Fontan palliation, admitted for non-cardiac etiology",
+            "Cardiac diagnosis with palliative/comfort care",
+            "Cardiomyopathy patients with compensated heart failure (EF > 45%) not requiring IV inotropic support",
+            "Stable Kawasaki with mildly dilated coronaries (unless not cleared by Kawasaki team)",
+            "Stable previous diagnosis of myocarditis/myopericarditis (unless not cleared by HF/TX team)",
+            "Endocarditis in patients with known congenital heart disease (to complete treatment after initiation)",
+            "History of pacemaker placement admitted for non-cardiac diagnosis (unless not cleared by EP team)",
+            "Status post successful cardioversion for monitoring (unless not cleared by EP team)"
+          ]
+        },
+        "toxicology": {
+          "exclusions": [
+            "Drug ingestion with physiologic instability"
+          ],
+          "conditions": [
+            "toxic"
+          ]
+        },
+        "endocrinology": {
+          "exclusions": [
+            "Diabetes in DKA, HCO3 <15 (requiring insulin drip)",
+            "Diabetes insipidus",
+            "Persistent hypoglycemia in pt <6 mos"
+          ],
+          "conditions": [
+            "endocrine"
+          ],
+          "accept": [
+            "Diabetes, new onset Type 1 or 2, not in DKA"
+          ],
+          "clinical_team_decision": [
+            "Diabetes in DKA, mild ketosis, HCO3 >15"
+          ]
+        },
+        "gastroenterology": {
+          "exclusions": [
+            "Hyperbilirubinemia – TSB within 2 below exchange level",
+            "Presence/concern for portal hypertension",
+            "GI bleed with hemodynamic instability (Hgb drop =/> 3 g/dl or Hgb 8-10 g/dl if unknown baseline)",
+            "Gallstone pancreatitis/biliary obstruction suspected and need for ERCP",
+            "Acute liver failure (INR>=2 or >1.5 w/ mental status changes)",
+            "Transplant patients"
+          ],
+          "conditions": [
+            "gi",
+            "transplant"
+          ]
+        },
+        "genetics_metabolic": {
+          "exclusions": [
+            "Suspected metabolic disorder",
+            "Known metabolic disorder with risk of neurologic compromise or specialized formulas"
+          ],
+          "conditions": [
+            "metabolic",
+            "genetic"
+          ]
+        },
+        "hematology_oncology": {
+          "exclusions": [
+            "Need for plasmapheresis",
+            "Malignancy requiring ongoing monitoring/intervention",
+            "Anticoagulation requiring heparin drip",
+            "Confirmed new diagnosis malignancy",
+            "Leukemia patients in induction chemotherapy",
+            "DVT - need for vascular surgery",
+            "IR procedures requiring catheter directed thrombolysis",
+            "Pulmonary embolism",
+            "Bone marrow transplant patients still under care of BMT team"
+          ],
+          "conditions": [
+            "hematology",
+            "oncology",
+            "transplant"
+          ],
+          "accept": [
+            "Anemia not requiring plasmapheresis/exchange transfusion",
+            "Other anticoagulation"
+          ],
+          "clinical_team_decision": [
+            "Allogenic or autologous transplant pts no longer under care of BMT team (Discuss w/ Onc)",
+            "Deep venous thrombosis (NOTE: if new onset, large DVT, consider tx to MC for other specialized care)"
+          ],
+          "ac_exclusion_picu_accept": [
+            "DVT- need for heparin drip"
+          ]
+        },
+        "infectious_disease": {
+          "exclusions": [
+            "Suspected bacterial meningitis in infant (1st 24 hours of admission): <60 days: CSF +GS +/-pleocytosis; >60 days-12 mos: meningitis score >/=2; ill-appearance any age"
+          ],
+          "conditions": [
+            "infectious"
+          ]
+        },
+        "neurology": {
+          "exclusions": [
+            "Evidence/suspicion for stroke",
+            "Intracranial process (bleed, mass) or need for intracranial monitoring",
+            "Presence of altered mental status (not improving)",
+            "Progressive neuromuscular dysfunction",
+            "Seizures requiring frequent interventions (hourly)",
+            "Status epilepticus requiring continuous EEG",
+            "Infantile spasms – suspected new diagnosis",
+            "Seizure in neonate <30 days (needs continuous EEG)",
+            "Acute inflammatory process requiring plasmapheresis",
+            "Vagal nerve stimulator or baclofen pump malfunction/infection"
+          ],
+          "conditions": [
+            "neurological"
+          ]
+        },
+        "maternal": {
+          "exclusions": [
+            "Pregnant or Complications of Pregnancy"
+          ],
+          "conditions": [
+            "maternal",
+            "pregnancy"
+          ]
+        },
+        "nephrology": {
+          "exclusions": [
+            "Need for dialysis",
+            "Acute kidney injury (AKI) with anuria/oliguria and hyperkalemia",
+            "New onset nephrotic syndrome requiring biopsy",
+            "Hypertension requiring IV anti-hypertensive drip"
+          ],
+          "conditions": [
+            "renal"
+          ],
+          "accept": [
+            "AKI with improving urine output and stable electrolytes",
+            "Known nephrotic syndrome with relapse (no biopsy needed)"
+          ]
+        },
+        "orthopedics": {
+          "exclusions": [
+            "Open fractures",
+            "Fractures requiring immediate surgical intervention"
+          ],
+          "conditions": [
+            "orthopedic"
+          ]
+        },
+        "surgery": {
+          "exclusions": [
+            "Need for immediate surgical intervention not available at community site",
+            "Complex post-operative patients requiring specialized ICU care"
+          ],
+          "conditions": [
+            "surgical"
+          ]
+        }
+      },
+      "general_exclusions": [
+        "Futile diagnosis or condition",
+        "Greater than 21 years of age, unless current TCH patient",
+        "No change in level of care or services provided",
+        "Burn patients >10% or perineal burns, airway burns",
+        "Sexual Assault requiring SANE Exam – only coverage Monday 1000-Friday 2300"
+      ],
+      "age_restrictions": {
+        "maximum": 21
+      },
+      "weight_restrictions": null
     }
   }
 }

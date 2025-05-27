@@ -1,0 +1,996 @@
+# Texas Children's Hospital Admission & Transfer Exclusion Criteria
+# Source Document: "Texas Children's Hospital Community Sites- Admission Exclusion Criteria (4/2024)" [cite: 11] and other cited TCH documents.
+
+community_sites_general_info:
+  source_document_reference: "Texas Children's Hospital Community Sites- Admission Exclusion Criteria (April 2024 Review)"
+  overview:
+    - "On-site pediatric hospitalist and PICU attending available for admission/consultation of patients 24/7[cite: 1]."
+    - "The clinical team will determine if the special needs of the patient can be addressed at the community sites[cite: 2]."
+    - "Decisions are made based on the skill set of the clinical team, availability of consultants, and specialty care[cite: 3]."
+    - "The Clinical Team is defined as: Physician responsible for care, RN responsible for care, Physician receiving the patient, and NAC equivalent[cite: 10]."
+    - "These are general recommendations and should not replace discussion amongst the teams[cite: 7]."
+    - "Particular attention should be paid to the far-right column in the source tables, which includes exclusions for all Community sites (West and The Woodlands Campuses)[cite: 8]."
+  campus_capacities:
+    west_campus: "Acute Care includes 42 beds (24 on 3W + 18 on 5W) + 4 overflow beds on 4W. PICU includes 22 beds[cite: 4]."
+    the_woodlands_campus: "Acute Care includes 46 beds (3rd, 5th Floors). PICU includes 14 beds (4th Floor)[cite: 5]. NICU includes 14 beds (4th Floor)[cite: 6]."
+  specific_notes_applicable_to_both:
+    cardiology_sop_reference: "Refer to Appendix A (Cardiology SOP Document) for guidelines to admit cardiac patients for in-patient monitoring[cite: 34]. ALL patients should be discussed with the cardiologist-on-call[cite: 34]."
+    trauma_guidelines:
+      - "Certain trauma patients involving only one organ system (e.g., fracture) or trauma with mild complications (e.g., dog bite with infection), may be admitted to Acute Care at Community Sites to the appropriate surgical service[cite: 31]."
+      - "All non-accidental trauma (NAT) patients, including those medically cleared and pending CPS disposition, as well as all head trauma with complications (including concussive symptoms) should be transferred to the appropriate surgical service at the Medical Center Campus[cite: 32]."
+      - "For full trauma exclusions and algorithms, see the TCH Trauma Services SharePoint[cite: 30, 31]."
+    document_last_reviewed: "April 2024[cite: 1, 11, 13, 14, 17, 18, 20, 21, 23, 24, 26, 27, 29, 33, 34, 36, 37, 39]."
+
+# --- West Campus ---
+west_campus:
+  campus_name: "Texas Children's Hospital West Campus"
+  introduction: "The following criteria are based on the 'Texas Children's Hospital Community Sites- Admission Exclusion Criteria (4/2024)' document [cite: 11] and apply to West Campus as a Community Site."
+  
+  physiologic_parameters_monitoring_needs: # [cite: 12]
+    category_title: "Physiologic Parameters/Monitoring Needs"
+    criteria:
+      - condition: "Telemetry"
+        disposition: "AC Exclusion, PICU Accept"
+        search_keywords: ["cardiac monitoring", "heart monitor", "ECG monitoring", "EKG monitoring", "arrhythmia monitoring", "dysrhythmia monitoring", "continuous cardiac monitoring", "Holter monitor", "event monitor", "tele", "rhythm strip", "cardiac event recording"]
+      - condition: "Non-rebreather mask for respiratory distress"
+        disposition: "AC Exclusion, PICU Accept"
+        search_keywords: ["NRB", "non-rebreather", "high flow oxygen", "severe respiratory distress", "hypoxia", "oxygen mask", "respiratory support", "breathing difficulty", "increased work of breathing", "oxygen saturation low", "respiratory compromise"]
+      - condition: "Continuous beta agonist treatment"
+        disposition: "AC Exclusion, PICU Accept"
+        search_keywords: ["continuous neb", "terbutaline drip", "continuous albuterol", "continuous nebulizer", "status asthmaticus", "severe asthma exacerbation", "bronchodilator infusion", "beta-2 agonist infusion", "continuous bronchodilator therapy", "unremitting wheezing requiring continuous treatment", "refractory wheezing needing ongoing beta-agonist", "severe bronchospasm", "constant nebulization"]
+      - condition: "CRS Score 4-5"
+        disposition: "AC Exclusion, PICU Accept"
+        search_keywords: ["CRS 4", "CRS 5", "clinical respiratory score 4", "clinical respiratory score 5", "pediatric respiratory score", "respiratory distress score", "moderate respiratory distress", "asthma score", "bronchiolitis score", "respiratory assessment score 4-5"]
+      - condition: "CRS Score >=6 (and not improving)"
+        disposition: "Community Exclusion"
+        search_keywords: ["CRS 6", "CRS 7", "CRS 8", "CRS 9", "CRS 10", "CRS 11", "CRS 12", "clinical respiratory score 6+", "clinical respiratory score six or greater", "severe respiratory distress", "worsening respiratory status", "pediatric respiratory failure", "impending respiratory failure", "high CRS score", "unresponsive to treatment", "failing respiratory effort"]
+      - condition: "HFNC (max flow for cannula size and not improving)"
+        disposition: "AC Exclusion, PICU Accept"
+        search_keywords: ["HFNC failure", "high flow nasal cannula failure", "max flow HFNC not improving", "worsening despite max HFNC", "escalating respiratory support post-HFNC", "refractory hypoxemia on HFNC", "persistent respiratory distress on max high flow", "Vapotherm failure", "Optiflow failure", "non-responsive to high flow oxygen therapy", "high flow nasal cannula", "HFNC", "Vapotherm", "Optiflow", "heated humidified high flow", "maximum HFNC settings", "failed high flow support"]
+      - condition: "Glasgow Coma (non-trauma) Score <9"
+        disposition: "AC Exclusion, PICU Accept"
+        search_keywords: ["GCS <9", "Glasgow Coma Scale less than 9", "low GCS", "altered mental status", "AMS", "decreased level of consciousness", "LOC", "unresponsive", "comatose", "stupor", "obtunded", "severe neurological impairment", "non-traumatic brain injury", "medical coma", "GCS 3", "GCS 4", "GCS 5", "GCS 6", "GCS 7", "GCS 8"]
+      - condition: "Glasgow Coma (non-trauma) Score 10-14"
+        disposition: "AC Exclusion, PICU Accept"
+        search_keywords: ["GCS 10", "GCS 11", "GCS 12", "GCS 13", "GCS 14", "Glasgow Coma Scale 10-14", "moderate neurological impairment", "altered mental status", "AMS", "lethargy", "confusion", "drowsiness", "non-traumatic brain injury", "somnolence", "reduced awareness"]
+      - condition: "Hourly or q2 hr assessments/treatments without expected imminent improvement (e.g., unstable vital signs requiring frequent checks, complex medication titration, intensive respiratory treatments)"
+        disposition: "AC Exclusion, PICU Accept"
+        search_keywords: ["frequent assessments", "q1h assessments", "q2h assessments", "frequent treatments", "q1h treatments", "q2h treatments", "unstable vital signs", "hemodynamic instability", "frequent vital sign checks", "complex medication titration", "vasoactive drips", "insulin drip", "frequent medication adjustments", "intensive respiratory treatments", "frequent nebulizers", "chest physiotherapy", "pulmonary toilet", "no expected improvement", "prolonged instability", "high nursing workload", "intensive monitoring", "continuous observation", "close monitoring needed"]
+      - condition: "Aggressive fluid resuscitation (>60 cc/kg)"
+        disposition: "AC Exclusion, PICU Accept"
+        search_keywords: ["large volume fluid bolus", "fluid overload risk", "septic shock", "hypovolemic shock", "dehydration with shock", "fluid resuscitation", ">60ml/kg fluids", "aggressive hydration", "shock", "poor perfusion", "capillary refill delayed", "large fluid challenge", "multiple fluid boluses"]
+      - condition: "Continuous EEG monitoring"
+        disposition: "Community Exclusion"
+        search_keywords: ["cEEG", "EEG monitoring", "seizure monitoring", "status epilepticus monitoring", "non-convulsive status epilepticus", "NCSE", "subclinical seizures", "continuous electroencephalogram", "brain wave monitoring", "epilepsy monitoring", "prolonged EEG", "bedside EEG monitoring"]
+      - condition: "Hypothermia (<97F), q1 temp checks, Bare hugger warmer"
+        disposition: "Community Exclusion"
+        search_keywords: ["low body temperature", "hypothermic", "temperature <97F", "temperature <36.1C", "frequent temperature checks", "q1h temperature", "active rewarming", "Bair Hugger", "forced-air warmer", "warming blanket", "cold stress", "neonatal hypothermia", "pediatric hypothermia", "temperature instability", "therapeutic hypothermia management (if not for cooling)"]
+      - condition: "Infants weighing <2.5 kg"
+        disposition: "Community Exclusion (X+ [cite: 12])"
+        search_keywords: ["infant <2500g", "low birth weight infant", "LBW", "small baby", "neonate <2.5kg", "premature infant", "small for gestational age", "SGA", "weight less than 2.5 kilograms", "very low birth weight", "VLBW (if applicable contextually)", "extremely low birth weight", "ELBW (if applicable contextually)"]
+
+  diagnosis_specific: # [cite: 12, 15, 16, 19, 22, 25, 28]
+    category_title: "Diagnosis Specific"
+    general_exclusions:
+      - condition: "Specialty care not available at Community Site"
+        disposition: "AC Exclusion, PICU Accept (if PICU can manage pending transfer or if specialty is PICU)"
+        search_keywords: ["unavailable specialist", "no subspecialty coverage", "lacking specialty service", "requires specialist not on site", "transfer for specialty care", "consult unavailable", "service not offered", "specialist needed", "subspecialist required", "specialty consultation needed", "referral to specialist center", "lack of expertise", "specialized treatment unavailable"]
+      - condition: "Drug ingestion with physiologic instability"
+        disposition: "AC Exclusion, PICU Accept"
+        search_keywords: ["overdose", "toxic ingestion", "poisoning", "medication overdose", "unstable vital signs post ingestion", "altered mental status post ingestion", "symptomatic ingestion", "drug toxicity with instability", "physiologically unstable ingestion", "ingestion requiring intensive care", "hemodynamically unstable ingestion", "respiratory compromise post ingestion", "accidental ingestion with severe symptoms", "intentional overdose with instability"]
+      - condition: "Transplant patients (general - specific types may vary, see below)"
+        disposition: "Community Exclusion"
+        search_keywords: ["solid organ transplant", "SOT", "bone marrow transplant", "BMT", "stem cell transplant", "SCT", "post-transplant", "transplant recipient", "immunosuppressed transplant", "kidney transplant", "liver transplant", "heart transplant", "lung transplant", "pancreas transplant", "intestinal transplant", "transplant complications", "graft versus host disease", "GVHD", "transplant rejection"]
+
+    endocrine:
+      subcategory_title: "Endocrine"
+      criteria:
+        - condition: "Diabetes, new onset Type 1 or 2, not in DKA"
+          disposition: "Acute Care (AC) Accept"
+          search_keywords: ["new onset diabetes", "NODM", "Type 1 diabetes mellitus", "T1DM", "Type 2 diabetes mellitus", "T2DM", "no diabetic ketoacidosis", "hyperglycemia without DKA", "diabetes education start"]
+        - condition: "Diabetes in DKA, mild ketosis, HCO3 >15"
+          disposition: "Acute Care (AC) Accept"
+          search_keywords: ["mild DKA", "diabetic ketoacidosis mild", "bicarbonate above 15", "ketones present mild", "diabetes management", "resolving DKA"]
+        - condition: "Diabetes in DKA, HCO3 <15 (requiring insulin drip)"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["moderate DKA", "severe DKA", "diabetic ketoacidosis HCO3 less than 15", "insulin infusion", "DKA protocol", "critical DKA management", "anion gap metabolic acidosis", "significant ketosis"]
+        - condition: "Diabetes insipidus"
+          disposition: "Community Exclusion"
+          search_keywords: ["DI", "central DI", "nephrogenic DI", "polyuria", "polydipsia", "desmopressin management", "DDAVP", "water deprivation test", "sodium imbalance", "serum osmolality high", "urine osmolality low"]
+        - condition: "Persistent hypoglycemia in pt <6 mos"
+          disposition: "Community Exclusion (X† [cite: 12])"
+          search_keywords: ["hypoglycemia infant", "low blood sugar infant <6 months", "recurrent hypoglycemia neonate", "persistent low glucose baby", "diazoxide", "glucagon continuous", "nesidioblastosis", "congenital hyperinsulinism"]
+
+    gastrointestinal:
+      subcategory_title: "Gastrointestinal"
+      criteria:
+        - condition: "Hyperbilirubinemia - TSB within 2 below exchange lvl"
+          disposition: "Community Exclusion (X+ [cite: 15])"
+          search_keywords: ["high bilirubin", "jaundice near exchange transfusion", "total serum bilirubin critical", "phototherapy intensive", "kernicterus risk", "severe hyperbilirubinemia", "neonatal jaundice severe"]
+        - condition: "Presence/concern for portal hypertension"
+          disposition: "Community Exclusion"
+          search_keywords: ["portal HTN", "esophageal varices", "ascites liver", "splenomegaly portal hypertension", "liver cirrhosis complication", "variceal bleeding risk"]
+        - condition: "GI bleed with hemodynamic instability"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["gastrointestinal hemorrhage unstable", "hematemesis shock", "melena hypotension", "upper GI bleed unstable", "lower GI bleed unstable", "active GI bleeding critical"]
+        - condition: "Hgb drop >=3 g/dl or Hgb 8-10 g/dl if unknown baseline"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["significant hemoglobin drop", "acute anemia GI bleed", "low hemoglobin unknown cause", "rapid Hgb decrease", "anemia requiring transfusion potentially"]
+        - condition: "Gallstone pancreatitis/biliary obstruction suspected and need for ERCP"
+          disposition: "Community Exclusion"
+          search_keywords: ["pancreatitis gallstones", "biliary colic obstruction", "ERCP needed", "cholangitis", "obstructive jaundice pancreatitis", "endoscopic retrograde cholangiopancreatography"]
+        - condition: "Acute liver failure (INR>=2 or >1.5 w/ mental status changes)"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["ALF", "fulminant hepatic failure", "hepatic encephalopathy", "coagulopathy liver failure", "high INR liver", "elevated LFTs severe", "liver function deterioration"]
+
+    genetics_metabolic:
+      subcategory_title: "Genetics/Metabolic"
+      criteria:
+        - condition: "Suspected metabolic disorder"
+          disposition: "Community Exclusion"
+          search_keywords: ["inborn error of metabolism suspected", "IEM workup", "metabolic crisis", "unexplained acidosis", "hyperammonemia", "organic acidemia suspicion", "urea cycle disorder suspicion", "mitochondrial disease suspicion"]
+        - condition: "Known metabolic disorder with risk of neurologic compromise or specialized formulas"
+          disposition: "Decision by Clinical Team"
+          search_keywords: ["established metabolic disorder", "PKU crisis", "MSUD crisis", "galactosemia complication", "special diet metabolic", "neurologic deterioration metabolic disease", "metabolic decompensation"]
+
+    hematology_oncology:
+      subcategory_title: "Hematology/Oncology"
+      criteria:
+        - condition: "Anemia not requiring plasmapheresis/exchange transfusion"
+          disposition: "Decision by Clinical Team"
+          search_keywords: ["anemia workup", "iron deficiency anemia severe", "hemolytic anemia stable", "blood transfusion non-emergent", "low hemoglobin stable"]
+        - condition: "Need for plasmapheresis"
+          disposition: "Community Exclusion"
+          search_keywords: ["plasma exchange", "therapeutic plasma exchange", "TPE", "Guillain-Barre plasmapheresis", "TTP plasmapheresis", "myasthenia gravis crisis plasmapheresis", "autoimmune disorder plasmapheresis"]
+        - condition: "Malignancy requiring ongoing monitoring/intervention (active treatment phase or unstable)"
+          disposition: "Decision by Clinical Team (often Community Exclusion)"
+          search_keywords: ["cancer active treatment", "chemotherapy complications", "radiation therapy side effects", "oncologic emergency", "neutropenic fever high risk", "unstable cancer patient"]
+        - condition: "Anticoagulation requiring heparin drip"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["heparin infusion", "IV heparin", "therapeutic anticoagulation heparin", "PTT monitoring frequent", "DVT heparin", "PE heparin", "unfractionated heparin gtt"]
+        - condition: "Other anticoagulation (e.g., LMWH, DOACs, stable)"
+          disposition: "Decision by Clinical Team"
+          search_keywords: ["Lovenox", "enoxaparin", "dalteparin", "rivaroxaban", "apixaban", "dabigatran", "warfarin stable", "stable anticoagulation management"]
+        - condition: "Confirmed new diagnosis malignancy"
+          disposition: "Community Exclusion"
+          search_keywords: ["new cancer diagnosis", "oncology workup new", "biopsy proven malignancy new", "leukemia new diagnosis", "lymphoma new diagnosis", "solid tumor new diagnosis", "staging studies cancer"]
+        - condition: "Leukemia patients in induction chemotherapy"
+          disposition: "Community Exclusion"
+          search_keywords: ["leukemia induction", "chemotherapy first cycle leukemia", "ALL induction", "AML induction", "high risk neutropenia leukemia"]
+        - condition: "Deep venous thrombosis (NOTE: if new onset, large DVT, consider tx to MC for other specialized care)"
+          disposition: "Decision by Clinical Team"
+          search_keywords: ["DVT", "blood clot leg", "venous thromboembolism", "VTE", "iliofemoral DVT", "extensive DVT", "May-Thurner"]
+        - condition: "DVT- need for heparin drip" # Duplicates slightly with general heparin drip, but context specific
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["DVT heparin infusion", "acute DVT IV heparin", "extensive DVT anticoagulation inpatient"]
+        - condition: "DVT- need for vascular surgery"
+          disposition: "Community Exclusion"
+          search_keywords: ["DVT thrombectomy", "venous stent DVT", "phlegmasia cerulea dolens", "vascular intervention DVT", "surgical DVT management"]
+        - condition: "IR procedures requiring catheter directed thrombolysis"
+          disposition: "Community Exclusion"
+          search_keywords: ["CDT", "interventional radiology clot lysis", "tPA infusion for DVT/PE", "arterial thrombolysis IR", "EKOS therapy"]
+        - condition: "Pulmonary embolism"
+          disposition: "Community Exclusion (typically, unless very minor and stable post-MC eval)"
+          search_keywords: ["PE", "blood clot lung", "saddle PE", "submassive PE", "massive PE", "anticoagulation for PE", "thrombolysis for PE"]
+        - condition: "Bone marrow transplant patients" # Duplicates general transplant but specific
+          disposition: "Community Exclusion"
+          search_keywords: ["BMT recipient", "HSCT patient", "post BMT complications", "neutropenic fever BMT", "GVHD BMT", "veno-occlusive disease", "VOD"]
+        - condition: "Transplant pts still under care of BMT team"
+          disposition: "Community Exclusion"
+          search_keywords: ["active BMT follow-up", "recent bone marrow transplant", "BMT team management"]
+        - condition: "Allogenic or autologous transplant pts no longer under care of BMT team (Discuss w/ Onc)"
+          disposition: "Decision by Clinical Team"
+          search_keywords: ["long term BMT follow up", "stable post BMT", "late effects of transplant"]
+
+    infectious_disease:
+      subcategory_title: "Infectious Disease"
+      criteria:
+        - condition: "Suspected bacterial meningitis in infant (1st 24 hours of admission): <60 days: CSF +GS +/-pleocytosis; >60 days-12 mos: meningitis score >=2; ill-appearance any age"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["infant meningitis", "neonatal meningitis suspected", "bacterial meningitis workup infant", "CSF pleocytosis infant", "positive gram stain CSF infant", "ill appearing infant fever", "sepsis workup meningitis concern"]
+
+    neurologic:
+      subcategory_title: "Neurologic"
+      criteria:
+        - condition: "Evidence/suspicion for stroke"
+          disposition: "Community Exclusion"
+          search_keywords: ["CVA suspected", "cerebrovascular accident", "stroke symptoms", "acute neurologic deficit", "focal neuro signs", "ischemic stroke", "hemorrhagic stroke", "TIA with high risk", "stroke code"]
+        - condition: "Intracranial process (bleed, mass) or need for intracranial monitoring"
+          disposition: "Community Exclusion"
+          search_keywords: ["ICH", "intracranial hemorrhage", "brain bleed", "brain tumor", "space occupying lesion brain", "ICP monitoring", "EVD", "neurocritical care", "subdural hematoma", "epidural hematoma", "subarachnoid hemorrhage"]
+        - condition: "Presence of altered mental status (not improving)" # Differentiates from GCS score by "not improving"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["AMS worsening", "persistent altered mental status", "declining LOC", "encephalopathy progressive", "unexplained confusion deteriorating", "ongoing obtundation"]
+        - condition: "Progressive neuromuscular dysfunction"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["Guillain-Barre syndrome", "GBS", "myasthenia gravis crisis", "MG crisis", "acute motor weakness worsening", "ascending paralysis", "respiratory compromise neuromuscular", "bulbar weakness progressive"]
+        - condition: "Seizures requiring frequent interventions (hourly)"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["refractory seizures", "frequent breakthrough seizures", "hourly seizure activity", "cluster seizures hourly", "antiepileptic drug loading frequent", "benzodiazepine rescue frequent"]
+        - condition: "Status epilepticus requiring continuous EEG" # Continuous EEG is a community exclusion
+          disposition: "AC Exclusion, PICU Accept (Note: Cont. EEG itself is Comm Excl, implies transfer after stabilization or if PICU can manage short-term)"
+          search_keywords: ["status epilepticus", "SE", "prolonged seizure", "convulsive status epilepticus", "non-convulsive status epilepticus cEEG", "refractory status epilepticus", "RSE"]
+        - condition: "Infantile spasms - suspected new diagnosis"
+          disposition: "AC Exclusion, PICU Accept (for workup, often leading to Main Campus)"
+          search_keywords: ["West syndrome", "hypsarrhythmia", "epileptic spasms infant", "ACTH therapy infantile spasms", "vigabatrin infantile spasms", "Salaam attacks"]
+        - condition: "Seizure in neonate <30 days (needs continuous EEG)"
+          disposition: "Community Exclusion"
+          search_keywords: ["neonatal seizures", "newborn seizure", "seizure infant less than 1 month", "cEEG neonate", "hypoxic ischemic encephalopathy HIE seizures"]
+        - condition: "Acute inflammatory process requiring plasmapheresis" # Plasmapheresis already listed but context is neuro
+          disposition: "Community Exclusion"
+          search_keywords: ["ADEM requiring TPE", "transverse myelitis plasmapheresis", "autoimmune encephalitis TPE", "NMDA receptor encephalitis plasmapheresis"]
+        - condition: "Vagal nerve stimulator or baclofen pump malfunction/infection"
+          disposition: "Community Exclusion"
+          search_keywords: ["VNS malfunction", "baclofen pump problem", "infected VNS", "infected baclofen pump", "device erosion neuro", "intrathecal baclofen issue"]
+        - condition: "Pregnant or Complications of Pregnancy"
+          disposition: "Community Exclusion (to PFW or appropriate facility)"
+          search_keywords: ["pregnant patient", "pregnancy complications", "obstetric emergency in child", "teen pregnancy complication", "needs OB care"]
+
+    psychiatric_diagnoses: # [cite: 22]
+      subcategory_title: "Psychiatric Diagnoses"
+      criteria:
+        - condition: "General Psychiatric Diagnoses requiring admission"
+          disposition: "Decision by Clinical Team (X** [cite: 22])"
+          search_keywords: ["psych admission", "mental health crisis", "suicidal ideation", "SI", "homicidal ideation", "HI", "acute psychosis", "severe depression inpatient", "anxiety exacerbation inpatient", "eating disorder medical instability", "behavioral crisis"]
+        - condition: "Aggressive Behavioral Health Patients Requiring Multiple Medication Interventions"
+          disposition: "Decision by Clinical Team (X** [cite: 22])"
+          search_keywords: ["agitation management", "behavioral emergency", "IM medication for aggression", "chemical restraint", "violent behavior psych", "multiple psych meds needed", "acute mania aggression"]
+        - condition: "Acute psychosis requiring urgent psychiatry evaluation (During weekends/holidays when no in-person or telehealth available)"
+          disposition: "Transfer/direct admit to Main Campus for in-person psychiatry consult [cite: 22]"
+          search_keywords: ["psychosis weekend", "urgent psych consult unavailable", "psychiatry emergency off hours", "no telepsych available", "needs inpatient psychiatrist immediate"]
+
+    ophthalmologic:
+      subcategory_title: "Ophthalmologic"
+      criteria:
+        - condition: "Pre-septal cellulitis without concern for post-septal involvement (Note: if <2 yrs, strongly consider CT to exclude orbital involvement)"
+          disposition: "Acute Care (AC) Accept"
+          search_keywords: ["periorbital cellulitis", "eyelid infection", "anterior orbital cellulitis", "mild eye infection"]
+        - condition: "Post-septal involvement, abscess, rapid progression, or need for frequent eye exams/surgical intervention"
+          disposition: "AC Exclusion, PICU Accept (likely transfer to MC)"
+          search_keywords: ["orbital cellulitis", "proptosis", "ophthalmoplegia", "vision loss eye infection", "orbital abscess", "eye surgery needed infection", "cavernous sinus thrombosis risk"]
+        - condition: "Atypical presentation (no source of infection, concern for malignancy, etc.)"
+          disposition: "Community Exclusion"
+          search_keywords: ["orbital mass", "rhabdomyosarcoma eye", "retinoblastoma concern", "unexplained proptosis", "uveitis complex", "ophthalmic tumor"]
+        - condition: "Immunocompromised patient (with ophthalmic issue)"
+          disposition: "Community Exclusion"
+          search_keywords: ["fungal eye infection immunocompromised", "CMV retinitis", "opportunistic eye infection", "neutropenic ophthalmic concern"]
+
+    renal:
+      subcategory_title: "Renal"
+      criteria:
+        - condition: "Hypertensive emergency (neuro changes)"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["hypertensive crisis neuro symptoms", "malignant hypertension", "posterior reversible encephalopathy syndrome", "PRES", "severe hypertension seizures", "encephalopathy hypertension"]
+        - condition: "Oliguric renal failure requiring close fluid management"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["acute kidney injury oliguria", "AKI low urine output", "fluid balance critical renal", "pre-renal failure progressing", "intrinsic renal failure acute"]
+        - condition: "Need for peritoneal or hemodialysis"
+          disposition: "Community Exclusion"
+          search_keywords: ["PD", "HD", "dialysis required", "end stage renal disease ESRD needing dialysis", "acute dialysis", "renal replacement therapy", "RRT"]
+        - condition: "Electrolyte abnormality needing q1-2 blood draws or frequent medication adjustments (e.g., severe DKA with complex electrolyte shifts, tumor lysis syndrome, critical hypokalemia/hyperkalemia requiring frequent monitoring and intervention, severe hyponatremia with neurological symptoms)"
+          disposition: "Community Exclusion"
+          search_keywords: ["critical electrolyte imbalance", "severe hypokalemia", "severe hyperkalemia", "symptomatic hyponatremia", "tumor lysis syndrome TLS", "frequent lab draws electrolytes", "IV electrolyte replacement frequent", "q1h K check", "q2h Na check"]
+        - condition: "Renal transplant patients" # Part of general transplant, but specific for renal section
+          disposition: "Community Exclusion"
+          search_keywords: ["kidney transplant recipient", "post renal transplant complication", "renal graft dysfunction", "immunosuppression renal transplant"]
+
+    respiratory:
+      subcategory_title: "Respiratory"
+      criteria:
+        - condition: "Recurrent apnea, unstable airway"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["apnea spells", "airway obstruction recurrent", "stridor severe", "foreign body airway concern unstable", "difficult airway", "ALTE with ongoing apnea", "BRUE high risk"]
+        - condition: "Tracheostomy present (stable, chronic)"
+          disposition: "AC Exclusion, PICU Accept (or AC if very stable and routine care)"
+          search_keywords: ["trach patient stable", "routine trach care", "home trach admission", "chronic respiratory failure with trach"]
+        - condition: "Tracheostomy present (acute issue, unstable)"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["trach emergency", "trach dislodgement", "trach obstruction", "mucus plugging trach unstable", "bleeding from trach", "respiratory distress trach"]
+        - condition: "Ventilator/Bipap/CPAP required"
+          disposition: "AC Exclusion, PICU Accept. *If neonatal, discuss with Woodlands NICU Attending for potential WL NICU care*[cite: 9, 29]."
+          search_keywords: ["vent", "BiPAP", "CPAP", "respiratory failure", "ventilatory failure", "intubated", "non-invasive ventilation", "NIV", "mechanical ventilation", "positive pressure ventilation", "NIPPV", "ventilator dependent"]
+        - condition: "Pulmonary hypertension (requiring sildenafil only, stable)"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["PAH sildenafil", "stable PH on monotherapy", "idiopathic pulmonary arterial hypertension stable", "congenital heart disease PH stable"]
+        - condition: "Severe pulmonary hypertension (requiring 2+ meds or unstable)"
+          disposition: "Community Exclusion"
+          search_keywords: ["severe PAH", "pulmonary hypertension crisis risk", "prostacyclin for PH", "multiple PH medications", "unstable pulmonary hypertension", "decompensated PH", "right heart failure PH"]
+        - condition: "Cystic fibrosis patients w/ complications of CF"
+          disposition: "Community Exclusion"
+          search_keywords: ["CF exacerbation severe", "cystic fibrosis hemoptysis", "CF pneumothorax", "DIOS CF", "advanced CF lung disease", "CF liver disease complication", "CF related diabetes uncontrolled"]
+        - condition: "Lung transplant patients" # Part of general transplant, specific for respiratory
+          disposition: "Community Exclusion"
+          search_keywords: ["post lung transplant", "lung graft rejection", "lung transplant infection", "bronchiolitis obliterans syndrome", "BOS"]
+
+    rheumatologic:
+      subcategory_title: "Rheumatologic"
+      criteria:
+        - condition: "Kawasaki requiring IVIG (uncomplicated, meeting criteria for community IVIG)"
+          disposition: "Acute Care (AC) Accept"
+          search_keywords: ["Kawasaki disease IVIG", "intravenous immunoglobulin Kawasaki", "mucocutaneous lymph node syndrome IVIG", "KD treatment"]
+        - condition: "Kawasaki needing Rheum evaluation (Not responding to 1st line tx, age <12 mos, coronary artery dilatations- discuss with Rheum)"
+          disposition: "Community Exclusion"
+          search_keywords: ["refractory Kawasaki", "IVIG resistant Kawasaki", "Kawasaki infant <1 year old", "coronary artery aneurysm Kawasaki", "atypical Kawasaki", "incomplete Kawasaki complex"]
+        - condition: "New diagnosis or worsening underlying primary rheumatologic conditions (requiring specialist unavailable at community site)"
+          disposition: "Community Exclusion"
+          search_keywords: ["JIA flare severe", "lupus flare critical", "vasculitis new diagnosis", "dermatomyositis severe", "scleroderma complication", "rheumatology consult needed unavailable"]
+        - condition: "Suspected/confirmed MISC-C: without evidence of shock"
+          disposition: "Decision by Clinical Team (likely AC or PICU at community site if stable)"
+          search_keywords: ["MISC", "multisystem inflammatory syndrome in children", "PIMS-TS", "post-COVID inflammatory syndrome", "MISC stable"]
+        - condition: "Suspected/confirmed MISC-C: with evidence of shock (tachycardia refractory to aggressive fluid resuscitation [>60 cc/kg], AMS, etc.)"
+          disposition: "AC Exclusion, PICU Accept"
+          search_keywords: ["MISC shock", "MISC hypotension", "MISC requiring pressors", "severe MISC", "MISC cardiac dysfunction", "MISC with altered mental status"]
+        - condition: "Suspected/confirmed MISC-C: evidence of cardiac failure"
+          disposition: "Community Exclusion"
+          search_keywords: ["MISC myocarditis", "MISC heart failure", "MISC LV dysfunction", "MISC coronary changes", "cardiac MISC critical"]
+
+    traumas_neurosurgical_burns_ir: # Grouped as per source
+      subcategory_title: "Traumas, Neurosurgical, Burn, Interventional Radiology"
+      criteria:
+        - condition: "Traumas or Neurosurgical patients (general, requiring specialist care not at community site)" # Refers to general trauma note too
+          disposition: "Community Exclusion"
+          search_keywords: ["polytrauma", "major trauma", "neurosurgery needed", "traumatic brain injury TBI severe", "spinal cord injury SCI", "complex orthopedic trauma", "specialized surgical consult trauma"]
+        - condition: "Burn patients (considered Trauma - significant burns as per trauma guidelines)"
+          disposition: "Community Exclusion"
+          search_keywords: ["major burn", "extensive burn", "burn >10% BSA", "airway burn", "electrical burn severe", "chemical burn extensive", "burn center needed"]
+        - condition: "Interventional Radiology: Arterial studies (diagnostic or therapeutic)"
+          disposition: "Community Exclusion"
+          search_keywords: ["arteriogram", "angioplasty arterial", "stent arterial IR", "embolization arterial IR", "diagnostic angiography", "therapeutic arterial intervention"]
+        - condition: "Interventional Radiology: Venous studies - Lesions with airway, head, or neck involvement"
+          disposition: "Decision by Clinical Team (likely Community Exclusion or PICU for stabilization)"
+          search_keywords: ["venous malformation airway", "head neck vascular lesion IR", "complex venous study", "sclerotherapy head neck risk"]
+        - condition: "Interventional Radiology: IR procedures requiring TPA, thrombolysis" # Duplicates with Hem/Onc CDT, but IR specific
+          disposition: "Community Exclusion"
+          search_keywords: ["IR thrombolysis", "catheter directed tPA", "interventional radiology clot busting", "pharmacomechanical thrombectomy IR"]
+        - condition: "Interventional Radiology: Other venous/lymphatic malformations (complex, requiring IR expertise not at community site)"
+          disposition: "Community Exclusion"
+          search_keywords: ["complex lymphatic malformation", "Klippel-Trenaunay syndrome IR", "sclerotherapy complex", "vascular anomaly IR", "lymphangiogram complex"]
+        - condition: "Patients requiring vascular surgery (not available at community site)"
+          disposition: "Community Exclusion"
+          search_keywords: ["arterial bypass needed", "vascular trauma repair", "aneurysm repair vascular", "complex vascular access surgery", "limb ischemia surgery"]
+
+    neonatology_general_community_site_exclusions: # These are general exclusions for community sites, Woodlands NICU has specific considerations
+      subcategory_title: "Neonatology (General Community Site Exclusions - See Woodlands for NICU specifics)"
+      criteria:
+        - condition: "Neonates up to 44 weeks post-gestational age"
+          disposition: "Decision by Clinical Team / Community Exclusion (see Woodlands)"
+          search_keywords: ["neonate <44wks PGA", "post-conceptual age <44 weeks", "corrected gestational age infant", "late preterm needing admission", "term neonate admission general"]
+        - condition: "Infants weighing <2.5 kg" # Already listed in physio
+          disposition: "Decision by Clinical Team / Community Exclusion (X+ [cite: 12]) (see Woodlands)"
+          search_keywords: ["infant less than 2.5kg general", "low birth weight general admission", "small infant ward care"]
+        - condition: "Neonates requiring subspecialty consultation at birth (not available at community site)"
+          disposition: "Community Exclusion"
+          search_keywords: ["newborn subspecialist needed", "congenital anomaly new consult", "neonatal genetics consult unavailable", "birth defect requiring immediate specialist"]
+        - condition: "Prematurity (with complications requiring services not at community site)"
+          disposition: "Community Exclusion"
+          search_keywords: ["premature infant complications general", "preemie respiratory distress general", "necrotizing enterocolitis NEC general", "intraventricular hemorrhage IVH general", "bronchopulmonary dysplasia BPD severe general"]
+
+  obstetric_maternal_care_exclusions:
+    category_title: "Obstetric/Maternal Care Exclusions"
+    criteria:
+      - condition: "Primary obstetric or maternal care (e.g., labor and delivery, management of pregnancy complications)"
+        disposition: "West Campus Exclusion (Refer to Pavilion for Women or appropriate OB facility)"
+        search_keywords: ["pregnancy West Katy", "obstetrics West Katy", "maternal care West Katy", "labor West Katy", "delivery West Katy", "no OB services West Katy"]
+      - condition: "Patient requiring admission primarily for obstetric reasons"
+        disposition: "West Campus Exclusion (Refer to Pavilion for Women)"
+        search_keywords: ["pregnant patient admission West Katy", "maternal health admission West Katy", "OB admission West Katy"]
+      - condition: "Maternal patient with Eclamptic Seizure/Eclampsia or other acute neurological event during pregnancy/postpartum"
+        disposition: "West Campus Exclusion (Refer to Pavilion for Women or appropriate OB/Neuro facility)"
+        search_keywords: ["eclampsia west_campus", "eclamptic seizure west_campus", "maternal seizure west_campus", "pregnancy seizure west_campus", "postpartum seizure west_campus", "neurology obstetric west_campus"]
+
+  cardiology_sop_appendix_a: # [cite: 34, 35, 38]
+    category_title: "Cardiology Scope of Practice (SOP) - Appendix A (Applicable to West Campus)"
+    overarching_note: "***ALL patients should be discussed with the cardiologist-on-call*** [cite: 34]"
+    tiers:
+      - tier_level: "TIER III: Admit to Community Site (West Campus)"
+        conditions:
+          - category: "Congenital Heart Disease"
+            items:
+              - "Status post cardiac repair (>6wks), unless not approved by CT surgery [cite: 35]"
+              - "Unrepaired and stable biventricular heart disease (except in neonatal period) [cite: 35]"
+          - category: "Heart Failure Transplant"
+            items:
+              - "Status post-transplant (with preserved systolic function) admitted for non-cardiac etiology, unless not approved by the HF/TX team [cite: 35]"
+          - category: "Acquired Heart Disease"
+            items:
+              - "Kawasaki with no evidence of toxic shock syndrome [cite: 38]"
+              - "Stable endocarditis in non-cardiac patients (line-associated, etc.) once treatment plan has been initiated and established. Cardiology responsible for notifying the appropriate service[cite: 38]."
+          - category: "Arrhythmia"
+            items:
+              - "BRUE patients with non-cardiac history (Holter to be placed) [cite: 38]"
+          - category: "Procedures"
+            items:
+              - "Clear with CV anesthesia [cite: 38]"
+
+      - tier_level: "TIER II: All attempts should be made to admit to Community Site (West Campus)"
+        conditions:
+          - category: "Congenital Heart Disease"
+            items:
+              - "Status post Glenn/Fontan palliation, admitted for non-cardiac etiology [cite: 35]"
+              - "Cardiac diagnosis with palliative/comfort care [cite: 35]"
+          - category: "Heart Failure Transplant"
+            items:
+              - "Cardiomyopathy patients with compensated heart failure (EF>45%) and not requiring IV inotropic support, unless not approved by the HF/TX team [cite: 35]"
+          - category: "Acquired Heart Disease"
+            items:
+              - "Stable Kawasaki with mildly dilated coronaries, unless not cleared by the Kawasaki team [cite: 38]"
+              - "Stable previous diagnosis of myocarditis/myopericarditis, unless not cleared by the HF/TX team [cite: 38]"
+              - "Endocarditis in patients with known congenital heart disease and to complete treatment (after initiation of therapy and work up in the MC), unless not approved by primary cardiologist and/or CT surgery [cite: 38]"
+          - category: "Arrhythmia"
+            items:
+              - "New diagnosis or history of SVT responsive to medical therapy and/or vagal maneuvers, cardiology will contact the primary team (EP team), unless not cleared by EP team [cite: 38]"
+              - "History of pacemaker placement admitted for non-cardiac diagnosis, unless not cleared by EP team [cite: 38]"
+              - "Status post successful cardioversion for monitoring, unless not cleared by the EP team [cite: 38]"
+          - category: "Procedures"
+            items:
+              - "Clear with CV anesthesia [cite: 38]"
+
+      - tier_level: "TIER I: Transfer to Main Campus Cardiology (Community Exclusion for West Campus)"
+        conditions:
+          - category: "Congenital Heart Disease"
+            items:
+              - "PGE dependent lesions [cite: 35]"
+              - "Status post cardiac repair (<6wks) [cite: 35]"
+              - "Single ventricle (during inter-stage) awaiting Glenn [cite: 35]"
+              - "Congenital heart disease in the neonatal period, regardless of severity [cite: 35]"
+              - "Unstable congenital and acquired heart disease [cite: 35]"
+          - category: "Heart Failure Transplant"
+            items:
+              - "Decompensated heart failure [cite: 35]"
+              - "Patients listed for heart transplant [cite: 35]"
+              - "Mechanical assist device [cite: 35]"
+              - "Any patients not cleared by the HF/TX team[cite: 35]."
+          - category: "Acquired Heart Disease"
+            items:
+              - "Kawasaki with evidence of toxic shock syndrome or moderate/severe coronary artery dilation [cite: 38]"
+              - "Evidence of myocardial ischemia (i.e. elevated ST segments on ECG) [cite: 38]"
+              - "Endocarditis in patients with multi-specialists and discussed *cardiology as the primary provider-will contact the primary team i.e. heart failure team; CV surgery team[cite: 38]." # Sic from source
+              - "Endocarditis in patients not approved by CT surgery [cite: 38]"
+              - "New myocarditis/myopericarditis [cite: 38]"
+          - category: "Arrhythmia"
+            items:
+              - "SVT/arrhythmia requiring escalation of care, which includes need for drips (inotropic, chronotropic, antiarrhythmic) [cite: 38]"
+              - "Complete heart block [cite: 38]"
+              - "Need for telemetry, pacing, cardioversion (multiple times) [cite: 38]"
+          - category: "Procedures"
+            items:
+              - "Need for procedures requiring CV anesthesia [cite: 38]"
+
+# --- The Woodlands Campus ---
+the_woodlands_campus:
+  campus_name: "Texas Children's Hospital The Woodlands Campus"
+  introduction: "The following criteria are based on the 'Texas Children's Hospital Community Sites- Admission Exclusion Criteria (4/2024)' document[cite: 11]. Criteria are generally the same as West Campus unless specified, particularly for Neonatology where The Woodlands has specific NICU capabilities."
+  source_document_reference: "Texas Children's Hospital Community Sites- Admission Exclusion Criteria (April 2024 Review) and specific Woodlands guidelines."
+  
+  woodlands_nicu_specific_note: "Woodlands NICU: Please discuss with NICU attending for all patients <44 weeks post gestational age prior to decision to transfer[cite: 9]. The Woodlands has a 14-bed NICU[cite: 6], allowing for care of certain neonates who would be excluded from general community sites."
+
+  physiologic_parameters_monitoring_needs: # [cite: 12]
+    category_title: "Physiologic Parameters/Monitoring Needs - The Woodlands Campus"
+    general_note: "Criteria generally same as West Campus. Keywords would be similar. Specific attention and discussion with Woodlands NICU attending required for neonatal patients as noted below and per[cite: 9, 29]."
+    criteria:
+      - condition: "Telemetry"
+        disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+        search_keywords: ["cardiac monitoring", "heart monitor", "ECG monitoring", "EKG monitoring", "arrhythmia monitoring", "dysrhythmia monitoring", "continuous cardiac monitoring", "Holter monitor", "event monitor", "tele", "rhythm strip", "cardiac event recording"]
+      - condition: "Non-rebreather mask for respiratory distress"
+        disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+        search_keywords: ["NRB", "non-rebreather", "high flow oxygen", "severe respiratory distress", "hypoxia", "oxygen mask", "respiratory support", "breathing difficulty", "increased work of breathing", "oxygen saturation low", "respiratory compromise"]
+      - condition: "Continuous beta agonist treatment"
+        disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+        search_keywords: ["continuous neb", "terbutaline drip", "continuous albuterol", "continuous nebulizer", "status asthmaticus", "severe asthma exacerbation", "bronchodilator infusion", "beta-2 agonist infusion", "continuous bronchodilator therapy", "unremitting wheezing requiring continuous treatment", "refractory wheezing needing ongoing beta-agonist", "severe bronchospasm", "constant nebulization"]
+      - condition: "CRS Score 4-5"
+        disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+        search_keywords: ["CRS 4", "CRS 5", "clinical respiratory score 4", "clinical respiratory score 5", "pediatric respiratory score", "respiratory distress score", "moderate respiratory distress", "asthma score", "bronchiolitis score", "respiratory assessment score 4-5"]
+      - condition: "CRS Score >=6 (and not improving)"
+        disposition: "Community Exclusion (Same as West Campus)"
+        search_keywords: ["CRS 6", "CRS 7", "CRS 8", "CRS 9", "CRS 10", "CRS 11", "CRS 12", "clinical respiratory score 6+", "clinical respiratory score six or greater", "severe respiratory distress", "worsening respiratory status", "pediatric respiratory failure", "impending respiratory failure", "high CRS score", "unresponsive to treatment", "failing respiratory effort"]
+      - condition: "HFNC (max flow for cannula size and not improving)"
+        disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+        search_keywords: ["HFNC failure", "high flow nasal cannula failure", "max flow HFNC not improving", "worsening despite max HFNC", "escalating respiratory support post-HFNC", "refractory hypoxemia on HFNC", "persistent respiratory distress on max high flow", "Vapotherm failure", "Optiflow failure", "non-responsive to high flow oxygen therapy", "high flow nasal cannula", "HFNC", "Vapotherm", "Optiflow", "heated humidified high flow", "maximum HFNC settings", "failed high flow support"]
+      - condition: "Glasgow Coma (non-trauma) Score <9"
+        disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+        search_keywords: ["GCS <9", "Glasgow Coma Scale less than 9", "low GCS", "altered mental status", "AMS", "decreased level of consciousness", "LOC", "unresponsive", "comatose", "stupor", "obtunded", "severe neurological impairment", "non-traumatic brain injury", "medical coma", "GCS 3", "GCS 4", "GCS 5", "GCS 6", "GCS 7", "GCS 8"]
+      - condition: "Glasgow Coma (non-trauma) Score 10-14"
+        disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+        search_keywords: ["GCS 10", "GCS 11", "GCS 12", "GCS 13", "GCS 14", "Glasgow Coma Scale 10-14", "moderate neurological impairment", "altered mental status", "AMS", "lethargy", "confusion", "drowsiness", "non-traumatic brain injury", "somnolence", "reduced awareness"]
+      - condition: "Hourly or q2 hr assessments/treatments without expected imminent improvement (e.g., unstable vital signs requiring frequent checks, complex medication titration, intensive respiratory treatments)"
+        disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+        search_keywords: ["frequent assessments", "q1h assessments", "q2h assessments", "frequent treatments", "q1h treatments", "q2h treatments", "unstable vital signs", "hemodynamic instability", "frequent vital sign checks", "complex medication titration", "vasoactive drips", "insulin drip", "frequent medication adjustments", "intensive respiratory treatments", "frequent nebulizers", "chest physiotherapy", "pulmonary toilet", "no expected improvement", "prolonged instability", "high nursing workload", "intensive monitoring", "continuous observation", "close monitoring needed"]
+      - condition: "Aggressive fluid resuscitation (>60 cc/kg)"
+        disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+        search_keywords: ["large volume fluid bolus", "fluid overload risk", "septic shock", "hypovolemic shock", "dehydration with shock", "fluid resuscitation", ">60ml/kg fluids", "aggressive hydration", "shock", "poor perfusion", "capillary refill delayed", "large fluid challenge", "multiple fluid boluses"]
+      - condition: "Continuous EEG monitoring"
+        disposition: "Community Exclusion (Same as West Campus)"
+        search_keywords: ["cEEG", "EEG monitoring", "seizure monitoring", "status epilepticus monitoring", "non-convulsive status epilepticus", "NCSE", "subclinical seizures", "continuous electroencephalogram", "brain wave monitoring", "epilepsy monitoring", "prolonged EEG", "bedside EEG monitoring"]
+      - condition: "Hypothermia (<97F), q1 temp checks, Bare hugger warmer"
+        disposition: "Community Exclusion (Same as West Campus)"
+        search_keywords: ["low body temperature", "hypothermic", "temperature <97F", "temperature <36.1C", "frequent temperature checks", "q1h temperature", "active rewarming", "Bair Hugger", "forced-air warmer", "warming blanket", "cold stress", "neonatal hypothermia", "pediatric hypothermia", "temperature instability", "therapeutic hypothermia management (if not for cooling)"]
+      - condition: "Infants weighing <2.5 kg"
+        disposition: "Community Exclusion (X+ [cite: 12]). *Discuss with Woodlands NICU Attending*[cite: 9, 28, 29]. WL NICU may accept."
+        search_keywords: ["infant <2500g", "low birth weight infant", "LBW", "small baby", "neonate <2.5kg", "premature infant", "small for gestational age", "SGA", "weight less than 2.5 kilograms", "very low birth weight", "VLBW", "extremely low birth weight", "ELBW", "Woodlands NICU infant weight"]
+
+  diagnosis_specific: # [cite: 12, 15, 16, 19, 22, 25, 28]
+    category_title: "Diagnosis Specific - The Woodlands Campus"
+    general_note: "Criteria generally same as West Campus; keywords would be similar. Specific differences for Neonatology are detailed below[cite: 9, 29]."
+    general_exclusions: # Copied from West Campus
+      - condition: "Specialty care not available at Community Site"
+        disposition: "AC Exclusion, PICU Accept (if PICU can manage pending transfer or if specialty is PICU) (Same as West Campus)"
+        search_keywords: ["unavailable specialist", "no subspecialty coverage", "lacking specialty service", "requires specialist not on site", "transfer for specialty care", "consult unavailable", "service not offered", "specialist needed", "subspecialist required", "specialty consultation needed", "referral to specialist center", "lack of expertise", "specialized treatment unavailable"]
+      - condition: "Drug ingestion with physiologic instability"
+        disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+        search_keywords: ["overdose", "toxic ingestion", "poisoning", "medication overdose", "unstable vital signs post ingestion", "altered mental status post ingestion", "symptomatic ingestion", "drug toxicity with instability", "physiologically unstable ingestion", "ingestion requiring intensive care", "hemodynamically unstable ingestion", "respiratory compromise post ingestion", "accidental ingestion with severe symptoms", "intentional overdose with instability"]
+      - condition: "Transplant patients (general - specific types may vary, see below)"
+        disposition: "Community Exclusion (Same as West Campus)"
+        search_keywords: ["solid organ transplant", "SOT", "bone marrow transplant", "BMT", "stem cell transplant", "SCT", "post-transplant", "transplant recipient", "immunosuppressed transplant", "kidney transplant", "liver transplant", "heart transplant", "lung transplant", "pancreas transplant", "intestinal transplant", "transplant complications", "graft versus host disease", "GVHD", "transplant rejection"]
+
+    endocrine: # Copied from West Campus
+      subcategory_title: "Endocrine"
+      criteria:
+        - condition: "Diabetes, new onset Type 1 or 2, not in DKA"
+          disposition: "Acute Care (AC) Accept (Same as West Campus)"
+          search_keywords: ["new onset diabetes", "NODM", "Type 1 diabetes mellitus", "T1DM", "Type 2 diabetes mellitus", "T2DM", "no diabetic ketoacidosis", "hyperglycemia without DKA", "diabetes education start"]
+        - condition: "Diabetes in DKA, mild ketosis, HCO3 >15"
+          disposition: "Acute Care (AC) Accept (Same as West Campus)"
+          search_keywords: ["mild DKA", "diabetic ketoacidosis mild", "bicarbonate above 15", "ketones present mild", "diabetes management", "resolving DKA"]
+        - condition: "Diabetes in DKA, HCO3 <15 (requiring insulin drip)"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["moderate DKA", "severe DKA", "diabetic ketoacidosis HCO3 less than 15", "insulin infusion", "DKA protocol", "critical DKA management", "anion gap metabolic acidosis", "significant ketosis"]
+        - condition: "Diabetes insipidus"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["DI", "central DI", "nephrogenic DI", "polyuria", "polydipsia", "desmopressin management", "DDAVP", "water deprivation test", "sodium imbalance", "serum osmolality high", "urine osmolality low"]
+        - condition: "Persistent hypoglycemia in pt <6 mos"
+          disposition: "Community Exclusion (X† [cite: 12]) (Same as West Campus)"
+          search_keywords: ["hypoglycemia infant", "low blood sugar infant <6 months", "recurrent hypoglycemia neonate", "persistent low glucose baby", "diazoxide", "glucagon continuous", "nesidioblastosis", "congenital hyperinsulinism"]
+
+    gastrointestinal: # Copied from West Campus
+      subcategory_title: "Gastrointestinal"
+      criteria:
+        - condition: "Hyperbilirubinemia - TSB within 2 below exchange lvl"
+          disposition: "Community Exclusion (X+ [cite: 15]) (Same as West Campus)"
+          search_keywords: ["high bilirubin", "jaundice near exchange transfusion", "total serum bilirubin critical", "phototherapy intensive", "kernicterus risk", "severe hyperbilirubinemia", "neonatal jaundice severe"]
+        - condition: "Presence/concern for portal hypertension"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["portal HTN", "esophageal varices", "ascites liver", "splenomegaly portal hypertension", "liver cirrhosis complication", "variceal bleeding risk"]
+        - condition: "GI bleed with hemodynamic instability"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["gastrointestinal hemorrhage unstable", "hematemesis shock", "melena hypotension", "upper GI bleed unstable", "lower GI bleed unstable", "active GI bleeding critical"]
+        - condition: "Hgb drop >=3 g/dl or Hgb 8-10 g/dl if unknown baseline"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["significant hemoglobin drop", "acute anemia GI bleed", "low hemoglobin unknown cause", "rapid Hgb decrease", "anemia requiring transfusion potentially"]
+        - condition: "Gallstone pancreatitis/biliary obstruction suspected and need for ERCP"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["pancreatitis gallstones", "biliary colic obstruction", "ERCP needed", "cholangitis", "obstructive jaundice pancreatitis", "endoscopic retrograde cholangiopancreatography"]
+        - condition: "Acute liver failure (INR>=2 or >1.5 w/ mental status changes)"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["ALF", "fulminant hepatic failure", "hepatic encephalopathy", "coagulopathy liver failure", "high INR liver", "elevated LFTs severe", "liver function deterioration"]
+
+    genetics_metabolic: # Copied from West Campus
+      subcategory_title: "Genetics/Metabolic"
+      criteria:
+        - condition: "Suspected metabolic disorder"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["inborn error of metabolism suspected", "IEM workup", "metabolic crisis", "unexplained acidosis", "hyperammonemia", "organic acidemia suspicion", "urea cycle disorder suspicion", "mitochondrial disease suspicion"]
+        - condition: "Known metabolic disorder with risk of neurologic compromise or specialized formulas"
+          disposition: "Decision by Clinical Team (Same as West Campus)"
+          search_keywords: ["established metabolic disorder", "PKU crisis", "MSUD crisis", "galactosemia complication", "special diet metabolic", "neurologic deterioration metabolic disease", "metabolic decompensation"]
+
+    hematology_oncology: # Copied from West Campus
+      subcategory_title: "Hematology/Oncology"
+      criteria:
+        - condition: "Anemia not requiring plasmapheresis/exchange transfusion"
+          disposition: "Decision by Clinical Team (Same as West Campus)"
+          search_keywords: ["anemia workup", "iron deficiency anemia severe", "hemolytic anemia stable", "blood transfusion non-emergent", "low hemoglobin stable"]
+        - condition: "Need for plasmapheresis"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["plasma exchange", "therapeutic plasma exchange", "TPE", "Guillain-Barre plasmapheresis", "TTP plasmapheresis", "myasthenia gravis crisis plasmapheresis", "autoimmune disorder plasmapheresis"]
+        - condition: "Malignancy requiring ongoing monitoring/intervention (active treatment phase or unstable)"
+          disposition: "Decision by Clinical Team (often Community Exclusion) (Same as West Campus)"
+          search_keywords: ["cancer active treatment", "chemotherapy complications", "radiation therapy side effects", "oncologic emergency", "neutropenic fever high risk", "unstable cancer patient"]
+        - condition: "Anticoagulation requiring heparin drip"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["heparin infusion", "IV heparin", "therapeutic anticoagulation heparin", "PTT monitoring frequent", "DVT heparin", "PE heparin", "unfractionated heparin gtt"]
+        - condition: "Other anticoagulation (e.g., LMWH, DOACs, stable)"
+          disposition: "Decision by Clinical Team (Same as West Campus)"
+          search_keywords: ["Lovenox", "enoxaparin", "dalteparin", "rivaroxaban", "apixaban", "dabigatran", "warfarin stable", "stable anticoagulation management"]
+        - condition: "Confirmed new diagnosis malignancy"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["new cancer diagnosis", "oncology workup new", "biopsy proven malignancy new", "leukemia new diagnosis", "lymphoma new diagnosis", "solid tumor new diagnosis", "staging studies cancer"]
+        - condition: "Leukemia patients in induction chemotherapy"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["leukemia induction", "chemotherapy first cycle leukemia", "ALL induction", "AML induction", "high risk neutropenia leukemia"]
+        - condition: "Deep venous thrombosis (NOTE: if new onset, large DVT, consider tx to MC for other specialized care)"
+          disposition: "Decision by Clinical Team (Same as West Campus)"
+          search_keywords: ["DVT", "blood clot leg", "venous thromboembolism", "VTE", "iliofemoral DVT", "extensive DVT", "May-Thurner"]
+        - condition: "DVT- need for heparin drip"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["DVT heparin infusion", "acute DVT IV heparin", "extensive DVT anticoagulation inpatient"]
+        - condition: "DVT- need for vascular surgery"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["DVT thrombectomy", "venous stent DVT", "phlegmasia cerulea dolens", "vascular intervention DVT", "surgical DVT management"]
+        - condition: "IR procedures requiring catheter directed thrombolysis"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["CDT", "interventional radiology clot lysis", "tPA infusion for DVT/PE", "arterial thrombolysis IR", "EKOS therapy"]
+        - condition: "Pulmonary embolism"
+          disposition: "Community Exclusion (typically, unless very minor and stable post-MC eval) (Same as West Campus)"
+          search_keywords: ["PE", "blood clot lung", "saddle PE", "submassive PE", "massive PE", "anticoagulation for PE", "thrombolysis for PE"]
+        - condition: "Bone marrow transplant patients"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["BMT recipient", "HSCT patient", "post BMT complications", "neutropenic fever BMT", "GVHD BMT", "veno-occlusive disease", "VOD"]
+        - condition: "Transplant pts still under care of BMT team"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["active BMT follow-up", "recent bone marrow transplant", "BMT team management"]
+        - condition: "Allogenic or autologous transplant pts no longer under care of BMT team (Discuss w/ Onc)"
+          disposition: "Decision by Clinical Team (Same as West Campus)"
+          search_keywords: ["long term BMT follow up", "stable post BMT", "late effects of transplant"]
+
+    infectious_disease: # Copied from West Campus
+      subcategory_title: "Infectious Disease"
+      criteria:
+        - condition: "Suspected bacterial meningitis in infant (1st 24 hours of admission): <60 days: CSF +GS +/-pleocytosis; >60 days-12 mos: meningitis score >=2; ill-appearance any age"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["infant meningitis", "neonatal meningitis suspected", "bacterial meningitis workup infant", "CSF pleocytosis infant", "positive gram stain CSF infant", "ill appearing infant fever", "sepsis workup meningitis concern"]
+
+    neurologic: # Copied from West Campus
+      subcategory_title: "Neurologic"
+      criteria:
+        - condition: "Evidence/suspicion for stroke"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["CVA suspected", "cerebrovascular accident", "stroke symptoms", "acute neurologic deficit", "focal neuro signs", "ischemic stroke", "hemorrhagic stroke", "TIA with high risk", "stroke code"]
+        - condition: "Intracranial process (bleed, mass) or need for intracranial monitoring"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["ICH", "intracranial hemorrhage", "brain bleed", "brain tumor", "space occupying lesion brain", "ICP monitoring", "EVD", "neurocritical care", "subdural hematoma", "epidural hematoma", "subarachnoid hemorrhage"]
+        - condition: "Presence of altered mental status (not improving)"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["AMS worsening", "persistent altered mental status", "declining LOC", "encephalopathy progressive", "unexplained confusion deteriorating", "ongoing obtundation"]
+        - condition: "Progressive neuromuscular dysfunction"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["Guillain-Barre syndrome", "GBS", "myasthenia gravis crisis", "MG crisis", "acute motor weakness worsening", "ascending paralysis", "respiratory compromise neuromuscular", "bulbar weakness progressive"]
+        - condition: "Seizures requiring frequent interventions (hourly)"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["refractory seizures", "frequent breakthrough seizures", "hourly seizure activity", "cluster seizures hourly", "antiepileptic drug loading frequent", "benzodiazepine rescue frequent"]
+        - condition: "Status epilepticus requiring continuous EEG"
+          disposition: "AC Exclusion, PICU Accept (Note: Cont. EEG itself is Comm Excl, implies transfer after stabilization or if PICU can manage short-term) (Same as West Campus)"
+          search_keywords: ["status epilepticus", "SE", "prolonged seizure", "convulsive status epilepticus", "non-convulsive status epilepticus cEEG", "refractory status epilepticus", "RSE"]
+        - condition: "Infantile spasms - suspected new diagnosis"
+          disposition: "AC Exclusion, PICU Accept (for workup, often leading to Main Campus) (Same as West Campus)"
+          search_keywords: ["West syndrome", "hypsarrhythmia", "epileptic spasms infant", "ACTH therapy infantile spasms", "vigabatrin infantile spasms", "Salaam attacks"]
+        - condition: "Seizure in neonate <30 days (needs continuous EEG)"
+          disposition: "Community Exclusion. *Discuss with Woodlands NICU Attending for potential WL NICU care if applicable.*" # Added Woodlands specific note
+          search_keywords: ["neonatal seizures", "newborn seizure", "seizure infant less than 1 month", "cEEG neonate", "hypoxic ischemic encephalopathy HIE seizures", "Woodlands NICU neonatal seizure"] # Added Woodlands specific keyword
+        - condition: "Acute inflammatory process requiring plasmapheresis"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["ADEM requiring TPE", "transverse myelitis plasmapheresis", "autoimmune encephalitis TPE", "NMDA receptor encephalitis plasmapheresis"]
+        - condition: "Vagal nerve stimulator or baclofen pump malfunction/infection"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["VNS malfunction", "baclofen pump problem", "infected VNS", "infected baclofen pump", "device erosion neuro", "intrathecal baclofen issue"]
+        - condition: "Pregnant or Complications of Pregnancy"
+          disposition: "Community Exclusion (to PFW or appropriate facility) (Same as West Campus)"
+          search_keywords: ["pregnant patient", "pregnancy complications", "obstetric emergency in child", "teen pregnancy complication", "needs OB care"]
+
+    psychiatric_diagnoses: # [cite: 22] Copied from West Campus
+      subcategory_title: "Psychiatric Diagnoses"
+      criteria:
+        - condition: "General Psychiatric Diagnoses requiring admission"
+          disposition: "Decision by Clinical Team (X** [cite: 22]) (Same as West Campus)"
+          search_keywords: ["psych admission", "mental health crisis", "suicidal ideation", "SI", "homicidal ideation", "HI", "acute psychosis", "severe depression inpatient", "anxiety exacerbation inpatient", "eating disorder medical instability", "behavioral crisis"]
+        - condition: "Aggressive Behavioral Health Patients Requiring Multiple Medication Interventions"
+          disposition: "Decision by Clinical Team (X** [cite: 22]) (Same as West Campus)"
+          search_keywords: ["agitation management", "behavioral emergency", "IM medication for aggression", "chemical restraint", "violent behavior psych", "multiple psych meds needed", "acute mania aggression"]
+        - condition: "Acute psychosis requiring urgent psychiatry evaluation (During weekends/holidays when no in-person or telehealth available)"
+          disposition: "Transfer/direct admit to Main Campus for in-person psychiatry consult [cite: 22] (Same as West Campus)"
+          search_keywords: ["psychosis weekend", "urgent psych consult unavailable", "psychiatry emergency off hours", "no telepsych available", "needs inpatient psychiatrist immediate"]
+
+    ophthalmologic: # Copied from West Campus
+      subcategory_title: "Ophthalmologic"
+      criteria:
+        - condition: "Pre-septal cellulitis without concern for post-septal involvement (Note: if <2 yrs, strongly consider CT to exclude orbital involvement)"
+          disposition: "Acute Care (AC) Accept (Same as West Campus)"
+          search_keywords: ["periorbital cellulitis", "eyelid infection", "anterior orbital cellulitis", "mild eye infection"]
+        - condition: "Post-septal involvement, abscess, rapid progression, or need for frequent eye exams/surgical intervention"
+          disposition: "AC Exclusion, PICU Accept (likely transfer to MC) (Same as West Campus)"
+          search_keywords: ["orbital cellulitis", "proptosis", "ophthalmoplegia", "vision loss eye infection", "orbital abscess", "eye surgery needed infection", "cavernous sinus thrombosis risk"]
+        - condition: "Atypical presentation (no source of infection, concern for malignancy, etc.)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["orbital mass", "rhabdomyosarcoma eye", "retinoblastoma concern", "unexplained proptosis", "uveitis complex", "ophthalmic tumor"]
+        - condition: "Immunocompromised patient (with ophthalmic issue)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["fungal eye infection immunocompromised", "CMV retinitis", "opportunistic eye infection", "neutropenic ophthalmic concern"]
+
+    renal: # Copied from West Campus
+      subcategory_title: "Renal"
+      criteria:
+        - condition: "Hypertensive emergency (neuro changes)"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["hypertensive crisis neuro symptoms", "malignant hypertension", "posterior reversible encephalopathy syndrome", "PRES", "severe hypertension seizures", "encephalopathy hypertension"]
+        - condition: "Oliguric renal failure requiring close fluid management"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["acute kidney injury oliguria", "AKI low urine output", "fluid balance critical renal", "pre-renal failure progressing", "intrinsic renal failure acute"]
+        - condition: "Need for peritoneal or hemodialysis"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["PD", "HD", "dialysis required", "end stage renal disease ESRD needing dialysis", "acute dialysis", "renal replacement therapy", "RRT"]
+        - condition: "Electrolyte abnormality needing q1-2 blood draws or frequent medication adjustments (e.g., severe DKA with complex electrolyte shifts, tumor lysis syndrome, critical hypokalemia/hyperkalemia requiring frequent monitoring and intervention, severe hyponatremia with neurological symptoms)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["critical electrolyte imbalance", "severe hypokalemia", "severe hyperkalemia", "symptomatic hyponatremia", "tumor lysis syndrome TLS", "frequent lab draws electrolytes", "IV electrolyte replacement frequent", "q1h K check", "q2h Na check"]
+        - condition: "Renal transplant patients"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["kidney transplant recipient", "post renal transplant complication", "renal graft dysfunction", "immunosuppression renal transplant"]
+
+    respiratory: # Copied from West Campus
+      subcategory_title: "Respiratory"
+      criteria:
+        - condition: "Recurrent apnea, unstable airway"
+          disposition: "AC Exclusion, PICU Accept. *If neonatal and at Woodlands, discuss with Woodlands NICU Attending for potential WL NICU care.*" # Added Woodlands specific note
+          search_keywords: ["apnea spells", "airway obstruction recurrent", "stridor severe", "foreign body airway concern unstable", "difficult airway", "ALTE with ongoing apnea", "BRUE high risk", "neonatal apnea Woodlands"] # Added Woodlands specific keyword
+        - condition: "Tracheostomy present (stable, chronic)"
+          disposition: "AC Exclusion, PICU Accept (or AC if very stable and routine care) (Same as West Campus)"
+          search_keywords: ["trach patient stable", "routine trach care", "home trach admission", "chronic respiratory failure with trach"]
+        - condition: "Tracheostomy present (acute issue, unstable)"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["trach emergency", "trach dislodgement", "trach obstruction", "mucus plugging trach unstable", "bleeding from trach", "respiratory distress trach"]
+        - condition: "Ventilator/Bipap/CPAP required" # Note: This is also covered in Woodlands NICU specific section for neonates. This is for general peds.
+          disposition: "AC Exclusion, PICU Accept. *If neonatal and at Woodlands, discuss with Woodlands NICU Attending for potential WL NICU care*[cite: 9, 29]." # Disposition already mentions WL NICU
+          search_keywords: ["vent", "BiPAP", "CPAP", "respiratory failure", "ventilatory failure", "intubated", "non-invasive ventilation", "NIV", "mechanical ventilation", "positive pressure ventilation", "NIPPV", "ventilator dependent"]
+        - condition: "Pulmonary hypertension (requiring sildenafil only, stable)"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["PAH sildenafil", "stable PH on monotherapy", "idiopathic pulmonary arterial hypertension stable", "congenital heart disease PH stable"]
+        - condition: "Severe pulmonary hypertension (requiring 2+ meds or unstable)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["severe PAH", "pulmonary hypertension crisis risk", "prostacyclin for PH", "multiple PH medications", "unstable pulmonary hypertension", "decompensated PH", "right heart failure PH"]
+        - condition: "Cystic fibrosis patients w/ complications of CF"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["CF exacerbation severe", "cystic fibrosis hemoptysis", "CF pneumothorax", "DIOS CF", "advanced CF lung disease", "CF liver disease complication", "CF related diabetes uncontrolled"]
+        - condition: "Lung transplant patients" # Part of general transplant, specific for respiratory
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["post lung transplant", "lung graft rejection", "lung transplant infection", "bronchiolitis obliterans syndrome", "BOS"]
+
+    rheumatologic: # Copied from West Campus
+      subcategory_title: "Rheumatologic"
+      criteria:
+        - condition: "Kawasaki requiring IVIG (uncomplicated, meeting criteria for community IVIG)"
+          disposition: "Acute Care (AC) Accept (Same as West Campus)"
+          search_keywords: ["Kawasaki disease IVIG", "intravenous immunoglobulin Kawasaki", "mucocutaneous lymph node syndrome IVIG", "KD treatment"]
+        - condition: "Kawasaki needing Rheum evaluation (Not responding to 1st line tx, age <12 mos, coronary artery dilatations- discuss with Rheum)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["refractory Kawasaki", "IVIG resistant Kawasaki", "Kawasaki infant <1 year old", "coronary artery aneurysm Kawasaki", "atypical Kawasaki", "incomplete Kawasaki complex"]
+        - condition: "New diagnosis or worsening underlying primary rheumatologic conditions (requiring specialist unavailable at community site)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["JIA flare severe", "lupus flare critical", "vasculitis new diagnosis", "dermatomyositis severe", "scleroderma complication", "rheumatology consult needed unavailable"]
+        - condition: "Suspected/confirmed MISC-C: without evidence of shock"
+          disposition: "Decision by Clinical Team (likely AC or PICU at community site if stable) (Same as West Campus)"
+          search_keywords: ["MISC", "multisystem inflammatory syndrome in children", "PIMS-TS", "post-COVID inflammatory syndrome", "MISC stable"]
+        - condition: "Suspected/confirmed MISC-C: with evidence of shock (tachycardia refractory to aggressive fluid resuscitation [>60 cc/kg], AMS, etc.)"
+          disposition: "AC Exclusion, PICU Accept (Same as West Campus)"
+          search_keywords: ["MISC shock", "MISC hypotension", "MISC requiring pressors", "severe MISC", "MISC cardiac dysfunction", "MISC with altered mental status"]
+        - condition: "Suspected/confirmed MISC-C: evidence of cardiac failure"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["MISC myocarditis", "MISC heart failure", "MISC LV dysfunction", "MISC coronary changes", "cardiac MISC critical"]
+
+    traumas_neurosurgical_burns_ir: # Copied from West Campus
+      subcategory_title: "Traumas, Neurosurgical, Burn, Interventional Radiology"
+      criteria:
+        - condition: "Traumas or Neurosurgical patients (general, requiring specialist care not at community site)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["polytrauma", "major trauma", "neurosurgery needed", "traumatic brain injury TBI severe", "spinal cord injury SCI", "complex orthopedic trauma", "specialized surgical consult trauma"]
+        - condition: "Burn patients (considered Trauma - significant burns as per trauma guidelines)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["major burn", "extensive burn", "burn >10% BSA", "airway burn", "electrical burn severe", "chemical burn extensive", "burn center needed"]
+        - condition: "Interventional Radiology: Arterial studies (diagnostic or therapeutic)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["arteriogram", "angioplasty arterial", "stent arterial IR", "embolization arterial IR", "diagnostic angiography", "therapeutic arterial intervention"]
+        - condition: "Interventional Radiology: Venous studies - Lesions with airway, head, or neck involvement"
+          disposition: "Decision by Clinical Team (likely Community Exclusion or PICU for stabilization) (Same as West Campus)"
+          search_keywords: ["venous malformation airway", "head neck vascular lesion IR", "complex venous study", "sclerotherapy head neck risk"]
+        - condition: "Interventional Radiology: IR procedures requiring TPA, thrombolysis"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["IR thrombolysis", "catheter directed tPA", "interventional radiology clot busting", "pharmacomechanical thrombectomy IR"]
+        - condition: "Interventional Radiology: Other venous/lymphatic malformations (complex, requiring IR expertise not at community site)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["complex lymphatic malformation", "Klippel-Trenaunay syndrome IR", "sclerotherapy complex", "vascular anomaly IR", "lymphangiogram complex"]
+        - condition: "Patients requiring vascular surgery (not available at community site)"
+          disposition: "Community Exclusion (Same as West Campus)"
+          search_keywords: ["arterial bypass needed", "vascular trauma repair", "aneurysm repair vascular", "complex vascular access surgery", "limb ischemia surgery"]
+
+    neonatology_woodlands_nicu: # Specific to The Woodlands NICU capabilities - THIS SECTION IS PRESERVED AND NOT OVERWRITTEN FROM WEST CAMPUS GENERAL NEONATOLOGY
+      subcategory_title: "Neonatology - The Woodlands Campus (Specific NICU Criteria)"
+      introduction_note: "The Woodlands has a 14-bed NICU[cite: 6]. Discuss ALL patients <44 weeks PGA with NICU attending[cite: 9]. Acceptance to WL NICU possible for conditions excluded from general community sites[cite: 29]."
+      criteria:
+        - problem_diagnosis: "Neonates up to 44 weeks post-gestational age"
+          disposition_detail: "Decision by Clinical Team. WL NICU Accept. Community Exclusion (General Sites)."
+          woodlands_specific_action: "Must discuss with Woodlands NICU Attending[cite: 9, 28, 29]."
+          search_keywords: ["Woodlands NICU <44wks", "neonate admission Woodlands", "PGA <44 weeks Woodlands NICU", "late preterm Woodlands", "term neonate Woodlands NICU", "corrected gestational age Woodlands"]
+        - problem_diagnosis: "Infants weighing <2.5 kg" 
+          disposition_detail: "Decision by Clinical Team. WL NICU Accept. Community Exclusion (General Sites, X+ [cite: 12])."
+          woodlands_specific_action: "Must discuss with Woodlands NICU Attending[cite: 9, 28, 29]."
+          search_keywords: ["Woodlands NICU low birth weight", "infant <2.5kg Woodlands", "LBW Woodlands NICU", "small baby Woodlands NICU", "VLBW Woodlands NICU consideration", "infant <2500g", "premature infant", "small for gestational age", "SGA", "weight less than 2.5 kilograms"] # Combined with general keywords for completeness
+        - problem_diagnosis: "Neonates requiring subspecialty consultation at birth (not available at general community site but potentially manageable at WL NICU after discussion)"
+          disposition_detail: "WL NICU Accept. Community Exclusion (General Sites)."
+          woodlands_specific_action: "Must discuss with Woodlands NICU Attending[cite: 28, 29]."
+          search_keywords: ["Woodlands NICU subspecialty consult", "newborn specialist Woodlands", "neonate complex condition Woodlands", "birth defect Woodlands NICU"]
+        - problem_diagnosis: "Prematurity (requiring NICU level care potentially available at WL NICU)"
+          disposition_detail: "WL NICU Accept. Community Exclusion (General Sites)."
+          woodlands_specific_action: "Must discuss with Woodlands NICU Attending[cite: 28, 29]."
+          search_keywords: ["Woodlands NICU premature infant", "preemie Woodlands NICU", "respiratory distress syndrome RDS Woodlands", "NEC Woodlands NICU monitoring", "IVH Woodlands NICU monitoring", "BPD Woodlands NICU care"]
+        - problem_diagnosis: "Ventilator/Bipap/CPAP required (Neonatal context for Woodlands NICU)" 
+          disposition_detail: "WL NICU may accept after discussion with NICU Attending[cite: 9, 29]." 
+          search_keywords: ["neonatal ventilation Woodlands", "newborn BiPAP Woodlands", "infant CPAP Woodlands NICU", "neonatal respiratory failure Woodlands", "mechanical ventilation neonate Woodlands"]
+
+  obstetric_maternal_care_exclusions:
+    category_title: "Obstetric/Maternal Care Exclusions"
+    criteria:
+      - condition: "Primary obstetric or maternal care (e.g., labor and delivery, management of pregnancy complications)"
+        disposition: "Woodlands Campus Exclusion (Refer to Pavilion for Women or appropriate OB facility)"
+        search_keywords: ["pregnancy Woodlands", "obstetrics Woodlands", "maternal care Woodlands", "labor Woodlands", "delivery Woodlands", "no OB services Woodlands"]
+      - condition: "Patient requiring admission primarily for obstetric reasons"
+        disposition: "Woodlands Campus Exclusion (Refer to Pavilion for Women)"
+        search_keywords: ["pregnant patient admission Woodlands", "maternal health admission Woodlands", "OB admission Woodlands"]
+      - condition: "Maternal patient with Eclamptic Seizure/Eclampsia or other acute neurological event during pregnancy/postpartum"
+        disposition: "Woodlands Campus Exclusion (Refer to Pavilion for Women or appropriate OB/Neuro facility)"
+        search_keywords: ["eclampsia the_woodlands_campus", "eclamptic seizure the_woodlands_campus", "maternal seizure the_woodlands_campus", "pregnancy seizure the_woodlands_campus", "postpartum seizure the_woodlands_campus", "neurology obstetric the_woodlands_campus"]
+
+  cardiology_sop_appendix_a: # [cite: 34, 35, 38]
+    category_title: "Cardiology Scope of Practice (SOP) - Appendix A (Applicable to The Woodlands Campus)"
+    overarching_note: "***ALL patients should be discussed with the cardiologist-on-call*** [cite: 34]"
+    # Structure mirrors West Campus.
+    tiers:
+      - tier_level: "TIER III: Admit to Community Site (The Woodlands Campus)"
+        conditions:
+          - category: "Congenital Heart Disease"
+            items:
+              - "Status post cardiac repair (>6wks), unless not approved by CT surgery [cite: 35]"
+              - "Unrepaired and stable biventricular heart disease (except in neonatal period) [cite: 35]"
+          - category: "Heart Failure Transplant"
+            items:
+              - "Status post-transplant (with preserved systolic function) admitted for non-cardiac etiology, unless not approved by the HF/TX team [cite: 35]"
+          - category: "Acquired Heart Disease"
+            items:
+              - "Kawasaki with no evidence of toxic shock syndrome [cite: 38]"
+              - "Stable endocarditis in non-cardiac patients (line-associated, etc.) once treatment plan has been initiated and established. Cardiology responsible for notifying the appropriate service[cite: 38]."
+          - category: "Arrhythmia"
+            items:
+              - "BRUE patients with non-cardiac history (Holter to be placed) [cite: 38]"
+          - category: "Procedures"
+            items:
+              - "Clear with CV anesthesia [cite: 38]"
+
+      - tier_level: "TIER II: All attempts should be made to admit to Community Site (The Woodlands Campus)"
+        conditions:
+          - category: "Congenital Heart Disease"
+            items:
+              - "Status post Glenn/Fontan palliation, admitted for non-cardiac etiology [cite: 35]"
+              - "Cardiac diagnosis with palliative/comfort care [cite: 35]"
+          - category: "Heart Failure Transplant"
+            items:
+              - "Cardiomyopathy patients with compensated heart failure (EF>45%) and not requiring IV inotropic support, unless not approved by the HF/TX team [cite: 35]"
+          - category: "Acquired Heart Disease"
+            items:
+              - "Stable Kawasaki with mildly dilated coronaries, unless not cleared by the Kawasaki team [cite: 38]"
+              - "Stable previous diagnosis of myocarditis/myopericarditis, unless not cleared by the HF/TX team [cite: 38]"
+              - "Endocarditis in patients with known congenital heart disease and to complete treatment (after initiation of therapy and work up in the MC), unless not approved by primary cardiologist and/or CT surgery [cite: 38]"
+          - category: "Arrhythmia"
+            items:
+              - "New diagnosis or history of SVT responsive to medical therapy and/or vagal maneuvers, cardiology will contact the primary team (EP team), unless not cleared by EP team [cite: 38]"
+              - "History of pacemaker placement admitted for non-cardiac diagnosis, unless not cleared by EP team [cite: 38]"
+              - "Status post successful cardioversion for monitoring, unless not cleared by the EP team [cite: 38]"
+          - category: "Procedures"
+            items:
+              - "Clear with CV anesthesia [cite: 38]"
+
+      - tier_level: "TIER I: Transfer to Main Campus Cardiology (Community Exclusion for The Woodlands Campus)"
+        conditions:
+          - category: "Congenital Heart Disease"
+            items:
+              - "PGE dependent lesions [cite: 35]"
+              - "Status post cardiac repair (<6wks) [cite: 35]"
+              - "Single ventricle (during inter-stage) awaiting Glenn [cite: 35]"
+              - "Congenital heart disease in the neonatal period, regardless of severity [cite: 35]"
+              - "Unstable congenital and acquired heart disease [cite: 35]"
+          - category: "Heart Failure Transplant"
+            items:
+              - "Decompensated heart failure [cite: 35]"
+              - "Patients listed for heart transplant [cite: 35]"
+              - "Mechanical assist device [cite: 35]"
+              - "Any patients not cleared by the HF/TX team[cite: 35]."
+          - category: "Acquired Heart Disease"
+            items:
+              - "Kawasaki with evidence of toxic shock syndrome or moderate/severe coronary artery dilation [cite: 38]"
+              - "Evidence of myocardial ischemia (i.e. elevated ST segments on ECG) [cite: 38]"
+              - "Endocarditis in patients with multi-specialists and discussed *cardiology as the primary provider-will contact the primary team i.e. heart failure team; CV surgery team[cite: 38]." # Sic from source
+              - "Endocarditis in patients not approved by CT surgery [cite: 38]"
+              - "New myocarditis/myopericarditis [cite: 38]"
+          - category: "Arrhythmia"
+            items:
+              - "SVT/arrhythmia requiring escalation of care, which includes need for drips (inotropic, chronotropic, antiarrhythmic) [cite: 38]"
+              - "Complete heart block [cite: 38]"
+              - "Need for telemetry, pacing, cardioversion (multiple times) [cite: 38]"
+          - category: "Procedures"
+            items:
+              - "Need for procedures requiring CV anesthesia [cite: 38]"
+
+# --- Texas Children's Hospital North Austin Campus ---
+TCH_NORTH_AUSTIN:
+  campus_name: "Texas Children's Hospital North Austin Campus"
+  introduction: "The following criteria are specific to or particularly relevant for the North Austin Campus."
+  source_document_reference: "User-provided list (May 2025)"
+
+  administrative_review_medical_control:
+    category_title: "Administrative Review by Medical Control"
+    criteria:
+      - condition: "Futile diagnosis or condition"
+        disposition: "Administrative Exclusion"
+        search_keywords: ["futility", "terminal condition no intervention", "comfort care only consideration"]
+      - condition: "Greater than 21 years of age, unless current TCH patient"
+        disposition: "Administrative Exclusion (Refer to Adult Facility)"
+        search_keywords: ["adult patient", "age >21", "transition to adult care"]
+      - condition: "No change in level of care or services provided"
+        disposition: "Administrative Exclusion (Lateral Transfer - No Escalation)"
+        search_keywords: ["lateral transfer", "no escalation of care", "same services"]
+
+  nicu_exclusions_system_wide: # As provided, marked as system-wide but listed under Austin
+    category_title: "NICU Exclusions (System-Wide)"
+    criteria:
+      - condition: "Nasal discharge (clear or purulent) or cough"
+        disposition: "NICU Exclusion (Viral Contact/Symptoms)"
+        search_keywords: ["neonate runny nose", "newborn cough", "infant URI symptoms NICU"]
+      - condition: "Neonate with respiratory distress or apnea with contacts with a viral illness (cough, cold, runny nose, fever)"
+        disposition: "NICU Exclusion (Viral Contact/Symptoms with Distress)"
+        search_keywords: ["neonate sick contact resp distress", "newborn apnea viral exposure", "infant respiratory illness contact"]
+      - condition: "Neonate with severe hypoxemia and lactic acidosis require on-call cardiologist approval prior to accepting"
+        disposition: "NICU Exclusion (Cardiology Approval Required for Severe Hypoxemia/Acidosis)"
+        search_keywords: ["neonate critical hypoxemia", "newborn lactic acidosis severe", "infant cardiologist consult hypoxia"]
+
+  austin_campus_specific_exclusions:
+    category_title: "Austin Campus Specific Exclusion Criteria"
+    criteria:
+      - condition: "Acute Pulmonary Arterial Hypertension Crisis"
+        disposition: "Austin Campus Exclusion (Transfer to Main Campus)"
+        search_keywords: ["PAH crisis", "acute pulmonary hypertension decompensation", "severe PH episode"]
+      - condition: "Burn patients >10% or perineal burns, airway burns"
+        disposition: "Austin Campus Exclusion (Refer to Burn Center)"
+        search_keywords: ["major burn Austin", "extensive burn Austin", "burn >10% BSA Austin", "perineal burn Austin", "airway burn Austin"]
+      - condition: "Cardiac Surgery patients – requires on-call cardiologist approval prior to accepting"
+        disposition: "Austin Campus Exclusion (Cardiology Approval Required Post-Op)"
+        search_keywords: ["post-op cardiac surgery Austin", "cardiac surgery transfer Austin", "cardiologist approval cardiac surgery"]
+      - condition: "Cystic Fibrosis – acute/chronic complications of CF"
+        disposition: "Austin Campus Exclusion (Transfer to Main Campus CF Center)"
+        search_keywords: ["CF exacerbation Austin", "cystic fibrosis complications Austin", "advanced CF care Austin"]
+      - condition: "Open Globes"
+        disposition: "Austin Campus Exclusion (Ophthalmology Emergency - Transfer)"
+        search_keywords: ["open globe injury Austin", "eye rupture Austin", "penetrating eye trauma Austin"]
+      - condition: "Maternal patient requiring ICU Level Care"
+        disposition: "Austin Campus Exclusion (Refer to Adult ICU/OB High Risk)"
+        search_keywords: ["maternal ICU Austin", "pregnant ICU care Austin", "critical obstetric patient Austin"]
+      - condition: "Maternal patient with Placenta Accreta"
+        disposition: "Austin Campus Exclusion (OB High Risk - Refer)"
+        search_keywords: ["placenta accreta Austin", "high risk delivery accreta Austin"]
+      - condition: "Maternal patient with HELLP Syndrome"
+        disposition: "Austin Campus Exclusion (OB High Risk - Refer)"
+        search_keywords: ["HELLP syndrome Austin", "severe preeclampsia HELLP Austin"]
+      - condition: "Maternal patient with Eclamptic Seizure/Eclampsia"
+        disposition: "Austin Campus Exclusion (OB High Risk - Refer)"
+        search_keywords: ["eclampsia Austin", "eclamptic seizure Austin", "maternal seizure Austin"]
+      - condition: "Maternal patient requiring Mass Transfusion"
+        disposition: "Austin Campus Exclusion (OB High Risk/MTP - Refer)"
+        search_keywords: ["massive transfusion protocol maternal Austin", "obstetric hemorrhage MTP Austin"]
+      - condition: "Maternal patient Post CPR/ROSC"
+        disposition: "Austin Campus Exclusion (Post-Cardiac Arrest Care - Refer)"
+        search_keywords: ["maternal cardiac arrest Austin", "ROSC maternal Austin"]
+      - condition: "Maternal patient with Sepsis"
+        disposition: "Austin Campus Exclusion (Sepsis Care - Refer)"
+        search_keywords: ["maternal sepsis Austin", "puerperal sepsis Austin"]
+      - condition: "Maternal patient requiring Telemetry Monitoring"
+        disposition: "Austin Campus Exclusion (Cardiac Monitoring - Refer)"
+        search_keywords: ["maternal telemetry Austin", "cardiac monitoring pregnant Austin"]
+      - condition: "Psychiatric (acute, requiring specialized inpatient psych facility)"
+        disposition: "Austin Campus Exclusion (Refer to Psychiatric Facility)"
+        search_keywords: ["acute psychiatric crisis Austin", "inpatient psych needed Austin", "behavioral health emergency Austin"]
+      - condition: "Transplant – rejection or recent surgery (including BMT)"
+        disposition: "Austin Campus Exclusion (Transfer to Transplant Center - Main Campus)"
+        search_keywords: ["transplant rejection Austin", "post-transplant complication Austin", "BMT recent Austin"]
+      - condition: "Sexual Assault requiring SANE Exam – only coverage Monday 1000-Friday 2300"
+        disposition: "Austin Campus Exclusion (Outside SANE Coverage Hours - Refer)"
+        search_keywords: ["SANE exam Austin off hours", "sexual assault exam weekend Austin", "forensic exam unavailable Austin"]
+
+# Symbol Explanations from Source Document
+symbol_notes:
+  - "X+: Community Exclusion. (For 'Infants weighing <2.5 kg'[cite: 12], and 'Hyperbilirubinemia - TSB within 2 below exchange lvl' [cite: 15])."
+  - "X†: Community Exclusion for 'Persistent hypoglycemia in pt <6 mos'[cite: 12]."
+  - "X**: Decision by Clinical Team for 'Psychiatric Diagnoses' and 'Aggressive Behavioral Health Patients Requiring Multiple Medication Interventions'[cite: 22]. (Note: Weekend/holiday acute psychosis -> Main Campus [cite: 22])."

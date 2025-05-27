@@ -1,4 +1,3 @@
-
 unit_id,unit_name,campus_id,unit_type,total_beds,available_beds,occupied_beds,unavailable_beds,occupancy_rate,expected_admissions,expected_transfers_in,expected_transfers_out,expected_discharges
 MC_ACUTE,Main Campus Acute Care,TCH_MAIN_TMC,general,281,22,244,1,87,20,8,1,31
 AB_7_SOUTH,AB 7 South,TCH_MAIN_TMC,general,8,6,1,0,12,1,0,0,0

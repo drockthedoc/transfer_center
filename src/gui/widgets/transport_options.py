@@ -1,81 +1,132 @@
-"""
-Transport Options Widget for the Transfer Center GUI.
-
-This module contains the transport options input widget used in the main application window.
-"""
-
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import (
-    QComboBox,
-    QFormLayout,
-    QGroupBox,
-    QTimeEdit,
-    QVBoxLayout,
-    QWidget,
+    QWidget, QVBoxLayout, QFormLayout, QLabel, QGroupBox, QTextBrowser, QFrame
 )
+from PyQt5.QtCore import Qt
+from typing import Optional, Dict, Any
 
+# Actual model import
+from ...core.models import Recommendation # Assuming Recommendation holds all necessary transport fields
 
 class TransportOptionsWidget(QWidget):
-    """Widget for inputting transport options."""
-
-    options_changed = pyqtSignal()  # Signal when options change
-
-    def __init__(self, parent=None):
-        """Initialize the transport options widget."""
+    def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
+        self.setWindowTitle("Transport Information")
         self._init_ui()
 
     def _init_ui(self):
-        """Initialize the user interface."""
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(5, 5, 5, 5)
-        layout.setSpacing(3)
+        main_layout = QVBoxLayout(self)
+        
+        transport_group = QGroupBox("Selected Transport & Conditions")
+        form_layout = QFormLayout(transport_group)
+        form_layout.setRowWrapPolicy(QFormLayout.WrapAllRows)
 
-        # Transport Options Group
-        transport_group = QGroupBox("Transport Options")
-        transport_layout = QFormLayout()
-        transport_layout.setContentsMargins(5, 5, 5, 5)
-        transport_layout.setVerticalSpacing(2)
-        transport_layout.setHorizontalSpacing(5)
+        self.chosen_mode_label = QLabel("N/A")
+        self.travel_time_label = QLabel("N/A")
+        
+        self.details_browser = QTextBrowser()
+        self.details_browser.setReadOnly(True)
+        self.details_browser.setOpenExternalLinks(False) # No external links expected here
+        self.details_browser.setFrameStyle(QFrame.NoFrame)
+        self.details_browser.setFixedHeight(100)
 
-        # Transport type (EMS, Kangaroo Crew, etc.)
-        self.transport_type_input = QComboBox()
-        self.transport_type_input.addItems(["Local EMS", "Kangaroo Crew", "Family"])
-        self.transport_type_input.currentIndexChanged.connect(self._update_transport_ui)
-        self.transport_type_input.currentIndexChanged.connect(self.options_changed)
+        self.weather_browser = QTextBrowser()
+        self.weather_browser.setReadOnly(True)
+        self.weather_browser.setFrameStyle(QFrame.NoFrame)
+        self.weather_browser.setFixedHeight(80)
 
-        # Transport mode (ground, helicopter, fixed-wing)
-        self.transport_mode_input = QComboBox()
-        self.transport_mode_input.addItems(["Ground", "Helicopter", "Fixed-Wing"])
-        self.transport_mode_input.currentIndexChanged.connect(self.options_changed)
+        self.traffic_browser = QTextBrowser()
+        self.traffic_browser.setReadOnly(True)
+        self.traffic_browser.setFrameStyle(QFrame.NoFrame)
+        self.traffic_browser.setFixedHeight(80)
 
-        # Estimated departure time
-        self.departure_time_input = QTimeEdit()
-        self.departure_time_input.setDisplayFormat("hh:mm AP")
-        self.departure_time_input.timeChanged.connect(self.options_changed)
+        form_layout.addRow("<b>Chosen Transport Mode:</b>", self.chosen_mode_label)
+        form_layout.addRow("<b>Estimated Travel Time:</b>", self.travel_time_label)
+        form_layout.addRow(QLabel("<b>Other Transport Details:</b>"))
+        form_layout.addRow(self.details_browser)
+        form_layout.addRow(QLabel("<b>Weather Conditions:</b>"))
+        form_layout.addRow(self.weather_browser)
+        form_layout.addRow(QLabel("<b>Traffic Conditions:</b>"))
+        form_layout.addRow(self.traffic_browser)
+        
+        transport_group.setLayout(form_layout)
+        main_layout.addWidget(transport_group)
+        self.setLayout(main_layout)
 
-        transport_layout.addRow("Transport Type:", self.transport_type_input)
-        transport_layout.addRow("Transport Mode:", self.transport_mode_input)
-        transport_layout.addRow("Departure Time:", self.departure_time_input)
+    def _format_dict_to_html_list(self, data: Dict[str, Any]) -> str:
+        if not data:
+            return "<p>N/A</p>"
+        html = "<ul>"
+        for key, value in data.items():
+            html += f"<li><b>{key.replace('_', ' ').title()}:</b> {value}</li>"
+        html += "</ul>"
+        return html
 
-        transport_group.setLayout(transport_layout)
-        layout.addWidget(transport_group)
+    def update_transport_info(self, recommendation: Optional[Recommendation]):
+        if not recommendation:
+            self.clear_display()
+            return
 
-    def _update_transport_ui(self, index):
-        """Update transport UI elements based on selected transport type."""
-        # Enable/disable transport mode selection based on transport type
-        is_kc = self.transport_type_input.currentText() == "Kangaroo Crew"
-        is_family = self.transport_type_input.currentText() == "Family"
+        self.chosen_mode_label.setText(getattr(recommendation, 'chosen_transport_mode', 'N/A') or 'N/A')
+        
+        travel_time_min = getattr(recommendation, 'final_travel_time_minutes', None)
+        if travel_time_min is not None:
+            self.travel_time_label.setText(f"{travel_time_min:.0f} minutes")
+        else:
+            # Fallback to transport_details if final_travel_time_minutes is not set
+            transport_dict = getattr(recommendation, 'transport_details', {})
+            est_time = transport_dict.get('estimated_time_minutes')
+            self.travel_time_label.setText(f"{est_time:.0f} minutes (est.)" if est_time is not None else "N/A")
 
-        self.transport_mode_input.setEnabled(is_kc)
+        transport_details_dict = getattr(recommendation, 'transport_details', {})
+        self.details_browser.setHtml(self._format_dict_to_html_list(transport_details_dict))
+        
+        conditions_dict = getattr(recommendation, 'conditions', {})
+        weather_dict = conditions_dict.get('weather', {})
+        self.weather_browser.setHtml(self._format_dict_to_html_list(weather_dict))
+        
+        traffic_dict = conditions_dict.get('traffic', {})
+        self.traffic_browser.setHtml(self._format_dict_to_html_list(traffic_dict))
 
-        if is_family:
-            self.transport_mode_input.setCurrentIndex(0)  # Set to Ground
+    def clear_display(self):
+        self.chosen_mode_label.setText("N/A")
+        self.travel_time_label.setText("N/A")
+        self.details_browser.setHtml("<p>N/A</p>")
+        self.weather_browser.setHtml("<p>N/A</p>")
+        self.traffic_browser.setHtml("<p>N/A</p>")
 
-    def get_transport_data(self):
-        """Get the transport options data from the widget."""
-        return {
-            "transport_type": self.transport_type_input.currentText(),
-            "transport_mode": self.transport_mode_input.currentText(),
-            "departure_time": self.departure_time_input.time().toString("hh:mm"),
-        }
+if __name__ == '__main__':
+    import sys
+    from PyQt5.QtWidgets import QApplication
+
+    # Dummy Recommendation for testing
+    class DummyRecommendation:
+        def __init__(self):
+            self.chosen_transport_mode = "Ground Ambulance"
+            self.final_travel_time_minutes = 45.0
+            self.transport_details = {
+                "vehicle_id": "ALS Unit 7",
+                "crew_type": "Paramedic, EMT",
+                "estimated_cost_usd": 350,
+                "special_notes": "Patient requires cardiac monitoring during transport."
+            }
+            self.conditions = {
+                "weather": {"summary": "Partly Cloudy", "temperature_c": 18, "wind_mph": 12, "precipitation_chance": "10%"},
+                "traffic": {"level": "Moderate", "description": "Minor congestion on I-10 Eastbound"}
+            }
+
+    app = QApplication(sys.argv)
+    TransportOptionsWidget.Recommendation = DummyRecommendation # Monkey patch
+    
+    widget = TransportOptionsWidget()
+    
+    # Test with data
+    rec = DummyRecommendation()
+    widget.update_transport_info(rec)
+    widget.show()
+    widget.resize(400, 350)
+
+    # Test clearing
+    # widget.clear_display()
+    # widget.show()
+
+    sys.exit(app.exec_())

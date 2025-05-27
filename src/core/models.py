@@ -197,8 +197,8 @@ class HospitalCampus(BaseModel):
         default_factory=list,
         description="List of exclusion criteria for this campus.",
     )
-    bed_census: BedCensus = Field(
-        ..., description="Current bed census data for the campus."
+    bed_census: Optional[BedCensus] = Field(
+        default=None, description="Current bed census data for the campus."
     )
     helipads: List[HelipadData] = Field(
         default_factory=list, description="List of helipads available at the campus."

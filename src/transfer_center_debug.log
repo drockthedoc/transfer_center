@@ -1,0 +1,1698 @@
+2025-05-25 18:24:56,595 - __main__ - INFO - text_interface.<module>:134 - Application started. Logging to console (INFO and above) and to file (DEBUG and above).
+2025-05-25 18:24:56,595 - __main__ - DEBUG - text_interface.<module>:135 - Full log file path: /Users/derek/CascadeProjects/transfer_center/src/transfer_center_debug.log
+2025-05-25 18:24:56,681 - __main__ - INFO - text_interface.<module>:153 - Tiktoken encoding 'cl100k_base' loaded successfully for token counting.
+2025-05-25 18:24:56,722 - __main__ - INFO - text_interface.main:506 - OpenAI client initialized. Using model: deepseek-r1-medical-mini via http://localhost:1234/v1
+2025-05-25 18:25:08,742 - __main__ - DEBUG - text_interface.load_census_data:318 - Attempting to load census data from: /Users/derek/CascadeProjects/transfer_center/data/current_census.csv
+2025-05-25 18:25:08,744 - __main__ - DEBUG - text_interface.load_census_data:322 - File /Users/derek/CascadeProjects/transfer_center/data/current_census.csv opened successfully.
+2025-05-25 18:25:08,746 - __main__ - DEBUG - text_interface.load_census_data:334 - CSV headers identified: ['unit_id', 'unit_name', 'campus_id', 'unit_type', 'total_beds', 'available_beds', 'occupied_beds', 'unavailable_beds', 'occupancy_rate', 'expected_admissions', 'expected_transfers_in', 'expected_transfers_out', 'expected_discharges']
+2025-05-25 18:25:08,746 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 1: {'unit_id': 'MC_ACUTE', 'unit_name': 'Main Campus Acute Care', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '281', 'available_beds': '22', 'occupied_beds': '244', 'unavailable_beds': '1', 'occupancy_rate': '87', 'expected_admissions': '20', 'expected_transfers_in': '8', 'expected_transfers_out': '1', 'expected_discharges': '31'}
+2025-05-25 18:25:08,747 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 1: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,747 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 2: {'unit_id': 'AB_7_SOUTH', 'unit_name': 'AB 7 South', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '8', 'available_beds': '6', 'occupied_beds': '1', 'unavailable_beds': '0', 'occupancy_rate': '12', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,747 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 2: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,747 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 3: {'unit_id': 'LT_CARDIOLOGY_22', 'unit_name': 'LT Cardiology Inpatient 22', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '15', 'available_beds': '0', 'occupied_beds': '14', 'unavailable_beds': '0', 'occupancy_rate': '93', 'expected_admissions': '0', 'expected_transfers_in': '1', 'expected_transfers_out': '0', 'expected_discharges': '2'}
+2025-05-25 18:25:08,747 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 3: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,747 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 4: {'unit_id': 'LT_CARDIOLOGY_23', 'unit_name': 'LT Cardiology Inpatient 23', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '28', 'available_beds': '0', 'occupied_beds': '26', 'unavailable_beds': '0', 'occupancy_rate': '92', 'expected_admissions': '0', 'expected_transfers_in': '2', 'expected_transfers_out': '0', 'expected_discharges': '3'}
+2025-05-25 18:25:08,748 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 4: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,748 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 5: {'unit_id': 'WT_GENERAL_MEDICINE', 'unit_name': 'WT General Medicine', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '22', 'available_beds': '0', 'occupied_beds': '22', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '2', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '3'}
+2025-05-25 18:25:08,748 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 5: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,748 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 6: {'unit_id': 'WT_HEMATOLOGY_ONCOLOGY', 'unit_name': 'WT Hematology/Oncology', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '32', 'available_beds': '5', 'occupied_beds': '26', 'unavailable_beds': '0', 'occupancy_rate': '81', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '2'}
+2025-05-25 18:25:08,748 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 6: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,748 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 7: {'unit_id': 'WT_HEMONC_7', 'unit_name': 'WT Hematology/Oncology 7', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '22', 'available_beds': '1', 'occupied_beds': '19', 'unavailable_beds': '0', 'occupancy_rate': '86', 'expected_admissions': '1', 'expected_transfers_in': '1', 'expected_transfers_out': '0', 'expected_discharges': '3'}
+2025-05-25 18:25:08,749 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 7: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,749 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 8: {'unit_id': 'WT_NEURO_SCIENCE_SURGERY', 'unit_name': 'WT Neuroscience/Surgery', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '35', 'available_beds': '2', 'occupied_beds': '29', 'unavailable_beds': '0', 'occupancy_rate': '82', 'expected_admissions': '10', 'expected_transfers_in': '0', 'expected_transfers_out': '1', 'expected_discharges': '3'}
+2025-05-25 18:25:08,749 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 8: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,749 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 9: {'unit_id': 'WT_PHMU', 'unit_name': 'WT PHMU', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '36', 'available_beds': '0', 'occupied_beds': '35', 'unavailable_beds': '0', 'occupancy_rate': '97', 'expected_admissions': '0', 'expected_transfers_in': '2', 'expected_transfers_out': '0', 'expected_discharges': '6'}
+2025-05-25 18:25:08,749 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 9: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,749 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 10: {'unit_id': 'WT_PUL_ADOL_ENDO', 'unit_name': 'WT Pulmonary/Adolescent/Endocrinology', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '36', 'available_beds': '2', 'occupied_beds': '34', 'unavailable_beds': '0', 'occupancy_rate': '94', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '3'}
+2025-05-25 18:25:08,749 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 10: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,749 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 11: {'unit_id': 'WT_REHABILITATION', 'unit_name': 'WT Rehabilitation', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '16', 'available_beds': '1', 'occupied_beds': '15', 'unavailable_beds': '0', 'occupancy_rate': '93', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,749 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 11: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,750 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 12: {'unit_id': 'WT_SURGERY_CARE', 'unit_name': 'WT Surgery Care', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'general', 'total_beds': '31', 'available_beds': '5', 'occupied_beds': '23', 'unavailable_beds': '1', 'occupancy_rate': '77', 'expected_admissions': '5', 'expected_transfers_in': '2', 'expected_transfers_out': '0', 'expected_discharges': '6'}
+2025-05-25 18:25:08,750 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 12: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,750 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 13: {'unit_id': 'WC_ACUTE', 'unit_name': 'West Campus Acute Care', 'campus_id': 'TCH_WEST_KATY', 'unit_type': 'general', 'total_beds': '42', 'available_beds': '2', 'occupied_beds': '36', 'unavailable_beds': '0', 'occupancy_rate': '85', 'expected_admissions': '5', 'expected_transfers_in': '0', 'expected_transfers_out': '1', 'expected_discharges': '9'}
+2025-05-25 18:25:08,750 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 13: Found campus_id 'TCH_WEST_KATY'.
+2025-05-25 18:25:08,750 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 14: {'unit_id': 'WC_3_WEST', 'unit_name': 'West Campus 3 West', 'campus_id': 'TCH_WEST_KATY', 'unit_type': 'general', 'total_beds': '24', 'available_beds': '1', 'occupied_beds': '21', 'unavailable_beds': '0', 'occupancy_rate': '87', 'expected_admissions': '3', 'expected_transfers_in': '0', 'expected_transfers_out': '1', 'expected_discharges': '7'}
+2025-05-25 18:25:08,750 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 14: Found campus_id 'TCH_WEST_KATY'.
+2025-05-25 18:25:08,750 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 15: {'unit_id': 'WC_4_WEST', 'unit_name': 'West Campus 4 West', 'campus_id': 'TCH_WEST_KATY', 'unit_type': 'general', 'total_beds': '0', 'available_beds': '0', 'occupied_beds': '0', 'unavailable_beds': '0', 'occupancy_rate': '0', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,750 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 15: Found campus_id 'TCH_WEST_KATY'.
+2025-05-25 18:25:08,751 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 16: {'unit_id': 'WC_5_WEST', 'unit_name': 'West Campus 5 West', 'campus_id': 'TCH_WEST_KATY', 'unit_type': 'general', 'total_beds': '18', 'available_beds': '1', 'occupied_beds': '15', 'unavailable_beds': '0', 'occupancy_rate': '83', 'expected_admissions': '2', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '2'}
+2025-05-25 18:25:08,751 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 16: Found campus_id 'TCH_WEST_KATY'.
+2025-05-25 18:25:08,751 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 17: {'unit_id': 'WL_ACUTE', 'unit_name': 'Woodlands Acute Care', 'campus_id': 'TCH_WOODLANDS', 'unit_type': 'general', 'total_beds': '43', 'available_beds': '6', 'occupied_beds': '37', 'unavailable_beds': '0', 'occupancy_rate': '86', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '2', 'expected_discharges': '9'}
+2025-05-25 18:25:08,751 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 17: Found campus_id 'TCH_WOODLANDS'.
+2025-05-25 18:25:08,751 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 18: {'unit_id': 'WL_3', 'unit_name': 'Woodlands 3', 'campus_id': 'TCH_WOODLANDS', 'unit_type': 'general', 'total_beds': '15', 'available_beds': '3', 'occupied_beds': '12', 'unavailable_beds': '0', 'occupancy_rate': '80', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '3'}
+2025-05-25 18:25:08,751 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 18: Found campus_id 'TCH_WOODLANDS'.
+2025-05-25 18:25:08,751 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 19: {'unit_id': 'WL_5', 'unit_name': 'Woodlands 5', 'campus_id': 'TCH_WOODLANDS', 'unit_type': 'general', 'total_beds': '28', 'available_beds': '3', 'occupied_beds': '25', 'unavailable_beds': '0', 'occupancy_rate': '89', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '2', 'expected_discharges': '6'}
+2025-05-25 18:25:08,751 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 19: Found campus_id 'TCH_WOODLANDS'.
+2025-05-25 18:25:08,752 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 20: {'unit_id': 'AN_ACUTE', 'unit_name': 'Austin Acute Care', 'campus_id': 'TCH_NORTH_AUSTIN', 'unit_type': 'general', 'total_beds': '17', 'available_beds': '3', 'occupied_beds': '14', 'unavailable_beds': '0', 'occupancy_rate': '82', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '2'}
+2025-05-25 18:25:08,752 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 20: Found campus_id 'TCH_NORTH_AUSTIN'.
+2025-05-25 18:25:08,752 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 21: {'unit_id': 'AN_WOMENS', 'unit_name': "Austin Women's Unit", 'campus_id': 'TCH_NORTH_AUSTIN', 'unit_type': 'general', 'total_beds': '8', 'available_beds': '1', 'occupied_beds': '7', 'unavailable_beds': '0', 'occupancy_rate': '87', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '4'}
+2025-05-25 18:25:08,752 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 21: Found campus_id 'TCH_NORTH_AUSTIN'.
+2025-05-25 18:25:08,752 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 22: {'unit_id': 'AN_LABOR_DELIVERY', 'unit_name': 'Austin Labor & Delivery Unit', 'campus_id': 'TCH_NORTH_AUSTIN', 'unit_type': 'general', 'total_beds': '7', 'available_beds': '1', 'occupied_beds': '6', 'unavailable_beds': '0', 'occupancy_rate': '85', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '3'}
+2025-05-25 18:25:08,752 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 22: Found campus_id 'TCH_NORTH_AUSTIN'.
+2025-05-25 18:25:08,752 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 23: {'unit_id': 'AN_MBU', 'unit_name': 'Austin Mother/Baby Unit', 'campus_id': 'TCH_NORTH_AUSTIN', 'unit_type': 'general', 'total_beds': '1', 'available_beds': '0', 'occupied_beds': '1', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '1'}
+2025-05-25 18:25:08,752 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 23: Found campus_id 'TCH_NORTH_AUSTIN'.
+2025-05-25 18:25:08,752 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 24: {'unit_id': 'AN_LDO_4', 'unit_name': 'Austin LDO 4', 'campus_id': 'TCH_NORTH_AUSTIN', 'unit_type': 'general', 'total_beds': '0', 'available_beds': '0', 'occupied_beds': '0', 'unavailable_beds': '0', 'occupancy_rate': '0', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,752 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 24: Found campus_id 'TCH_NORTH_AUSTIN'.
+2025-05-25 18:25:08,753 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 25: {'unit_id': 'AN_NEWBORN_NURSERY', 'unit_name': 'Austin Newborn Nursery', 'campus_id': 'TCH_NORTH_AUSTIN', 'unit_type': 'general', 'total_beds': '0', 'available_beds': '0', 'occupied_beds': '0', 'unavailable_beds': '0', 'occupancy_rate': '0', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,753 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 25: Found campus_id 'TCH_NORTH_AUSTIN'.
+2025-05-25 18:25:08,753 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 26: {'unit_id': 'AN_WOMENS_ASSESS', 'unit_name': "Austin Women's Assess", 'campus_id': 'TCH_NORTH_AUSTIN', 'unit_type': 'general', 'total_beds': '0', 'available_beds': '-1', 'occupied_beds': '1', 'unavailable_beds': '0', 'occupancy_rate': '0', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '1'}
+2025-05-25 18:25:08,753 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 26: Found campus_id 'TCH_NORTH_AUSTIN'.
+2025-05-25 18:25:08,753 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 27: {'unit_id': 'AN_PICU', 'unit_name': 'Austin PICU', 'campus_id': 'TCH_NORTH_AUSTIN', 'unit_type': 'icu', 'total_beds': '7', 'available_beds': '0', 'occupied_beds': '6', 'unavailable_beds': '0', 'occupancy_rate': '85', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '1', 'expected_discharges': '1'}
+2025-05-25 18:25:08,753 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 27: Found campus_id 'TCH_NORTH_AUSTIN'.
+2025-05-25 18:25:08,753 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 28: {'unit_id': 'AN_NICU', 'unit_name': 'Austin NICU', 'campus_id': 'TCH_NORTH_AUSTIN', 'unit_type': 'nicu', 'total_beds': '11', 'available_beds': '0', 'occupied_beds': '11', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '1', 'expected_discharges': '1'}
+2025-05-25 18:25:08,753 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 28: Found campus_id 'TCH_NORTH_AUSTIN'.
+2025-05-25 18:25:08,753 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 29: {'unit_id': 'LT_ACHD_24', 'unit_name': 'LT Adult Congenital Heart Disease 24', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'icu', 'total_beds': '10', 'available_beds': '2', 'occupied_beds': '7', 'unavailable_beds': '0', 'occupancy_rate': '70', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '1'}
+2025-05-25 18:25:08,754 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 29: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,754 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 30: {'unit_id': 'LT_CVICU_16', 'unit_name': 'LT Cardiovascular ICU 16', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'icu', 'total_beds': '12', 'available_beds': '0', 'occupied_beds': '12', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '2', 'expected_discharges': '0'}
+2025-05-25 18:25:08,754 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 30: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,754 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 31: {'unit_id': 'LT_CVICU_17', 'unit_name': 'LT Cardiovascular ICU 17', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'icu', 'total_beds': '24', 'available_beds': '2', 'occupied_beds': '22', 'unavailable_beds': '0', 'occupancy_rate': '91', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '2', 'expected_discharges': '0'}
+2025-05-25 18:25:08,754 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 31: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,754 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 32: {'unit_id': 'LT_CVICU_18', 'unit_name': 'LT Cardiovascular ICU 18', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'icu', 'total_beds': '10', 'available_beds': '0', 'occupied_beds': '10', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,754 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 32: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,754 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 33: {'unit_id': 'LT_PICU_10', 'unit_name': 'LT Pediatric ICU 10', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'icu', 'total_beds': '27', 'available_beds': '1', 'occupied_beds': '26', 'unavailable_beds': '0', 'occupancy_rate': '96', 'expected_admissions': '1', 'expected_transfers_in': '1', 'expected_transfers_out': '2', 'expected_discharges': '0'}
+2025-05-25 18:25:08,754 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 33: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,754 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 34: {'unit_id': 'LT_PICU_11', 'unit_name': 'LT Pediatric ICU 11', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'icu', 'total_beds': '10', 'available_beds': '0', 'occupied_beds': '10', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '1', 'expected_discharges': '0'}
+2025-05-25 18:25:08,755 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 34: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,755 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 35: {'unit_id': 'LT_PICU_12', 'unit_name': 'LT Pediatric ICU 12', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'icu', 'total_beds': '27', 'available_beds': '0', 'occupied_beds': '27', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '1', 'expected_transfers_in': '3', 'expected_transfers_out': '0', 'expected_discharges': '2'}
+2025-05-25 18:25:08,755 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 35: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,755 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 36: {'unit_id': 'LT_PICU_9', 'unit_name': 'LT Pediatric ICU 9', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'icu', 'total_beds': '27', 'available_beds': '0', 'occupied_beds': '26', 'unavailable_beds': '0', 'occupancy_rate': '96', 'expected_admissions': '4', 'expected_transfers_in': '0', 'expected_transfers_out': '4', 'expected_discharges': '0'}
+2025-05-25 18:25:08,755 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 36: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,755 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 37: {'unit_id': 'WT_BMT_UNIT', 'unit_name': 'WT Bone Marrow Transplant Unit', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'icu', 'total_beds': '12', 'available_beds': '0', 'occupied_beds': '12', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,755 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 37: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,755 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 38: {'unit_id': 'WT_CARDIOVASCULAR_ICU', 'unit_name': 'WT Cardiovascular ICU', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'icu', 'total_beds': '0', 'available_beds': '0', 'occupied_beds': '0', 'unavailable_beds': '0', 'occupancy_rate': '0', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,755 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 38: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 39: {'unit_id': 'WC_4_PICU', 'unit_name': 'West Campus PICU', 'campus_id': 'TCH_WEST_KATY', 'unit_type': 'icu', 'total_beds': '15', 'available_beds': '1', 'occupied_beds': '13', 'unavailable_beds': '0', 'occupancy_rate': '86', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '1'}
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 39: Found campus_id 'TCH_WEST_KATY'.
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 40: {'unit_id': 'WL_PICU', 'unit_name': 'Woodlands PICU', 'campus_id': 'TCH_WOODLANDS', 'unit_type': 'icu', 'total_beds': '12', 'available_beds': '0', 'occupied_beds': '12', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '1', 'expected_discharges': '0'}
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 40: Found campus_id 'TCH_WOODLANDS'.
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 41: {'unit_id': 'PW_PAVILION', 'unit_name': 'Pavilion for Women', 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'general', 'total_beds': '76', 'available_beds': '14', 'occupied_beds': '62', 'unavailable_beds': '0', 'occupancy_rate': '81', 'expected_admissions': '1', 'expected_transfers_in': '6', 'expected_transfers_out': '9', 'expected_discharges': '9'}
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 41: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 42: {'unit_id': 'PW_CCU_9', 'unit_name': 'PW Critical Care Unit 9', 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'icu', 'total_beds': '4', 'available_beds': '1', 'occupied_beds': '3', 'unavailable_beds': '0', 'occupancy_rate': '75', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '2', 'expected_discharges': '0'}
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 42: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 43: {'unit_id': 'PW_LABOR_DELIVERY', 'unit_name': 'PW Labor & Delivery Unit', 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'general', 'total_beds': '15', 'available_beds': '3', 'occupied_beds': '12', 'unavailable_beds': '0', 'occupancy_rate': '80', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '5', 'expected_discharges': '0'}
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 43: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,756 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 44: {'unit_id': 'PW_MBU_12', 'unit_name': 'PW Mother/Baby Unit 12', 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'general', 'total_beds': '18', 'available_beds': '6', 'occupied_beds': '12', 'unavailable_beds': '0', 'occupancy_rate': '66', 'expected_admissions': '0', 'expected_transfers_in': '2', 'expected_transfers_out': '0', 'expected_discharges': '3'}
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 44: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 45: {'unit_id': 'PW_MBU_14', 'unit_name': 'PW Mother/Baby Unit 14', 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'general', 'total_beds': '12', 'available_beds': '1', 'occupied_beds': '11', 'unavailable_beds': '0', 'occupancy_rate': '91', 'expected_admissions': '0', 'expected_transfers_in': '1', 'expected_transfers_out': '2', 'expected_discharges': '4'}
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 45: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 46: {'unit_id': 'PW_MBU_15', 'unit_name': 'PW Mother/Baby Unit 15', 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'general', 'total_beds': '6', 'available_beds': '1', 'occupied_beds': '5', 'unavailable_beds': '0', 'occupancy_rate': '83', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '1'}
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 46: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 47: {'unit_id': 'PW_MBU_15_NICU', 'unit_name': 'PW MBU 15 NICU Complex Care', 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'nicu', 'total_beds': '0', 'available_beds': '0', 'occupied_beds': '0', 'unavailable_beds': '0', 'occupancy_rate': '0', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 47: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 48: {'unit_id': 'PW_NICU_7', 'unit_name': 'PW NICU 7', 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'nicu', 'total_beds': '14', 'available_beds': '0', 'occupied_beds': '14', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 48: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 49: {'unit_id': 'PW_NICU_MAIN', 'unit_name': 'PW NICU Main', 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'nicu', 'total_beds': '54', 'available_beds': '15', 'occupied_beds': '39', 'unavailable_beds': '0', 'occupancy_rate': '72', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '3', 'expected_discharges': '0'}
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 49: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 50: {'unit_id': 'PW_PACU', 'unit_name': 'PW Post-Anesthesia Care Unit', 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'general', 'total_beds': '0', 'available_beds': '0', 'occupied_beds': '0', 'unavailable_beds': '0', 'occupancy_rate': '0', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,757 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 50: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,758 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 51: {'unit_id': 'PW_WOMENS_SPECIALTY', 'unit_name': "PW Women's Specialty", 'campus_id': 'TCH_PAVILION_WOMEN', 'unit_type': 'general', 'total_beds': '21', 'available_beds': '2', 'occupied_beds': '19', 'unavailable_beds': '0', 'occupancy_rate': '90', 'expected_admissions': '1', 'expected_transfers_in': '3', 'expected_transfers_out': '0', 'expected_discharges': '1'}
+2025-05-25 18:25:08,758 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 51: Found campus_id 'TCH_PAVILION_WOMEN'.
+2025-05-25 18:25:08,758 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 52: {'unit_id': 'WL_NICU', 'unit_name': 'Woodlands NICU', 'campus_id': 'TCH_WOODLANDS', 'unit_type': 'nicu', 'total_beds': '15', 'available_beds': '2', 'occupied_beds': '13', 'unavailable_beds': '0', 'occupancy_rate': '86', 'expected_admissions': '0', 'expected_transfers_in': '0', 'expected_transfers_out': '0', 'expected_discharges': '0'}
+2025-05-25 18:25:08,758 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 52: Found campus_id 'TCH_WOODLANDS'.
+2025-05-25 18:25:08,758 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 53: {'unit_id': 'WT_NEWBORN_LEVEL_2', 'unit_name': 'WT Newborn Center Level 2', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'nicu', 'total_beds': '33', 'available_beds': '0', 'occupied_beds': '33', 'unavailable_beds': '0', 'occupancy_rate': '100', 'expected_admissions': '0', 'expected_transfers_in': '4', 'expected_transfers_out': '0', 'expected_discharges': '5'}
+2025-05-25 18:25:08,758 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 53: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,758 - __main__ - DEBUG - text_interface.load_census_data:337 - Processing CSV row 54: {'unit_id': 'WT_NEWBORN_LEVEL_3', 'unit_name': 'WT Newborn Center Level 3', 'campus_id': 'TCH_MAIN_TMC', 'unit_type': 'nicu', 'total_beds': '68', 'available_beds': '1', 'occupied_beds': '66', 'unavailable_beds': '0', 'occupancy_rate': '97', 'expected_admissions': '1', 'expected_transfers_in': '0', 'expected_transfers_out': '1', 'expected_discharges': '1'}
+2025-05-25 18:25:08,758 - __main__ - DEBUG - text_interface.load_census_data:341 - Row 54: Found campus_id 'TCH_MAIN_TMC'.
+2025-05-25 18:25:08,758 - __main__ - DEBUG - text_interface.load_census_data:346 - Finished processing CSV. Total rows read: 54. Resulting dict keys: ['TCH_MAIN_TMC', 'TCH_WEST_KATY', 'TCH_WOODLANDS', 'TCH_NORTH_AUSTIN', 'TCH_PAVILION_WOMEN']
+2025-05-25 18:25:08,764 - __main__ - INFO - text_interface.load_census_data:350 - Successfully loaded census data for 5 campuses from /Users/derek/CascadeProjects/transfer_center/data/current_census.csv.
+2025-05-25 18:25:08,770 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:166 - Executing LLM chat completion for: Step 1 Extraction
+2025-05-25 18:25:08,774 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:173 - [Step 1 Extraction] System prompt token count: ~27
+2025-05-25 18:25:08,774 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:174 - [Step 1 Extraction] User prompt token count: ~652
+2025-05-25 18:25:08,775 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:175 - [Step 1 Extraction] Total estimated prompt tokens: ~679
+2025-05-25 18:25:08,776 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:184 - [Step 1 Extraction] System Prompt:
+You are an expert clinical information extractor. Respond ONLY with a valid JSON object. Do not include any text before or after the JSON.
+2025-05-25 18:25:08,776 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:185 - [Step 1 Extraction] User Prompt:
+# Clinical Vignette Analysis - Step 1: Extract Clinical Information
+
+You are an expert clinical information extractor. Respond ONLY with a valid JSON object. Do not include any text before or after the JSON.
+
+Context:
+The sending facility is Houston Methodist Hospital (location unknown).
+
+Vignette:
+8 yo male without significant PMH presents with a left humerus fracture. Fell off a rockwall onto side. Seen at UC and transferred to OSH. XR shows a proximal humerus fracture, mild displacement. NV intact, no penetrating skin trauma. No other injuries sustained. Splinted for comfort. Recommendations: Typically managed conservatively with coaptation splint and outpatient follow up. Please discuss with family that no other interventions may be necessary after our eval. Vitals: 103/63, HR 111, RR 22, SpO2 99%. Coming ground EMS from Houston Methodist Cypress.
+
+Task:
+From the vignette, extract all relevant clinical information explicitly mentioned. Present this as a structured JSON object.
+Ensure all string values are properly quoted. For boolean concepts, use true or false. For numerical values, use numbers.
+Within the 'patient_details' object, include a 'patient_description' field which is a concise, one-sentence summary of the patient (e.g., '3-year-old male with a history of prematurity and previous RSV bronchiolitis requiring PICU admission.').
+Use the 'llm_reasoning_notes' field for any ambiguities, information that doesn't fit other fields, or general observations about the vignette's content or clarity.
+
+Example JSON Structure (adapt as needed based on the vignette's content):
+{{ # Note: Using double curlies to escape for f-string, then single for JSON
+    "patient_details": {
+        "patient_description": "3-year-old male with history of prematurity at 32 weeks and previous RSV bronchiolitis at 6 months requiring PICU admission and HFNC support.",
+        "age_years": 3, 
+        "gender": "male", 
+        "history_prematurity_weeks": 32, 
+        "history_rsv_picu_hfnc": true 
+    },
+    "presenting_complaint": {
+        "symptoms": ["high fever", "increased work of breathing", "decreased oral intake"], 
+        "duration_days": 2 
+    },
+    "vital_signs": {
+        "temperature_celsius": 39.5, 
+        "heart_rate": 145, 
+        "respiratory_rate": 35, 
+        "bp_systolic": 90, 
+        "bp_diastolic": 60, 
+        "spo2_room_air_percent": 93 
+    },
+    "current_treatment_and_response": {
+        "medications": ["albuterol nebs", "ipratropium nebs"], 
+        "response": "minimal improvement" 
+    },
+    "llm_reasoning_notes": "Vignette is concise. 'Minimal improvement' to nebs is noted. Prematurity and RSV history are significant. No allergies mentioned."
+}}
+
+Your Output (JSON only):
+
+2025-05-25 18:25:08,776 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:204 - [Step 1 Extraction] Using JSON schema for response_format: {
+  "type": "json_schema",
+  "json_schema": {
+    "name": "step_1_extraction_schema",
+    "strict": "true",
+    "schema": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}
+2025-05-25 18:25:24,085 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:166 - Executing LLM chat completion for: Step 2 Specialty Needs
+2025-05-25 18:25:24,086 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:173 - [Step 2 Specialty Needs] System prompt token count: ~33
+2025-05-25 18:25:24,086 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:174 - [Step 2 Specialty Needs] User prompt token count: ~665
+2025-05-25 18:25:24,086 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:175 - [Step 2 Specialty Needs] Total estimated prompt tokens: ~698
+2025-05-25 18:25:24,088 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:184 - [Step 2 Specialty Needs] System Prompt:
+You are an expert triage physician. Your task is to assess potential medical specialty needs based on clinical information and provided indicators. Respond ONLY with a valid JSON object.
+2025-05-25 18:25:24,088 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:185 - [Step 2 Specialty Needs] User Prompt:
+# Clinical Vignette Analysis - Step 2: Identify Specialty Needs
+
+You are an expert triage physician. Your task is to assess potential medical specialty needs based on clinical information and provided indicators. Respond ONLY with a valid JSON object.
+
+Extracted Clinical Entities:
+{
+  "patient_details": {
+    "patient_description": "8-year-old male who fell off a rockwall and sustained a proximal humerus fracture, with no significant prior medical history.",
+    "age_years": 8,
+    "gender": "male",
+    "presenting_complaint": {
+      "symptoms": [
+        "left humerus fracture"
+      ]
+    },
+    "vital_signs": {
+      "temperature_celsius": 103,
+      "heart_rate": 111,
+      "respiratory_rate": 22,
+      "spo2_room_air_percent": 99
+    }
+  },
+  "llm_reasoning_notes": "The vignette provides a straightforward presentation of an injury incident. The fracture is described clearly, and the vital signs are consistent with a healthy patient aside from the fracture."
+}
+
+Provided Specialty Need Indicators (for guidance, not exhaustive):
+
+- Significant respiratory distress (e.g., tachypnea, retractions, hypoxia not responsive to initial measures)
+- Hemodynamic instability (e.g., persistent hypotension, poor perfusion despite fluid resuscitation)
+- Acutely altered mental status or new focal neurological deficits
+- Recurrent or prolonged seizures
+- Suspected time-sensitive surgical emergency (e.g., acute abdomen, compartment syndrome)
+- Severe trauma meeting regional trauma criteria
+- Complex congenital conditions requiring immediate specialist intervention
+- Need for advanced monitoring (e.g., invasive arterial line, intracranial pressure monitoring)
+- Failure to respond to appropriate initial treatments at the sending facility
+
+
+Task:
+Based on the 'Extracted Clinical Entities' and the 'Specialty Indicators', identify potential medical specialties the patient might need. For each identified specialty, provide a 'likelihood_score' (0-100) and brief 'reasoning_from_vignette'.
+Output a structured JSON object. Adapt the example structure if needed.
+
+Example JSON Structure (adapt as needed):
+{{ # Note: Using double curlies to escape for f-string, then single for JSON
+    "specialties_assessment": [
+        {
+            "specialty_name": "Pediatric Critical Care (PICU)",
+            "likelihood_score": 90,
+            "reasoning_from_vignette": "Patient exhibits significant respiratory distress (SpO2 93% RA, increased WOB) and minimal improvement to initial nebs, aligning with indicators for advanced monitoring and respiratory support."
+        },
+        {
+            "specialty_name": "Pediatric Emergency Medicine",
+            "likelihood_score": 100,
+            "reasoning_from_vignette": "Acute presentation with high fever and respiratory distress warrants immediate evaluation by pediatric emergency specialists."
+        }
+    ],
+    "llm_reasoning_notes": "The need for PICU is high given the history and current presentation. If not PICU, at least a high-acuity pediatric inpatient unit with strong respiratory support capabilities is essential. The indicators provided were helpful in confirming these needs."
+}}
+
+Your Output (JSON only):
+
+2025-05-25 18:25:24,088 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:204 - [Step 2 Specialty Needs] Using JSON schema for response_format: {
+  "type": "json_schema",
+  "json_schema": {
+    "name": "step_2_specialty_needs_schema",
+    "strict": "true",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "specialties_assessment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "specialty_name": {
+                "type": "string"
+              },
+              "likelihood_score": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "reasoning_from_vignette": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "specialty_name",
+              "likelihood_score",
+              "reasoning_from_vignette"
+            ]
+          },
+          "minItems": 1
+        },
+        "llm_reasoning_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "specialties_assessment",
+        "llm_reasoning_notes"
+      ]
+    }
+  }
+}
+2025-05-25 18:25:38,971 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:166 - Executing LLM chat completion for: Step 3 Indiv. Eval - TCH_MAIN_TMC
+2025-05-25 18:25:38,973 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:173 - [Step 3 Indiv. Eval - TCH_MAIN_TMC] System prompt token count: ~83
+2025-05-25 18:25:38,973 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:174 - [Step 3 Indiv. Eval - TCH_MAIN_TMC] User prompt token count: ~5418
+2025-05-25 18:25:38,973 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:175 - [Step 3 Indiv. Eval - TCH_MAIN_TMC] Total estimated prompt tokens: ~5501
+2025-05-25 18:25:38,973 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:184 - [Step 3 Indiv. Eval - TCH_MAIN_TMC] System Prompt:
+You are an expert transfer center physician. Your task is to evaluate a patient against the inclusion/exclusion criteria and current census data for a SINGLE specified hospital campus. Respond ONLY with a valid JSON object. Adhere strictly to the provided exclusion criteria. However, if you identify an edge case or have nuanced thoughts, use the 'llm_reasoning_notes' to explain your confidence level or provide 'food for thought'.
+2025-05-25 18:25:38,973 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:185 - [Step 3 Indiv. Eval - TCH_MAIN_TMC] User Prompt:
+# Clinical Vignette Analysis - Step 3: Exclusion Criteria Evaluation (Individual Hospital)
+
+You are an AI assistant helping to determine if a patient transfer to a specific hospital is appropriate
+by evaluating exclusion criteria.
+
+## Input Data:
+
+### 1. Extracted Clinical Information:
+{
+  "patient_details": {
+    "patient_description": "8-year-old male who fell off a rockwall and sustained a proximal humerus fracture, with no significant prior medical history.",
+    "age_years": 8,
+    "gender": "male",
+    "presenting_complaint": {
+      "symptoms": [
+        "left humerus fracture"
+      ]
+    },
+    "vital_signs": {
+      "temperature_celsius": 103,
+      "heart_rate": 111,
+      "respiratory_rate": 22,
+      "spo2_room_air_percent": 99
+    }
+  },
+  "llm_reasoning_notes": "The vignette provides a straightforward presentation of an injury incident. The fracture is described clearly, and the vital signs are consistent with a healthy patient aside from the fracture."
+}
+
+### 2. Identified Specialty Needs:
+{
+  "specialties_assessment": [
+    {
+      "specialty_name": "Pediatric Emergency Medicine",
+      "likelihood_score": 100,
+      "reasoning_from_vignette": "The patient's presentation of significant respiratory distress, fever, and fracture requires immediate evaluation by a pediatric emergency specialist."
+    }
+  ],
+  "llm_reasoning_notes": "Based on the provided information, the most critical specialty need is Pediatric Emergency Medicine due to the high fever, respiratory distress, and acute injury."
+}
+
+### 3. Exclusion Criteria for TCH_MAIN_TMC (Applicable to Texas Children's Hospital - Main Campus (MC)):
+
+
+### 3.5. Potentially Relevant Exclusion Criteria (Context from Knowledge Base):
+No RAG snippets specifically applicable to TCH - Main were found after filtering.
+
+### 4. Current Census Data for TCH_MAIN_TMC:
+[
+  {
+    "unit_id": "MC_ACUTE",
+    "unit_name": "Main Campus Acute Care",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "281",
+    "available_beds": "22",
+    "occupied_beds": "244",
+    "unavailable_beds": "1",
+    "occupancy_rate": "87",
+    "expected_admissions": "20",
+    "expected_transfers_in": "8",
+    "expected_transfers_out": "1",
+    "expected_discharges": "31"
+  },
+  {
+    "unit_id": "AB_7_SOUTH",
+    "unit_name": "AB 7 South",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "8",
+    "available_beds": "6",
+    "occupied_beds": "1",
+    "unavailable_beds": "0",
+    "occupancy_rate": "12",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "LT_CARDIOLOGY_22",
+    "unit_name": "LT Cardiology Inpatient 22",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "15",
+    "available_beds": "0",
+    "occupied_beds": "14",
+    "unavailable_beds": "0",
+    "occupancy_rate": "93",
+    "expected_admissions": "0",
+    "expected_transfers_in": "1",
+    "expected_transfers_out": "0",
+    "expected_discharges": "2"
+  },
+  {
+    "unit_id": "LT_CARDIOLOGY_23",
+    "unit_name": "LT Cardiology Inpatient 23",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "28",
+    "available_beds": "0",
+    "occupied_beds": "26",
+    "unavailable_beds": "0",
+    "occupancy_rate": "92",
+    "expected_admissions": "0",
+    "expected_transfers_in": "2",
+    "expected_transfers_out": "0",
+    "expected_discharges": "3"
+  },
+  {
+    "unit_id": "WT_GENERAL_MEDICINE",
+    "unit_name": "WT General Medicine",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "22",
+    "available_beds": "0",
+    "occupied_beds": "22",
+    "unavailable_beds": "0",
+    "occupancy_rate": "100",
+    "expected_admissions": "2",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "3"
+  },
+  {
+    "unit_id": "WT_HEMATOLOGY_ONCOLOGY",
+    "unit_name": "WT Hematology/Oncology",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "32",
+    "available_beds": "5",
+    "occupied_beds": "26",
+    "unavailable_beds": "0",
+    "occupancy_rate": "81",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "2"
+  },
+  {
+    "unit_id": "WT_HEMONC_7",
+    "unit_name": "WT Hematology/Oncology 7",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "22",
+    "available_beds": "1",
+    "occupied_beds": "19",
+    "unavailable_beds": "0",
+    "occupancy_rate": "86",
+    "expected_admissions": "1",
+    "expected_transfers_in": "1",
+    "expected_transfers_out": "0",
+    "expected_discharges": "3"
+  },
+  {
+    "unit_id": "WT_NEURO_SCIENCE_SURGERY",
+    "unit_name": "WT Neuroscience/Surgery",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "35",
+    "available_beds": "2",
+    "occupied_beds": "29",
+    "unavailable_beds": "0",
+    "occupancy_rate": "82",
+    "expected_admissions": "10",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "1",
+    "expected_discharges": "3"
+  },
+  {
+    "unit_id": "WT_PHMU",
+    "unit_name": "WT PHMU",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "36",
+    "available_beds": "0",
+    "occupied_beds": "35",
+    "unavailable_beds": "0",
+    "occupancy_rate": "97",
+    "expected_admissions": "0",
+    "expected_transfers_in": "2",
+    "expected_transfers_out": "0",
+    "expected_discharges": "6"
+  },
+  {
+    "unit_id": "WT_PUL_ADOL_ENDO",
+    "unit_name": "WT Pulmonary/Adolescent/Endocrinology",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "36",
+    "available_beds": "2",
+    "occupied_beds": "34",
+    "unavailable_beds": "0",
+    "occupancy_rate": "94",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "3"
+  },
+  {
+    "unit_id": "WT_REHABILITATION",
+    "unit_name": "WT Rehabilitation",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "16",
+    "available_beds": "1",
+    "occupied_beds": "15",
+    "unavailable_beds": "0",
+    "occupancy_rate": "93",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "WT_SURGERY_CARE",
+    "unit_name": "WT Surgery Care",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "general",
+    "total_beds": "31",
+    "available_beds": "5",
+    "occupied_beds": "23",
+    "unavailable_beds": "1",
+    "occupancy_rate": "77",
+    "expected_admissions": "5",
+    "expected_transfers_in": "2",
+    "expected_transfers_out": "0",
+    "expected_discharges": "6"
+  },
+  {
+    "unit_id": "LT_ACHD_24",
+    "unit_name": "LT Adult Congenital Heart Disease 24",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "icu",
+    "total_beds": "10",
+    "available_beds": "2",
+    "occupied_beds": "7",
+    "unavailable_beds": "0",
+    "occupancy_rate": "70",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "1"
+  },
+  {
+    "unit_id": "LT_CVICU_16",
+    "unit_name": "LT Cardiovascular ICU 16",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "icu",
+    "total_beds": "12",
+    "available_beds": "0",
+    "occupied_beds": "12",
+    "unavailable_beds": "0",
+    "occupancy_rate": "100",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "2",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "LT_CVICU_17",
+    "unit_name": "LT Cardiovascular ICU 17",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "icu",
+    "total_beds": "24",
+    "available_beds": "2",
+    "occupied_beds": "22",
+    "unavailable_beds": "0",
+    "occupancy_rate": "91",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "2",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "LT_CVICU_18",
+    "unit_name": "LT Cardiovascular ICU 18",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "icu",
+    "total_beds": "10",
+    "available_beds": "0",
+    "occupied_beds": "10",
+    "unavailable_beds": "0",
+    "occupancy_rate": "100",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "LT_PICU_10",
+    "unit_name": "LT Pediatric ICU 10",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "icu",
+    "total_beds": "27",
+    "available_beds": "1",
+    "occupied_beds": "26",
+    "unavailable_beds": "0",
+    "occupancy_rate": "96",
+    "expected_admissions": "1",
+    "expected_transfers_in": "1",
+    "expected_transfers_out": "2",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "LT_PICU_11",
+    "unit_name": "LT Pediatric ICU 11",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "icu",
+    "total_beds": "10",
+    "available_beds": "0",
+    "occupied_beds": "10",
+    "unavailable_beds": "0",
+    "occupancy_rate": "100",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "1",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "LT_PICU_12",
+    "unit_name": "LT Pediatric ICU 12",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "icu",
+    "total_beds": "27",
+    "available_beds": "0",
+    "occupied_beds": "27",
+    "unavailable_beds": "0",
+    "occupancy_rate": "100",
+    "expected_admissions": "1",
+    "expected_transfers_in": "3",
+    "expected_transfers_out": "0",
+    "expected_discharges": "2"
+  },
+  {
+    "unit_id": "LT_PICU_9",
+    "unit_name": "LT Pediatric ICU 9",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "icu",
+    "total_beds": "27",
+    "available_beds": "0",
+    "occupied_beds": "26",
+    "unavailable_beds": "0",
+    "occupancy_rate": "96",
+    "expected_admissions": "4",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "4",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "WT_BMT_UNIT",
+    "unit_name": "WT Bone Marrow Transplant Unit",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "icu",
+    "total_beds": "12",
+    "available_beds": "0",
+    "occupied_beds": "12",
+    "unavailable_beds": "0",
+    "occupancy_rate": "100",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "WT_CARDIOVASCULAR_ICU",
+    "unit_name": "WT Cardiovascular ICU",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "icu",
+    "total_beds": "0",
+    "available_beds": "0",
+    "occupied_beds": "0",
+    "unavailable_beds": "0",
+    "occupancy_rate": "0",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "WT_NEWBORN_LEVEL_2",
+    "unit_name": "WT Newborn Center Level 2",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "nicu",
+    "total_beds": "33",
+    "available_beds": "0",
+    "occupied_beds": "33",
+    "unavailable_beds": "0",
+    "occupancy_rate": "100",
+    "expected_admissions": "0",
+    "expected_transfers_in": "4",
+    "expected_transfers_out": "0",
+    "expected_discharges": "5"
+  },
+  {
+    "unit_id": "WT_NEWBORN_LEVEL_3",
+    "unit_name": "WT Newborn Center Level 3",
+    "campus_id": "TCH_MAIN_TMC",
+    "unit_type": "nicu",
+    "total_beds": "68",
+    "available_beds": "1",
+    "occupied_beds": "66",
+    "unavailable_beds": "0",
+    "occupancy_rate": "97",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "1",
+    "expected_discharges": "1"
+  }
+]
+
+## Your Task:
+
+Evaluate the patient against the provided information for TCH_MAIN_TMC.
+
+**Primary Source for Exclusion Criteria Adjudication:**
+- If the "Exclusion Criteria for TCH_MAIN_TMC" (Section 3 above) is empty or contains no criteria (this is the expected scenario), you MUST use the "Potentially Relevant Exclusion Criteria (Context from Knowledge Base)" (Section 3.5) as your list of criteria to adjudicate.
+  - For each snippet listed in Section 3.5:
+    - The text following the "- " (e.g., "- Patient must be less than 18 years of age.") is the `criterion_statement`.
+    - Use the "Type" (e.g., general, departmental) and "Dept" (e.g., picu, N/A) from the snippet's header (e.g., "Snippet 1 (Source: ..., Type: general, Dept: N/A):") to categorize the criterion into the `general_criteria_adjudication` or `departmental_criteria_adjudication` list in your JSON output.
+    - Determine if this `criterion_statement` is met for exclusion based on the "Extracted Clinical Information". Record this as `true` or `false` in `is_met_for_exclusion`.
+    - Provide your specific reasoning in `reasoning_from_vignette`.
+  - Your `general_criteria_adjudication` and `departmental_criteria_adjudication` lists in the JSON output MUST contain an entry for EACH criterion snippet processed from Section 3.5.
+
+- If, unexpectedly, "Exclusion Criteria for TCH_MAIN_TMC" (Section 3) is NOT empty, then meticulously evaluate EACH criterion from Section 3. You may use Section 3.5 for additional context in your `llm_reasoning_notes` in this specific case.
+
+After this detailed adjudication, provide an `overall_transfer_decision`.
+Finally, consider the "Current Census Data" to summarize potential census-related impacts in the `census_impact_summary`.
+
+## Output Format (JSON):
+
+Provide your response in the following JSON structure. Ensure all fields are populated.
+When adjudicating from Section 3.5, the `criterion_statement` in your output MUST EXACTLY MATCH the text of the snippet (the part after "- ").
+
+{{ # Note: Using double curlies to escape for f-string, then single for JSON
+  "overall_transfer_decision": "Potentially Suitable" | "Likely Unsuitable" | "Unsuitable" | "Needs More Info" | "Error - Criteria Missing",
+  "primary_exclusion_reasons": ["List of primary reasons if unsuitable, or 'No primary exclusion reasons identified.'"],
+  "general_criteria_adjudication": [ // Should be an empty list [] if no relevant general RAG snippets from Section 3.5
+    { // This is an EXAMPLE of ONE adjudicated general criterion
+      "criterion_statement": "- Patient must be less than 18 years of age.", // EXACTLY copied from a RAG snippet in Section 3.5
+      "is_met_for_exclusion": false, // Example: patient is 3yo, so this criterion does NOT exclude.
+      "reasoning_from_vignette": "Patient is 3 years old, which is less than 18. This criterion is not met for exclusion."
+    },
+    { // This is ANOTHER EXAMPLE
+      "criterion_statement": "- Active bleeding requiring transfusion.", // EXACTLY copied from a RAG snippet
+      "is_met_for_exclusion": true, // Example: vignette states 'patient has active GI bleed requiring PRBCs'.
+      "reasoning_from_vignette": "Vignette mentions active GI bleed needing transfusions, so this criterion IS met for exclusion."
+    }
+    // ... potentially more, one for EACH general RAG snippet from Section 3.5. If no general snippets, this list is [].
+  ],
+  "departmental_criteria_adjudication": [ // Should be an empty list [] if no relevant departmental RAG snippets
+    { // This is an EXAMPLE of ONE adjudicated departmental criterion
+      "department_name": "PICU", // From RAG snippet metadata or Section 3
+      "criterion_statement": "- Requires ECMO capability.", // EXACTLY copied from a RAG snippet
+      "is_met_for_exclusion": false, // Example: Vignette does not suggest ECMO is needed.
+      "reasoning_from_vignette": "Patient's condition, while serious, does not currently indicate a need for ECMO based on the vignette."
+    }
+    // ... potentially more, one for EACH departmental RAG snippet from Section 3.5. If no departmental snippets, this list is [].
+  ],
+  "census_impact_summary": {
+    "relevant_unit_type": "e.g., PICU, NICU, General Ward",
+    "available_beds": "Number or 'N/A'",
+    "notes": "Brief note on census impact, e.g., 'Sufficient beds available', 'Unit at capacity'."
+  },
+  "llm_reasoning_notes": "Your overall reasoning, confidence, and any edge case considerations. If criteria are missing or unclear, state that here. This note should synthesize your findings from the detailed adjudication."
+}}
+
+## Important Notes on Criteria Application:
+
+1.  **Strict Adherence and Completeness**:
+    - If Section 3 (`exclusion_criteria_json`) is empty (expected scenario), you MUST evaluate EACH AND EVERY criterion snippet presented in Section 3.5 (`retrieved_criteria_snippets`). Use the text of the snippet (after "- ") as the `criterion_statement`.
+    - If Section 3 is NOT empty (unexpected), you MUST evaluate EACH AND EVERY criterion presented in Section 3.
+    - Adhere strictly to the exact wording. Do not infer, add, summarize, or skip any criteria you are evaluating. Your output adjudication lists must be comprehensive for the source you are using (primarily Section 3.5 or, if populated, Section 3).
+2.  **Focus**: Your primary goal is to identify if *any* specific exclusion criterion (from the RAG snippets if Section 3 is empty) is met based on the vignette.
+3.  **`is_met_for_exclusion`**: This field is CRITICAL.
+    *   Set to `true` if the patient's condition/details from the vignette MATCH the exclusion criterion, meaning they SHOULD BE EXCLUDED based on this specific point.
+    *   Set to `false` if the patient's condition/details DO NOT MATCH the exclusion criterion.
+4.  **Clarity**: If criteria (from RAG snippets or Section 3) are ambiguous or seem to conflict, note this in "llm_reasoning_notes" AFTER attempting to adjudicate them as best as possible.
+5.  **Missing Criteria**:
+    - If Section 3 (`exclusion_criteria_json`) is empty AND Section 3.5 (`retrieved_criteria_snippets`) is also empty, indicates no snippets were found (e.g., contains text like "No snippets retrieved", "Error during RAG retrieval", or is simply empty), or is otherwise not usable for adjudication, THEN set `overall_transfer_decision` to "Error - Criteria Missing" and explain in `llm_reasoning_notes`.
+    - Otherwise, proceed with adjudication using the available criteria (primarily from Section 3.5 if Section 3 is empty).
+6.  **Specialized Hospitals**: While adhering strictly to provided criteria, if a hospital has an obvious primary specialty (e.g., women's health for PFW) and the patient clearly does not fit this specialty, this should be strongly reflected in your adjudication of relevant general criteria (likely from RAG snippets) and your `llm_reasoning_notes`.
+7.  **Empty Adjudication Lists**: If Section 3.5 (`retrieved_criteria_snippets`) is empty, contains no usable snippets (e.g., 'No snippets retrieved', 'Error during RAG retrieval'), or if RAG retrieval failed, then both `general_criteria_adjudication` and `departmental_criteria_adjudication` lists in your JSON output MUST be empty lists (i.e., `[]`). Do NOT populate them with placeholder structures or example text in such cases.
+
+Begin your detailed, criterion-by-criterion evaluation for TCH_MAIN_TMC.
+
+2025-05-25 18:25:38,973 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:204 - [Step 3 Indiv. Eval - TCH_MAIN_TMC] Using JSON schema for response_format: {
+  "type": "json_schema",
+  "json_schema": {
+    "name": "step_3_indiv_eval_-_tch_main_tmc_schema",
+    "strict": "true",
+    "schema": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}
+2025-05-25 18:26:42,686 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:166 - Executing LLM chat completion for: Step 3 Indiv. Eval - TCH_WOODLANDS
+2025-05-25 18:26:42,688 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:173 - [Step 3 Indiv. Eval - TCH_WOODLANDS] System prompt token count: ~83
+2025-05-25 18:26:42,688 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:174 - [Step 3 Indiv. Eval - TCH_WOODLANDS] User prompt token count: ~2839
+2025-05-25 18:26:42,688 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:175 - [Step 3 Indiv. Eval - TCH_WOODLANDS] Total estimated prompt tokens: ~2922
+2025-05-25 18:26:42,690 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:184 - [Step 3 Indiv. Eval - TCH_WOODLANDS] System Prompt:
+You are an expert transfer center physician. Your task is to evaluate a patient against the inclusion/exclusion criteria and current census data for a SINGLE specified hospital campus. Respond ONLY with a valid JSON object. Adhere strictly to the provided exclusion criteria. However, if you identify an edge case or have nuanced thoughts, use the 'llm_reasoning_notes' to explain your confidence level or provide 'food for thought'.
+2025-05-25 18:26:42,690 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:185 - [Step 3 Indiv. Eval - TCH_WOODLANDS] User Prompt:
+# Clinical Vignette Analysis - Step 3: Exclusion Criteria Evaluation (Individual Hospital)
+
+You are an AI assistant helping to determine if a patient transfer to a specific hospital is appropriate
+by evaluating exclusion criteria.
+
+## Input Data:
+
+### 1. Extracted Clinical Information:
+{
+  "patient_details": {
+    "patient_description": "8-year-old male who fell off a rockwall and sustained a proximal humerus fracture, with no significant prior medical history.",
+    "age_years": 8,
+    "gender": "male",
+    "presenting_complaint": {
+      "symptoms": [
+        "left humerus fracture"
+      ]
+    },
+    "vital_signs": {
+      "temperature_celsius": 103,
+      "heart_rate": 111,
+      "respiratory_rate": 22,
+      "spo2_room_air_percent": 99
+    }
+  },
+  "llm_reasoning_notes": "The vignette provides a straightforward presentation of an injury incident. The fracture is described clearly, and the vital signs are consistent with a healthy patient aside from the fracture."
+}
+
+### 2. Identified Specialty Needs:
+{
+  "specialties_assessment": [
+    {
+      "specialty_name": "Pediatric Emergency Medicine",
+      "likelihood_score": 100,
+      "reasoning_from_vignette": "The patient's presentation of significant respiratory distress, fever, and fracture requires immediate evaluation by a pediatric emergency specialist."
+    }
+  ],
+  "llm_reasoning_notes": "Based on the provided information, the most critical specialty need is Pediatric Emergency Medicine due to the high fever, respiratory distress, and acute injury."
+}
+
+### 3. Exclusion Criteria for TCH_WOODLANDS (Applicable to Texas Children's Hospital - The Woodlands):
+
+
+### 3.5. Potentially Relevant Exclusion Criteria (Context from Knowledge Base):
+No RAG snippets specifically applicable to TCH - Woodlands were found after filtering.
+
+### 4. Current Census Data for TCH_WOODLANDS:
+[
+  {
+    "unit_id": "WL_ACUTE",
+    "unit_name": "Woodlands Acute Care",
+    "campus_id": "TCH_WOODLANDS",
+    "unit_type": "general",
+    "total_beds": "43",
+    "available_beds": "6",
+    "occupied_beds": "37",
+    "unavailable_beds": "0",
+    "occupancy_rate": "86",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "2",
+    "expected_discharges": "9"
+  },
+  {
+    "unit_id": "WL_3",
+    "unit_name": "Woodlands 3",
+    "campus_id": "TCH_WOODLANDS",
+    "unit_type": "general",
+    "total_beds": "15",
+    "available_beds": "3",
+    "occupied_beds": "12",
+    "unavailable_beds": "0",
+    "occupancy_rate": "80",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "3"
+  },
+  {
+    "unit_id": "WL_5",
+    "unit_name": "Woodlands 5",
+    "campus_id": "TCH_WOODLANDS",
+    "unit_type": "general",
+    "total_beds": "28",
+    "available_beds": "3",
+    "occupied_beds": "25",
+    "unavailable_beds": "0",
+    "occupancy_rate": "89",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "2",
+    "expected_discharges": "6"
+  },
+  {
+    "unit_id": "WL_PICU",
+    "unit_name": "Woodlands PICU",
+    "campus_id": "TCH_WOODLANDS",
+    "unit_type": "icu",
+    "total_beds": "12",
+    "available_beds": "0",
+    "occupied_beds": "12",
+    "unavailable_beds": "0",
+    "occupancy_rate": "100",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "1",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "WL_NICU",
+    "unit_name": "Woodlands NICU",
+    "campus_id": "TCH_WOODLANDS",
+    "unit_type": "nicu",
+    "total_beds": "15",
+    "available_beds": "2",
+    "occupied_beds": "13",
+    "unavailable_beds": "0",
+    "occupancy_rate": "86",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "0"
+  }
+]
+
+## Your Task:
+
+Evaluate the patient against the provided information for TCH_WOODLANDS.
+
+**Primary Source for Exclusion Criteria Adjudication:**
+- If the "Exclusion Criteria for TCH_WOODLANDS" (Section 3 above) is empty or contains no criteria (this is the expected scenario), you MUST use the "Potentially Relevant Exclusion Criteria (Context from Knowledge Base)" (Section 3.5) as your list of criteria to adjudicate.
+  - For each snippet listed in Section 3.5:
+    - The text following the "- " (e.g., "- Patient must be less than 18 years of age.") is the `criterion_statement`.
+    - Use the "Type" (e.g., general, departmental) and "Dept" (e.g., picu, N/A) from the snippet's header (e.g., "Snippet 1 (Source: ..., Type: general, Dept: N/A):") to categorize the criterion into the `general_criteria_adjudication` or `departmental_criteria_adjudication` list in your JSON output.
+    - Determine if this `criterion_statement` is met for exclusion based on the "Extracted Clinical Information". Record this as `true` or `false` in `is_met_for_exclusion`.
+    - Provide your specific reasoning in `reasoning_from_vignette`.
+  - Your `general_criteria_adjudication` and `departmental_criteria_adjudication` lists in the JSON output MUST contain an entry for EACH criterion snippet processed from Section 3.5.
+
+- If, unexpectedly, "Exclusion Criteria for TCH_WOODLANDS" (Section 3) is NOT empty, then meticulously evaluate EACH criterion from Section 3. You may use Section 3.5 for additional context in your `llm_reasoning_notes` in this specific case.
+
+After this detailed adjudication, provide an `overall_transfer_decision`.
+Finally, consider the "Current Census Data" to summarize potential census-related impacts in the `census_impact_summary`.
+
+## Output Format (JSON):
+
+Provide your response in the following JSON structure. Ensure all fields are populated.
+When adjudicating from Section 3.5, the `criterion_statement` in your output MUST EXACTLY MATCH the text of the snippet (the part after "- ").
+
+{{ # Note: Using double curlies to escape for f-string, then single for JSON
+  "overall_transfer_decision": "Potentially Suitable" | "Likely Unsuitable" | "Unsuitable" | "Needs More Info" | "Error - Criteria Missing",
+  "primary_exclusion_reasons": ["List of primary reasons if unsuitable, or 'No primary exclusion reasons identified.'"],
+  "general_criteria_adjudication": [ // Should be an empty list [] if no relevant general RAG snippets from Section 3.5
+    { // This is an EXAMPLE of ONE adjudicated general criterion
+      "criterion_statement": "- Patient must be less than 18 years of age.", // EXACTLY copied from a RAG snippet in Section 3.5
+      "is_met_for_exclusion": false, // Example: patient is 3yo, so this criterion does NOT exclude.
+      "reasoning_from_vignette": "Patient is 3 years old, which is less than 18. This criterion is not met for exclusion."
+    },
+    { // This is ANOTHER EXAMPLE
+      "criterion_statement": "- Active bleeding requiring transfusion.", // EXACTLY copied from a RAG snippet
+      "is_met_for_exclusion": true, // Example: vignette states 'patient has active GI bleed requiring PRBCs'.
+      "reasoning_from_vignette": "Vignette mentions active GI bleed needing transfusions, so this criterion IS met for exclusion."
+    }
+    // ... potentially more, one for EACH general RAG snippet from Section 3.5. If no general snippets, this list is [].
+  ],
+  "departmental_criteria_adjudication": [ // Should be an empty list [] if no relevant departmental RAG snippets
+    { // This is an EXAMPLE of ONE adjudicated departmental criterion
+      "department_name": "PICU", // From RAG snippet metadata or Section 3
+      "criterion_statement": "- Requires ECMO capability.", // EXACTLY copied from a RAG snippet
+      "is_met_for_exclusion": false, // Example: Vignette does not suggest ECMO is needed.
+      "reasoning_from_vignette": "Patient's condition, while serious, does not currently indicate a need for ECMO based on the vignette."
+    }
+    // ... potentially more, one for EACH departmental RAG snippet from Section 3.5. If no departmental snippets, this list is [].
+  ],
+  "census_impact_summary": {
+    "relevant_unit_type": "e.g., PICU, NICU, General Ward",
+    "available_beds": "Number or 'N/A'",
+    "notes": "Brief note on census impact, e.g., 'Sufficient beds available', 'Unit at capacity'."
+  },
+  "llm_reasoning_notes": "Your overall reasoning, confidence, and any edge case considerations. If criteria are missing or unclear, state that here. This note should synthesize your findings from the detailed adjudication."
+}}
+
+## Important Notes on Criteria Application:
+
+1.  **Strict Adherence and Completeness**:
+    - If Section 3 (`exclusion_criteria_json`) is empty (expected scenario), you MUST evaluate EACH AND EVERY criterion snippet presented in Section 3.5 (`retrieved_criteria_snippets`). Use the text of the snippet (after "- ") as the `criterion_statement`.
+    - If Section 3 is NOT empty (unexpected), you MUST evaluate EACH AND EVERY criterion presented in Section 3.
+    - Adhere strictly to the exact wording. Do not infer, add, summarize, or skip any criteria you are evaluating. Your output adjudication lists must be comprehensive for the source you are using (primarily Section 3.5 or, if populated, Section 3).
+2.  **Focus**: Your primary goal is to identify if *any* specific exclusion criterion (from the RAG snippets if Section 3 is empty) is met based on the vignette.
+3.  **`is_met_for_exclusion`**: This field is CRITICAL.
+    *   Set to `true` if the patient's condition/details from the vignette MATCH the exclusion criterion, meaning they SHOULD BE EXCLUDED based on this specific point.
+    *   Set to `false` if the patient's condition/details DO NOT MATCH the exclusion criterion.
+4.  **Clarity**: If criteria (from RAG snippets or Section 3) are ambiguous or seem to conflict, note this in "llm_reasoning_notes" AFTER attempting to adjudicate them as best as possible.
+5.  **Missing Criteria**:
+    - If Section 3 (`exclusion_criteria_json`) is empty AND Section 3.5 (`retrieved_criteria_snippets`) is also empty, indicates no snippets were found (e.g., contains text like "No snippets retrieved", "Error during RAG retrieval", or is simply empty), or is otherwise not usable for adjudication, THEN set `overall_transfer_decision` to "Error - Criteria Missing" and explain in `llm_reasoning_notes`.
+    - Otherwise, proceed with adjudication using the available criteria (primarily from Section 3.5 if Section 3 is empty).
+6.  **Specialized Hospitals**: While adhering strictly to provided criteria, if a hospital has an obvious primary specialty (e.g., women's health for PFW) and the patient clearly does not fit this specialty, this should be strongly reflected in your adjudication of relevant general criteria (likely from RAG snippets) and your `llm_reasoning_notes`.
+7.  **Empty Adjudication Lists**: If Section 3.5 (`retrieved_criteria_snippets`) is empty, contains no usable snippets (e.g., 'No snippets retrieved', 'Error during RAG retrieval'), or if RAG retrieval failed, then both `general_criteria_adjudication` and `departmental_criteria_adjudication` lists in your JSON output MUST be empty lists (i.e., `[]`). Do NOT populate them with placeholder structures or example text in such cases.
+
+Begin your detailed, criterion-by-criterion evaluation for TCH_WOODLANDS.
+
+2025-05-25 18:26:42,690 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:204 - [Step 3 Indiv. Eval - TCH_WOODLANDS] Using JSON schema for response_format: {
+  "type": "json_schema",
+  "json_schema": {
+    "name": "step_3_indiv_eval_-_tch_woodlands_schema",
+    "strict": "true",
+    "schema": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}
+2025-05-25 18:27:16,279 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:166 - Executing LLM chat completion for: Step 3 Indiv. Eval - TCH_WEST_KATY
+2025-05-25 18:27:16,284 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:173 - [Step 3 Indiv. Eval - TCH_WEST_KATY] System prompt token count: ~83
+2025-05-25 18:27:16,284 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:174 - [Step 3 Indiv. Eval - TCH_WEST_KATY] User prompt token count: ~2860
+2025-05-25 18:27:16,284 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:175 - [Step 3 Indiv. Eval - TCH_WEST_KATY] Total estimated prompt tokens: ~2943
+2025-05-25 18:27:16,285 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:184 - [Step 3 Indiv. Eval - TCH_WEST_KATY] System Prompt:
+You are an expert transfer center physician. Your task is to evaluate a patient against the inclusion/exclusion criteria and current census data for a SINGLE specified hospital campus. Respond ONLY with a valid JSON object. Adhere strictly to the provided exclusion criteria. However, if you identify an edge case or have nuanced thoughts, use the 'llm_reasoning_notes' to explain your confidence level or provide 'food for thought'.
+2025-05-25 18:27:16,285 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:185 - [Step 3 Indiv. Eval - TCH_WEST_KATY] User Prompt:
+# Clinical Vignette Analysis - Step 3: Exclusion Criteria Evaluation (Individual Hospital)
+
+You are an AI assistant helping to determine if a patient transfer to a specific hospital is appropriate
+by evaluating exclusion criteria.
+
+## Input Data:
+
+### 1. Extracted Clinical Information:
+{
+  "patient_details": {
+    "patient_description": "8-year-old male who fell off a rockwall and sustained a proximal humerus fracture, with no significant prior medical history.",
+    "age_years": 8,
+    "gender": "male",
+    "presenting_complaint": {
+      "symptoms": [
+        "left humerus fracture"
+      ]
+    },
+    "vital_signs": {
+      "temperature_celsius": 103,
+      "heart_rate": 111,
+      "respiratory_rate": 22,
+      "spo2_room_air_percent": 99
+    }
+  },
+  "llm_reasoning_notes": "The vignette provides a straightforward presentation of an injury incident. The fracture is described clearly, and the vital signs are consistent with a healthy patient aside from the fracture."
+}
+
+### 2. Identified Specialty Needs:
+{
+  "specialties_assessment": [
+    {
+      "specialty_name": "Pediatric Emergency Medicine",
+      "likelihood_score": 100,
+      "reasoning_from_vignette": "The patient's presentation of significant respiratory distress, fever, and fracture requires immediate evaluation by a pediatric emergency specialist."
+    }
+  ],
+  "llm_reasoning_notes": "Based on the provided information, the most critical specialty need is Pediatric Emergency Medicine due to the high fever, respiratory distress, and acute injury."
+}
+
+### 3. Exclusion Criteria for TCH_WEST_KATY (Applicable to Texas Children's Hospital - West Campus (Katy)):
+
+
+### 3.5. Potentially Relevant Exclusion Criteria (Context from Knowledge Base):
+No RAG snippets specifically applicable to TCH - West were found after filtering.
+
+### 4. Current Census Data for TCH_WEST_KATY:
+[
+  {
+    "unit_id": "WC_ACUTE",
+    "unit_name": "West Campus Acute Care",
+    "campus_id": "TCH_WEST_KATY",
+    "unit_type": "general",
+    "total_beds": "42",
+    "available_beds": "2",
+    "occupied_beds": "36",
+    "unavailable_beds": "0",
+    "occupancy_rate": "85",
+    "expected_admissions": "5",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "1",
+    "expected_discharges": "9"
+  },
+  {
+    "unit_id": "WC_3_WEST",
+    "unit_name": "West Campus 3 West",
+    "campus_id": "TCH_WEST_KATY",
+    "unit_type": "general",
+    "total_beds": "24",
+    "available_beds": "1",
+    "occupied_beds": "21",
+    "unavailable_beds": "0",
+    "occupancy_rate": "87",
+    "expected_admissions": "3",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "1",
+    "expected_discharges": "7"
+  },
+  {
+    "unit_id": "WC_4_WEST",
+    "unit_name": "West Campus 4 West",
+    "campus_id": "TCH_WEST_KATY",
+    "unit_type": "general",
+    "total_beds": "0",
+    "available_beds": "0",
+    "occupied_beds": "0",
+    "unavailable_beds": "0",
+    "occupancy_rate": "0",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "WC_5_WEST",
+    "unit_name": "West Campus 5 West",
+    "campus_id": "TCH_WEST_KATY",
+    "unit_type": "general",
+    "total_beds": "18",
+    "available_beds": "1",
+    "occupied_beds": "15",
+    "unavailable_beds": "0",
+    "occupancy_rate": "83",
+    "expected_admissions": "2",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "2"
+  },
+  {
+    "unit_id": "WC_4_PICU",
+    "unit_name": "West Campus PICU",
+    "campus_id": "TCH_WEST_KATY",
+    "unit_type": "icu",
+    "total_beds": "15",
+    "available_beds": "1",
+    "occupied_beds": "13",
+    "unavailable_beds": "0",
+    "occupancy_rate": "86",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "1"
+  }
+]
+
+## Your Task:
+
+Evaluate the patient against the provided information for TCH_WEST_KATY.
+
+**Primary Source for Exclusion Criteria Adjudication:**
+- If the "Exclusion Criteria for TCH_WEST_KATY" (Section 3 above) is empty or contains no criteria (this is the expected scenario), you MUST use the "Potentially Relevant Exclusion Criteria (Context from Knowledge Base)" (Section 3.5) as your list of criteria to adjudicate.
+  - For each snippet listed in Section 3.5:
+    - The text following the "- " (e.g., "- Patient must be less than 18 years of age.") is the `criterion_statement`.
+    - Use the "Type" (e.g., general, departmental) and "Dept" (e.g., picu, N/A) from the snippet's header (e.g., "Snippet 1 (Source: ..., Type: general, Dept: N/A):") to categorize the criterion into the `general_criteria_adjudication` or `departmental_criteria_adjudication` list in your JSON output.
+    - Determine if this `criterion_statement` is met for exclusion based on the "Extracted Clinical Information". Record this as `true` or `false` in `is_met_for_exclusion`.
+    - Provide your specific reasoning in `reasoning_from_vignette`.
+  - Your `general_criteria_adjudication` and `departmental_criteria_adjudication` lists in the JSON output MUST contain an entry for EACH criterion snippet processed from Section 3.5.
+
+- If, unexpectedly, "Exclusion Criteria for TCH_WEST_KATY" (Section 3) is NOT empty, then meticulously evaluate EACH criterion from Section 3. You may use Section 3.5 for additional context in your `llm_reasoning_notes` in this specific case.
+
+After this detailed adjudication, provide an `overall_transfer_decision`.
+Finally, consider the "Current Census Data" to summarize potential census-related impacts in the `census_impact_summary`.
+
+## Output Format (JSON):
+
+Provide your response in the following JSON structure. Ensure all fields are populated.
+When adjudicating from Section 3.5, the `criterion_statement` in your output MUST EXACTLY MATCH the text of the snippet (the part after "- ").
+
+{{ # Note: Using double curlies to escape for f-string, then single for JSON
+  "overall_transfer_decision": "Potentially Suitable" | "Likely Unsuitable" | "Unsuitable" | "Needs More Info" | "Error - Criteria Missing",
+  "primary_exclusion_reasons": ["List of primary reasons if unsuitable, or 'No primary exclusion reasons identified.'"],
+  "general_criteria_adjudication": [ // Should be an empty list [] if no relevant general RAG snippets from Section 3.5
+    { // This is an EXAMPLE of ONE adjudicated general criterion
+      "criterion_statement": "- Patient must be less than 18 years of age.", // EXACTLY copied from a RAG snippet in Section 3.5
+      "is_met_for_exclusion": false, // Example: patient is 3yo, so this criterion does NOT exclude.
+      "reasoning_from_vignette": "Patient is 3 years old, which is less than 18. This criterion is not met for exclusion."
+    },
+    { // This is ANOTHER EXAMPLE
+      "criterion_statement": "- Active bleeding requiring transfusion.", // EXACTLY copied from a RAG snippet
+      "is_met_for_exclusion": true, // Example: vignette states 'patient has active GI bleed requiring PRBCs'.
+      "reasoning_from_vignette": "Vignette mentions active GI bleed needing transfusions, so this criterion IS met for exclusion."
+    }
+    // ... potentially more, one for EACH general RAG snippet from Section 3.5. If no general snippets, this list is [].
+  ],
+  "departmental_criteria_adjudication": [ // Should be an empty list [] if no relevant departmental RAG snippets
+    { // This is an EXAMPLE of ONE adjudicated departmental criterion
+      "department_name": "PICU", // From RAG snippet metadata or Section 3
+      "criterion_statement": "- Requires ECMO capability.", // EXACTLY copied from a RAG snippet
+      "is_met_for_exclusion": false, // Example: Vignette does not suggest ECMO is needed.
+      "reasoning_from_vignette": "Patient's condition, while serious, does not currently indicate a need for ECMO based on the vignette."
+    }
+    // ... potentially more, one for EACH departmental RAG snippet from Section 3.5. If no departmental snippets, this list is [].
+  ],
+  "census_impact_summary": {
+    "relevant_unit_type": "e.g., PICU, NICU, General Ward",
+    "available_beds": "Number or 'N/A'",
+    "notes": "Brief note on census impact, e.g., 'Sufficient beds available', 'Unit at capacity'."
+  },
+  "llm_reasoning_notes": "Your overall reasoning, confidence, and any edge case considerations. If criteria are missing or unclear, state that here. This note should synthesize your findings from the detailed adjudication."
+}}
+
+## Important Notes on Criteria Application:
+
+1.  **Strict Adherence and Completeness**:
+    - If Section 3 (`exclusion_criteria_json`) is empty (expected scenario), you MUST evaluate EACH AND EVERY criterion snippet presented in Section 3.5 (`retrieved_criteria_snippets`). Use the text of the snippet (after "- ") as the `criterion_statement`.
+    - If Section 3 is NOT empty (unexpected), you MUST evaluate EACH AND EVERY criterion presented in Section 3.
+    - Adhere strictly to the exact wording. Do not infer, add, summarize, or skip any criteria you are evaluating. Your output adjudication lists must be comprehensive for the source you are using (primarily Section 3.5 or, if populated, Section 3).
+2.  **Focus**: Your primary goal is to identify if *any* specific exclusion criterion (from the RAG snippets if Section 3 is empty) is met based on the vignette.
+3.  **`is_met_for_exclusion`**: This field is CRITICAL.
+    *   Set to `true` if the patient's condition/details from the vignette MATCH the exclusion criterion, meaning they SHOULD BE EXCLUDED based on this specific point.
+    *   Set to `false` if the patient's condition/details DO NOT MATCH the exclusion criterion.
+4.  **Clarity**: If criteria (from RAG snippets or Section 3) are ambiguous or seem to conflict, note this in "llm_reasoning_notes" AFTER attempting to adjudicate them as best as possible.
+5.  **Missing Criteria**:
+    - If Section 3 (`exclusion_criteria_json`) is empty AND Section 3.5 (`retrieved_criteria_snippets`) is also empty, indicates no snippets were found (e.g., contains text like "No snippets retrieved", "Error during RAG retrieval", or is simply empty), or is otherwise not usable for adjudication, THEN set `overall_transfer_decision` to "Error - Criteria Missing" and explain in `llm_reasoning_notes`.
+    - Otherwise, proceed with adjudication using the available criteria (primarily from Section 3.5 if Section 3 is empty).
+6.  **Specialized Hospitals**: While adhering strictly to provided criteria, if a hospital has an obvious primary specialty (e.g., women's health for PFW) and the patient clearly does not fit this specialty, this should be strongly reflected in your adjudication of relevant general criteria (likely from RAG snippets) and your `llm_reasoning_notes`.
+7.  **Empty Adjudication Lists**: If Section 3.5 (`retrieved_criteria_snippets`) is empty, contains no usable snippets (e.g., 'No snippets retrieved', 'Error during RAG retrieval'), or if RAG retrieval failed, then both `general_criteria_adjudication` and `departmental_criteria_adjudication` lists in your JSON output MUST be empty lists (i.e., `[]`). Do NOT populate them with placeholder structures or example text in such cases.
+
+Begin your detailed, criterion-by-criterion evaluation for TCH_WEST_KATY.
+
+2025-05-25 18:27:16,286 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:204 - [Step 3 Indiv. Eval - TCH_WEST_KATY] Using JSON schema for response_format: {
+  "type": "json_schema",
+  "json_schema": {
+    "name": "step_3_indiv_eval_-_tch_west_katy_schema",
+    "strict": "true",
+    "schema": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}
+2025-05-25 18:27:59,065 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:166 - Executing LLM chat completion for: Step 3 Indiv. Eval - TCH_NORTH_AUSTIN
+2025-05-25 18:27:59,067 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:173 - [Step 3 Indiv. Eval - TCH_NORTH_AUSTIN] System prompt token count: ~83
+2025-05-25 18:27:59,067 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:174 - [Step 3 Indiv. Eval - TCH_NORTH_AUSTIN] User prompt token count: ~3393
+2025-05-25 18:27:59,068 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:175 - [Step 3 Indiv. Eval - TCH_NORTH_AUSTIN] Total estimated prompt tokens: ~3476
+2025-05-25 18:27:59,068 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:184 - [Step 3 Indiv. Eval - TCH_NORTH_AUSTIN] System Prompt:
+You are an expert transfer center physician. Your task is to evaluate a patient against the inclusion/exclusion criteria and current census data for a SINGLE specified hospital campus. Respond ONLY with a valid JSON object. Adhere strictly to the provided exclusion criteria. However, if you identify an edge case or have nuanced thoughts, use the 'llm_reasoning_notes' to explain your confidence level or provide 'food for thought'.
+2025-05-25 18:27:59,068 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:185 - [Step 3 Indiv. Eval - TCH_NORTH_AUSTIN] User Prompt:
+# Clinical Vignette Analysis - Step 3: Exclusion Criteria Evaluation (Individual Hospital)
+
+You are an AI assistant helping to determine if a patient transfer to a specific hospital is appropriate
+by evaluating exclusion criteria.
+
+## Input Data:
+
+### 1. Extracted Clinical Information:
+{
+  "patient_details": {
+    "patient_description": "8-year-old male who fell off a rockwall and sustained a proximal humerus fracture, with no significant prior medical history.",
+    "age_years": 8,
+    "gender": "male",
+    "presenting_complaint": {
+      "symptoms": [
+        "left humerus fracture"
+      ]
+    },
+    "vital_signs": {
+      "temperature_celsius": 103,
+      "heart_rate": 111,
+      "respiratory_rate": 22,
+      "spo2_room_air_percent": 99
+    }
+  },
+  "llm_reasoning_notes": "The vignette provides a straightforward presentation of an injury incident. The fracture is described clearly, and the vital signs are consistent with a healthy patient aside from the fracture."
+}
+
+### 2. Identified Specialty Needs:
+{
+  "specialties_assessment": [
+    {
+      "specialty_name": "Pediatric Emergency Medicine",
+      "likelihood_score": 100,
+      "reasoning_from_vignette": "The patient's presentation of significant respiratory distress, fever, and fracture requires immediate evaluation by a pediatric emergency specialist."
+    }
+  ],
+  "llm_reasoning_notes": "Based on the provided information, the most critical specialty need is Pediatric Emergency Medicine due to the high fever, respiratory distress, and acute injury."
+}
+
+### 3. Exclusion Criteria for TCH_NORTH_AUSTIN (Applicable to Texas Children's Hospital North Austin Campus):
+
+
+### 3.5. Potentially Relevant Exclusion Criteria (Context from Knowledge Base):
+No RAG snippets specifically applicable to TCH - N. Austin were found after filtering.
+
+### 4. Current Census Data for TCH_NORTH_AUSTIN:
+[
+  {
+    "unit_id": "AN_ACUTE",
+    "unit_name": "Austin Acute Care",
+    "campus_id": "TCH_NORTH_AUSTIN",
+    "unit_type": "general",
+    "total_beds": "17",
+    "available_beds": "3",
+    "occupied_beds": "14",
+    "unavailable_beds": "0",
+    "occupancy_rate": "82",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "2"
+  },
+  {
+    "unit_id": "AN_WOMENS",
+    "unit_name": "Austin Women's Unit",
+    "campus_id": "TCH_NORTH_AUSTIN",
+    "unit_type": "general",
+    "total_beds": "8",
+    "available_beds": "1",
+    "occupied_beds": "7",
+    "unavailable_beds": "0",
+    "occupancy_rate": "87",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "4"
+  },
+  {
+    "unit_id": "AN_LABOR_DELIVERY",
+    "unit_name": "Austin Labor & Delivery Unit",
+    "campus_id": "TCH_NORTH_AUSTIN",
+    "unit_type": "general",
+    "total_beds": "7",
+    "available_beds": "1",
+    "occupied_beds": "6",
+    "unavailable_beds": "0",
+    "occupancy_rate": "85",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "3"
+  },
+  {
+    "unit_id": "AN_MBU",
+    "unit_name": "Austin Mother/Baby Unit",
+    "campus_id": "TCH_NORTH_AUSTIN",
+    "unit_type": "general",
+    "total_beds": "1",
+    "available_beds": "0",
+    "occupied_beds": "1",
+    "unavailable_beds": "0",
+    "occupancy_rate": "100",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "1"
+  },
+  {
+    "unit_id": "AN_LDO_4",
+    "unit_name": "Austin LDO 4",
+    "campus_id": "TCH_NORTH_AUSTIN",
+    "unit_type": "general",
+    "total_beds": "0",
+    "available_beds": "0",
+    "occupied_beds": "0",
+    "unavailable_beds": "0",
+    "occupancy_rate": "0",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "AN_NEWBORN_NURSERY",
+    "unit_name": "Austin Newborn Nursery",
+    "campus_id": "TCH_NORTH_AUSTIN",
+    "unit_type": "general",
+    "total_beds": "0",
+    "available_beds": "0",
+    "occupied_beds": "0",
+    "unavailable_beds": "0",
+    "occupancy_rate": "0",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "0"
+  },
+  {
+    "unit_id": "AN_WOMENS_ASSESS",
+    "unit_name": "Austin Women's Assess",
+    "campus_id": "TCH_NORTH_AUSTIN",
+    "unit_type": "general",
+    "total_beds": "0",
+    "available_beds": "-1",
+    "occupied_beds": "1",
+    "unavailable_beds": "0",
+    "occupancy_rate": "0",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "0",
+    "expected_discharges": "1"
+  },
+  {
+    "unit_id": "AN_PICU",
+    "unit_name": "Austin PICU",
+    "campus_id": "TCH_NORTH_AUSTIN",
+    "unit_type": "icu",
+    "total_beds": "7",
+    "available_beds": "0",
+    "occupied_beds": "6",
+    "unavailable_beds": "0",
+    "occupancy_rate": "85",
+    "expected_admissions": "1",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "1",
+    "expected_discharges": "1"
+  },
+  {
+    "unit_id": "AN_NICU",
+    "unit_name": "Austin NICU",
+    "campus_id": "TCH_NORTH_AUSTIN",
+    "unit_type": "nicu",
+    "total_beds": "11",
+    "available_beds": "0",
+    "occupied_beds": "11",
+    "unavailable_beds": "0",
+    "occupancy_rate": "100",
+    "expected_admissions": "0",
+    "expected_transfers_in": "0",
+    "expected_transfers_out": "1",
+    "expected_discharges": "1"
+  }
+]
+
+## Your Task:
+
+Evaluate the patient against the provided information for TCH_NORTH_AUSTIN.
+
+**Primary Source for Exclusion Criteria Adjudication:**
+- If the "Exclusion Criteria for TCH_NORTH_AUSTIN" (Section 3 above) is empty or contains no criteria (this is the expected scenario), you MUST use the "Potentially Relevant Exclusion Criteria (Context from Knowledge Base)" (Section 3.5) as your list of criteria to adjudicate.
+  - For each snippet listed in Section 3.5:
+    - The text following the "- " (e.g., "- Patient must be less than 18 years of age.") is the `criterion_statement`.
+    - Use the "Type" (e.g., general, departmental) and "Dept" (e.g., picu, N/A) from the snippet's header (e.g., "Snippet 1 (Source: ..., Type: general, Dept: N/A):") to categorize the criterion into the `general_criteria_adjudication` or `departmental_criteria_adjudication` list in your JSON output.
+    - Determine if this `criterion_statement` is met for exclusion based on the "Extracted Clinical Information". Record this as `true` or `false` in `is_met_for_exclusion`.
+    - Provide your specific reasoning in `reasoning_from_vignette`.
+  - Your `general_criteria_adjudication` and `departmental_criteria_adjudication` lists in the JSON output MUST contain an entry for EACH criterion snippet processed from Section 3.5.
+
+- If, unexpectedly, "Exclusion Criteria for TCH_NORTH_AUSTIN" (Section 3) is NOT empty, then meticulously evaluate EACH criterion from Section 3. You may use Section 3.5 for additional context in your `llm_reasoning_notes` in this specific case.
+
+After this detailed adjudication, provide an `overall_transfer_decision`.
+Finally, consider the "Current Census Data" to summarize potential census-related impacts in the `census_impact_summary`.
+
+## Output Format (JSON):
+
+Provide your response in the following JSON structure. Ensure all fields are populated.
+When adjudicating from Section 3.5, the `criterion_statement` in your output MUST EXACTLY MATCH the text of the snippet (the part after "- ").
+
+{{ # Note: Using double curlies to escape for f-string, then single for JSON
+  "overall_transfer_decision": "Potentially Suitable" | "Likely Unsuitable" | "Unsuitable" | "Needs More Info" | "Error - Criteria Missing",
+  "primary_exclusion_reasons": ["List of primary reasons if unsuitable, or 'No primary exclusion reasons identified.'"],
+  "general_criteria_adjudication": [ // Should be an empty list [] if no relevant general RAG snippets from Section 3.5
+    { // This is an EXAMPLE of ONE adjudicated general criterion
+      "criterion_statement": "- Patient must be less than 18 years of age.", // EXACTLY copied from a RAG snippet in Section 3.5
+      "is_met_for_exclusion": false, // Example: patient is 3yo, so this criterion does NOT exclude.
+      "reasoning_from_vignette": "Patient is 3 years old, which is less than 18. This criterion is not met for exclusion."
+    },
+    { // This is ANOTHER EXAMPLE
+      "criterion_statement": "- Active bleeding requiring transfusion.", // EXACTLY copied from a RAG snippet
+      "is_met_for_exclusion": true, // Example: vignette states 'patient has active GI bleed requiring PRBCs'.
+      "reasoning_from_vignette": "Vignette mentions active GI bleed needing transfusions, so this criterion IS met for exclusion."
+    }
+    // ... potentially more, one for EACH general RAG snippet from Section 3.5. If no general snippets, this list is [].
+  ],
+  "departmental_criteria_adjudication": [ // Should be an empty list [] if no relevant departmental RAG snippets
+    { // This is an EXAMPLE of ONE adjudicated departmental criterion
+      "department_name": "PICU", // From RAG snippet metadata or Section 3
+      "criterion_statement": "- Requires ECMO capability.", // EXACTLY copied from a RAG snippet
+      "is_met_for_exclusion": false, // Example: Vignette does not suggest ECMO is needed.
+      "reasoning_from_vignette": "Patient's condition, while serious, does not currently indicate a need for ECMO based on the vignette."
+    }
+    // ... potentially more, one for EACH departmental RAG snippet from Section 3.5. If no departmental snippets, this list is [].
+  ],
+  "census_impact_summary": {
+    "relevant_unit_type": "e.g., PICU, NICU, General Ward",
+    "available_beds": "Number or 'N/A'",
+    "notes": "Brief note on census impact, e.g., 'Sufficient beds available', 'Unit at capacity'."
+  },
+  "llm_reasoning_notes": "Your overall reasoning, confidence, and any edge case considerations. If criteria are missing or unclear, state that here. This note should synthesize your findings from the detailed adjudication."
+}}
+
+## Important Notes on Criteria Application:
+
+1.  **Strict Adherence and Completeness**:
+    - If Section 3 (`exclusion_criteria_json`) is empty (expected scenario), you MUST evaluate EACH AND EVERY criterion snippet presented in Section 3.5 (`retrieved_criteria_snippets`). Use the text of the snippet (after "- ") as the `criterion_statement`.
+    - If Section 3 is NOT empty (unexpected), you MUST evaluate EACH AND EVERY criterion presented in Section 3.
+    - Adhere strictly to the exact wording. Do not infer, add, summarize, or skip any criteria you are evaluating. Your output adjudication lists must be comprehensive for the source you are using (primarily Section 3.5 or, if populated, Section 3).
+2.  **Focus**: Your primary goal is to identify if *any* specific exclusion criterion (from the RAG snippets if Section 3 is empty) is met based on the vignette.
+3.  **`is_met_for_exclusion`**: This field is CRITICAL.
+    *   Set to `true` if the patient's condition/details from the vignette MATCH the exclusion criterion, meaning they SHOULD BE EXCLUDED based on this specific point.
+    *   Set to `false` if the patient's condition/details DO NOT MATCH the exclusion criterion.
+4.  **Clarity**: If criteria (from RAG snippets or Section 3) are ambiguous or seem to conflict, note this in "llm_reasoning_notes" AFTER attempting to adjudicate them as best as possible.
+5.  **Missing Criteria**:
+    - If Section 3 (`exclusion_criteria_json`) is empty AND Section 3.5 (`retrieved_criteria_snippets`) is also empty, indicates no snippets were found (e.g., contains text like "No snippets retrieved", "Error during RAG retrieval", or is simply empty), or is otherwise not usable for adjudication, THEN set `overall_transfer_decision` to "Error - Criteria Missing" and explain in `llm_reasoning_notes`.
+    - Otherwise, proceed with adjudication using the available criteria (primarily from Section 3.5 if Section 3 is empty).
+6.  **Specialized Hospitals**: While adhering strictly to provided criteria, if a hospital has an obvious primary specialty (e.g., women's health for PFW) and the patient clearly does not fit this specialty, this should be strongly reflected in your adjudication of relevant general criteria (likely from RAG snippets) and your `llm_reasoning_notes`.
+7.  **Empty Adjudication Lists**: If Section 3.5 (`retrieved_criteria_snippets`) is empty, contains no usable snippets (e.g., 'No snippets retrieved', 'Error during RAG retrieval'), or if RAG retrieval failed, then both `general_criteria_adjudication` and `departmental_criteria_adjudication` lists in your JSON output MUST be empty lists (i.e., `[]`). Do NOT populate them with placeholder structures or example text in such cases.
+
+Begin your detailed, criterion-by-criterion evaluation for TCH_NORTH_AUSTIN.
+
+2025-05-25 18:27:59,068 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:204 - [Step 3 Indiv. Eval - TCH_NORTH_AUSTIN] Using JSON schema for response_format: {
+  "type": "json_schema",
+  "json_schema": {
+    "name": "step_3_indiv_eval_-_tch_north_austin_schema",
+    "strict": "true",
+    "schema": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}
+2025-05-25 18:28:49,176 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:166 - Executing LLM chat completion for: Step 3 Consolidation
+2025-05-25 18:28:49,179 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:173 - [Step 3 Consolidation] System prompt token count: ~64
+2025-05-25 18:28:49,179 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:174 - [Step 3 Consolidation] User prompt token count: ~1950
+2025-05-25 18:28:49,179 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:175 - [Step 3 Consolidation] Total estimated prompt tokens: ~2014
+2025-05-25 18:28:49,181 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:184 - [Step 3 Consolidation] System Prompt:
+You are an expert transfer center physician. You have been provided with individual evaluations for a patient against several hospital campuses. Your task is to consolidate these individual assessments into a single, comprehensive JSON object. The top-level keys of this object must be the campus_ids of the evaluated hospitals. Respond ONLY with a valid JSON object.
+2025-05-25 18:28:49,181 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:185 - [Step 3 Consolidation] User Prompt:
+Individual Hospital Evaluation Summaries:
+[
+  {
+    "campus_id": "TCH_MAIN_TMC",
+    "evaluation": {
+      "overall_transfer_decision": "Potentially Suitable",
+      "primary_exclusion_reasons": [],
+      "general_criteria_adjudication": [
+        {
+          "criterion_statement": "- Patient must be less than 18 years of age.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "Patient is 8 years old, which means he is under 18 and should not be excluded based on this criterion."
+        },
+        {
+          "criterion_statement": "- Active bleeding requiring transfusion.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "No mention of active bleeding or need for transfusions in the vignette."
+        }
+      ],
+      "departmental_criteria_adjudication": [
+        {
+          "department_name": "Pediatric Emergency Medicine",
+          "criterion_statement": "Patient must be less than 18 years of age.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "Patient is 8 years old and meets the age requirement for this criterion."
+        },
+        {
+          "department_name": "Pediatric Emergency Medicine",
+          "criterion_statement": "Requires ECMO capability.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "No indication of need for ECMO in the vignette."
+        }
+      ],
+      "census_impact_summary": {
+        "relevant_unit_type": "Pediatric Emergency Medicine",
+        "available_beds": "22 beds are available at the main campus with 244 occupied beds and 1 unavailable bed, indicating limited capacity in acute care. However, there is one bed available in South Unit and multiple options in other units."
+      },
+      "llm_reasoning_notes": "Based on the provided information, there are no specific exclusion criteria met that would prevent this patient from being transferred to Texas Children's Hospital - Main Campus (MC). The patient\u2019s age and condition do not raise any significant concerns that would require immediate attention elsewhere or exclusion due to capacity constraints. The census data shows limited availability in acute care but sufficient beds overall in other units, which should be able to accommodate the patient if needed."
+    }
+  },
+  {
+    "campus_id": "TCH_WOODLANDS",
+    "evaluation": {
+      "overall_transfer_decision": "Potentially Suitable",
+      "primary_exclusion_reasons": [
+        "No primary exclusion reasons identified."
+      ],
+      "general_criteria_adjudication": [
+        {
+          "criterion_statement": "- Patient must be less than 18 years of age.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "Patient is 8 years old, which is less than 18. This criterion is not met for exclusion."
+        }
+      ],
+      "departmental_criteria_adjudication": [
+        {
+          "criterion_statement": "- Requires ECMO capability.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "Patient's condition, while serious, does not currently indicate a need for ECMO based on the vignette."
+        }
+      ],
+      "census_impact_summary": {
+        "relevant_unit_type": "general",
+        "available_beds": "6",
+        "notes": "Sufficient beds available"
+      },
+      "llm_reasoning_notes": "Based on the provided information, there are no specific exclusion criteria applicable to TCH_WOODLANDS that would prevent this patient from being admitted. The patient is an eight-year-old male with a proximal humerus fracture and mild respiratory distress, which does not meet any of the exclusion criteria. Therefore, it seems appropriate to consider transferring him."
+    }
+  },
+  {
+    "campus_id": "TCH_WEST_KATY",
+    "evaluation": {
+      "overall_transfer_decision": "Potentially Suitable",
+      "primary_exclusion_reasons": [],
+      "general_criteria_adjudication": [
+        {
+          "criterion_statement": "- Patient must be less than 18 years of age.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "Patient is 8 years old, which means this criterion is not met for exclusion."
+        },
+        {
+          "criterion_statement": "- Patient must have active bleeding requiring transfusion.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "There's no mention of active bleeding or transfusions needed in the patient's presentation. Therefore, this criterion is not met for exclusion."
+        },
+        {
+          "criterion_statement": "- Patient must be over 18 years of age.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "Patient is 8 years old, so this criterion does not apply."
+        }
+      ],
+      "departmental_criteria_adjudication": [
+        {
+          "criterion_statement": "- Requires ECMO capability.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "There's no indication that the patient requires ECMO. The patient is stable with a fracture and fever."
+        }
+      ],
+      "census_impact_summary": {
+        "relevant_unit_type": "West Campus Acute Care",
+        "available_beds": "2",
+        "notes": "Sufficient beds available in acute care unit"
+      },
+      "llm_reasoning_notes": "The patient is an 8-year-old male with a proximal humerus fracture and fever. Given the criteria, none of the exclusion points apply here, making this patient potentially suitable for transfer to TCH_WEST_KATY. No active bleeding or ECMO needs are mentioned in the vignette."
+    }
+  },
+  {
+    "campus_id": "TCH_PAVILION_WOMEN",
+    "evaluation": {
+      "overall_transfer_decision": "Unsuitable",
+      "primary_exclusion_reasons": [
+        "Patient is not a pregnant female."
+      ],
+      "llm_reasoning_notes": "Patient does not meet the primary specialty criteria for PAVILION_FOR_WOMEN."
+    }
+  },
+  {
+    "campus_id": "TCH_NORTH_AUSTIN",
+    "evaluation": {
+      "overall_transfer_decision": "Potentially Suitable",
+      "primary_exclusion_reasons": [
+        "Patient's condition does not meet any exclusion criteria."
+      ],
+      "general_criteria_adjudication": [
+        {
+          "criterion_statement": "- Patient must be less than 18 years of age.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "The patient is 8 years old, which is less than 18. This criterion is not met for exclusion."
+        },
+        {
+          "criterion_statement": "- Patient must be experiencing active bleeding requiring transfusion.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "The patient did not have any mention of active bleeding or require transfusions, so this criterion is not met for exclusion."
+        },
+        {
+          "criterion_statement": "- Patient requires ECMO capability.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "The patient's condition does not necessitate ECMO as per the provided information. This criterion is not met for exclusion."
+        }
+      ],
+      "departmental_criteria_adjudication": [
+        {
+          "department_name": "Pediatric Emergency Medicine",
+          "criterion_statement": "- Patient requires specialized pediatric emergency care due to respiratory distress and fever.",
+          "is_met_for_exclusion": false,
+          "reasoning_from_vignette": "The patient's symptoms are concerning but do not specifically indicate the need for a PICU transfer. This criterion is not met for exclusion."
+        }
+      ],
+      "census_impact_summary": {
+        "relevant_unit_type": "Pediatric Emergency Medicine",
+        "available_beds": "3",
+        "notes": "There are available beds in Pediatric Emergency Medicine at Austin Acute Care (3 beds), which could potentially accommodate the patient if needed."
+      },
+      "llm_reasoning_notes": "Based on the provided information, this patient does not meet any specific exclusion criteria for TCH_NORTH_AUSTIN. The patient's condition involves a humerus fracture and respiratory distress, but these symptoms do not necessitate an immediate transfer to a specialized pediatric emergency department or other specialized care units."
+    }
+  }
+]
+
+Task:
+Combine the provided individual hospital evaluations into a single JSON object. Each top-level key in the output JSON object must be the campus_id (e.g., "TCH_MAIN_TMC", "TCH_WOODLANDS", etc.) from the individual assessments, and its value should be the detailed evaluation object for that campus.
+
+Example of final desired JSON structure:
+{{ # Note: Using double curlies to escape for f-string, then single for JSON
+  "TCH_MAIN_TMC": { ... evaluation for TCH_MAIN_TMC ... },
+  "TCH_WOODLANDS": { ... evaluation for TCH_WOODLANDS ... },
+  // ... other campuses ...
+}}
+
+Your Output (JSON only):
+
+2025-05-25 18:28:49,181 - __main__ - DEBUG - text_interface.execute_llm_chat_completion:204 - [Step 3 Consolidation] Using JSON schema for response_format: {
+  "type": "json_schema",
+  "json_schema": {
+    "name": "step_3_consolidation_schema",
+    "strict": "true",
+    "schema": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

@@ -92,10 +92,14 @@ class HospitalSearch:
                         )
                         if location:
                             self.hospitals_cache[hospital["name"]] = {
-                                "latitude": location.latitude,
-                                "longitude": location.longitude,
-                                "address": hospital["address"],
-                                "campus_id": "",  # External hospital, no campus ID
+                                "name": hospital["name"],
+                                "address": location.address if location else hospital.get("address", hospital["name"]),
+                                "latitude": location.latitude if location else None,
+                                "longitude": location.longitude if location else None,
+                                "campus_id": f"EXT_{hospital['name'].replace(' ', '_').upper()[:30]}",  # Ensure non-empty ID
+                                "source": "geocoded_preset",
+                                # Bed census would typically not be available here unless fetched separately
+                                "bed_census": None 
                             }
                     except (GeocoderTimedOut, GeocoderUnavailable) as e:
                         logger.warning(
@@ -146,7 +150,8 @@ class HospitalSearch:
                             "latitude": location.latitude,
                             "longitude": location.longitude,
                             "address": location.address,
-                            "campus_id": "",
+                            "campus_id": f"GEO_NOMINATIM_{location.latitude}_{location.longitude}", # Ensure non-empty ID
+                            "source": "geocoded_query",
                         }
                     )
             except (GeocoderTimedOut, GeocoderUnavailable) as e:

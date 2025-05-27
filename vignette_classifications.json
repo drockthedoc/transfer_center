@@ -1,0 +1,1015 @@
+[
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Telemetry",
+    "criterion_disposition": "AC Exclusion, PICU Accept",
+    "criterion_keywords": [
+      "cardiac monitoring",
+      "heart monitor",
+      "ECG monitoring",
+      "EKG monitoring",
+      "arrhythmia monitoring",
+      "dysrhythmia monitoring",
+      "continuous cardiac monitoring",
+      "Holter monitor",
+      "event monitor",
+      "tele",
+      "rhythm strip",
+      "cardiac event recording"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have any indication of cardiac monitoring or arrhythmia monitoring in his history or vitals."
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Non-rebreather mask for respiratory distress",
+    "criterion_disposition": "AC Exclusion, PICU Accept",
+    "criterion_keywords": [
+      "NRB",
+      "non-rebreather",
+      "high flow oxygen",
+      "severe respiratory distress",
+      "hypoxia",
+      "oxygen mask",
+      "respiratory support",
+      "breathing difficulty",
+      "increased work of breathing",
+      "oxygen saturation low",
+      "respiratory compromise"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have severe respiratory distress or hypoxia."
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Continuous beta agonist treatment",
+    "criterion_disposition": "AC Exclusion, PICU Accept",
+    "criterion_keywords": [
+      "continuous neb",
+      "terbutaline drip",
+      "continuous albuterol",
+      "continuous nebulizer",
+      "status asthmaticus",
+      "severe asthma exacerbation",
+      "bronchodilator infusion",
+      "beta-2 agonist infusion",
+      "continuous bronchodilator therapy",
+      "unremitting wheezing requiring continuous treatment",
+      "refractory wheezing needing ongoing beta-agonist",
+      "severe bronchospasm",
+      "constant nebulization"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a history of continuous beta agonist treatment."
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "CRS Score 4-5",
+    "criterion_disposition": "AC Exclusion, PICU Accept",
+    "criterion_keywords": [
+      "CRS 4",
+      "CRS 5",
+      "clinical respiratory score 4",
+      "clinical respiratory score 5",
+      "pediatric respiratory score",
+      "respiratory distress score",
+      "moderate respiratory distress",
+      "asthma score",
+      "bronchiolitis score",
+      "respiratory assessment score 4-5"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a CRS score of 4 or 5"
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "CRS Score >=6 (and not improving)",
+    "criterion_disposition": "Community Exclusion",
+    "criterion_keywords": [
+      "CRS 6",
+      "CRS 7",
+      "CRS 8",
+      "CRS 9",
+      "CRS 10",
+      "CRS 11",
+      "CRS 12",
+      "clinical respiratory score 6+",
+      "clinical respiratory score six or greater",
+      "severe respiratory distress",
+      "worsening respiratory status",
+      "pediatric respiratory failure",
+      "impending respiratory failure",
+      "high CRS score",
+      "unresponsive to treatment",
+      "failing respiratory effort"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The CRS score is not provided in the vignette"
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "HFNC (max flow for cannula size and not improving)",
+    "criterion_disposition": "AC Exclusion, PICU Accept",
+    "criterion_keywords": [
+      "HFNC failure",
+      "high flow nasal cannula failure",
+      "max flow HFNC not improving",
+      "worsening despite max HFNC",
+      "escalating respiratory support post-HFNC",
+      "refractory hypoxemia on HFNC",
+      "persistent respiratory distress on max high flow",
+      "Vapotherm failure",
+      "Optiflow failure",
+      "non-responsive to high flow oxygen therapy",
+      "high flow nasal cannula",
+      "HFNC",
+      "Vapotherm",
+      "Optiflow",
+      "heated humidified high flow",
+      "maximum HFNC settings",
+      "failed high flow support"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have respiratory distress or hypoxemia to warrant HFNC therapy."
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Glasgow Coma (non-trauma) Score <9",
+    "criterion_disposition": "AC Exclusion, PICU Accept",
+    "criterion_keywords": [
+      "GCS <9",
+      "Glasgow Coma Scale less than 9",
+      "low GCS",
+      "altered mental status",
+      "AMS",
+      "decreased level of consciousness",
+      "LOC",
+      "unresponsive",
+      "comatose",
+      "stupor",
+      "obtunded",
+      "severe neurological impairment",
+      "non-traumatic brain injury",
+      "medical coma",
+      "GCS 3",
+      "GCS 4",
+      "GCS 5",
+      "GCS 6",
+      "GCS 7",
+      "GCS 8"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a non-traumatic brain injury. The Glasgow Coma Scale score is not provided in the vignette."
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Glasgow Coma (non-trauma) Score 10-14",
+    "criterion_disposition": "AC Exclusion, PICU Accept",
+    "criterion_keywords": [
+      "GCS 10",
+      "GCS 11",
+      "GCS 12",
+      "GCS 13",
+      "GCS 14",
+      "Glasgow Coma Scale 10-14",
+      "moderate neurological impairment",
+      "altered mental status",
+      "AMS",
+      "lethargy",
+      "confusion",
+      "drowsiness",
+      "non-traumatic brain injury",
+      "somnolence",
+      "reduced awareness"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have moderate neurological impairment, altered mental status, or non-traumatic brain injury. GCS score is 15."
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Hourly or q2 hr assessments/treatments without expected imminent improvement (e.g., unstable vital signs requiring frequent checks, complex medication titration, intensive respiratory treatments)",
+    "criterion_disposition": "AC Exclusion, PICU Accept",
+    "criterion_keywords": [
+      "frequent assessments",
+      "q1h assessments",
+      "q2h assessments",
+      "frequent treatments",
+      "q1h treatments",
+      "q2h treatments",
+      "unstable vital signs",
+      "hemodynamic instability",
+      "frequent vital sign checks",
+      "complex medication titration",
+      "vasoactive drips",
+      "insulin drip",
+      "frequent medication adjustments",
+      "intensive respiratory treatments",
+      "frequent nebulizers",
+      "chest physiotherapy",
+      "pulmonary toilet",
+      "no expected improvement",
+      "prolonged instability",
+      "high nursing workload",
+      "intensive monitoring",
+      "continuous observation",
+      "close monitoring needed"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have unstable vital signs requiring frequent checks or complex medication titration. The patient also does not require intensive respiratory treatments. Therefore, the exclusion criterion does not apply."
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Aggressive fluid resuscitation (>60 cc/kg)",
+    "criterion_disposition": "AC Exclusion, PICU Accept",
+    "criterion_keywords": [
+      "large volume fluid bolus",
+      "fluid overload risk",
+      "septic shock",
+      "hypovolemic shock",
+      "dehydration with shock",
+      "fluid resuscitation",
+      ">60ml/kg fluids",
+      "aggressive hydration",
+      "shock",
+      "poor perfusion",
+      "capillary refill delayed",
+      "large fluid challenge",
+      "multiple fluid boluses"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have shock or dehydration. Therefore, aggressive fluid resuscitation is not indicated."
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Continuous EEG monitoring",
+    "criterion_disposition": "Community Exclusion",
+    "criterion_keywords": [
+      "cEEG",
+      "EEG monitoring",
+      "seizure monitoring",
+      "status epilepticus monitoring",
+      "non-convulsive status epilepticus",
+      "NCSE",
+      "subclinical seizures",
+      "continuous electroencephalogram",
+      "brain wave monitoring",
+      "epilepsy monitoring",
+      "prolonged EEG",
+      "bedside EEG monitoring"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a neurological condition that would require continuous EEG monitoring."
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Hypothermia (<97F), q1 temp checks, Bare hugger warmer",
+    "criterion_disposition": "Community Exclusion",
+    "criterion_keywords": [
+      "low body temperature",
+      "hypothermic",
+      "temperature <97F",
+      "temperature <36.1C",
+      "frequent temperature checks",
+      "q1h temperature",
+      "active rewarming",
+      "Bair Hugger",
+      "forced-air warmer",
+      "warming blanket",
+      "cold stress",
+      "neonatal hypothermia",
+      "pediatric hypothermia",
+      "temperature instability",
+      "therapeutic hypothermia management (if not for cooling)"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient's temperature is within normal range"
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Infants weighing <2.5 kg",
+    "criterion_disposition": "Community Exclusion (X+ [cite: 12])",
+    "criterion_keywords": [
+      "infant <2500g",
+      "low birth weight infant",
+      "LBW",
+      "small baby",
+      "neonate <2.5kg",
+      "premature infant",
+      "small for gestational age",
+      "SGA",
+      "weight less than 2.5 kilograms",
+      "very low birth weight",
+      "VLBW (if applicable contextually)",
+      "extremely low birth weight",
+      "ELBW (if applicable contextually)"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient's weight is above the specified range for this criterion."
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "obstetric_maternal_care_exclusions",
+    "criterion_condition": "Primary obstetric or maternal care (e.g., labor and delivery, management of pregnancy complications)",
+    "criterion_disposition": "West Campus Exclusion (Refer to Pavilion for Women or appropriate OB facility)",
+    "criterion_keywords": [
+      "pregnancy West Katy",
+      "obstetrics West Katy",
+      "maternal care West Katy",
+      "labor West Katy",
+      "delivery West Katy",
+      "no OB services West Katy"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient is not pregnant or in labor/delivery"
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "obstetric_maternal_care_exclusions",
+    "criterion_condition": "Patient requiring admission primarily for obstetric reasons",
+    "criterion_disposition": "West Campus Exclusion (Refer to Pavilion for Women)",
+    "criterion_keywords": [
+      "pregnant patient admission West Katy",
+      "maternal health admission West Katy",
+      "OB admission West Katy"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have obstetric reasons for admission"
+  },
+  {
+    "criterion_campus": "west_campus",
+    "criterion_category": "obstetric_maternal_care_exclusions",
+    "criterion_condition": "Maternal patient with Eclamptic Seizure/Eclampsia or other acute neurological event during pregnancy/postpartum",
+    "criterion_disposition": "West Campus Exclusion (Refer to Pavilion for Women or appropriate OB/Neuro facility)",
+    "criterion_keywords": [
+      "eclampsia west_campus",
+      "eclamptic seizure west_campus",
+      "maternal seizure west_campus",
+      "pregnancy seizure west_campus",
+      "postpartum seizure west_campus",
+      "neurology obstetric west_campus"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient is not pregnant or postpartum"
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Telemetry",
+    "criterion_disposition": "AC Exclusion, PICU Accept (Same as West Campus)",
+    "criterion_keywords": [
+      "cardiac monitoring",
+      "heart monitor",
+      "ECG monitoring",
+      "EKG monitoring",
+      "arrhythmia monitoring",
+      "dysrhythmia monitoring",
+      "continuous cardiac monitoring",
+      "Holter monitor",
+      "event monitor",
+      "tele",
+      "rhythm strip",
+      "cardiac event recording"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have any cardiac monitoring devices attached or ordered."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Non-rebreather mask for respiratory distress",
+    "criterion_disposition": "AC Exclusion, PICU Accept (Same as West Campus)",
+    "criterion_keywords": [
+      "NRB",
+      "non-rebreather",
+      "high flow oxygen",
+      "severe respiratory distress",
+      "hypoxia",
+      "oxygen mask",
+      "respiratory support",
+      "breathing difficulty",
+      "increased work of breathing",
+      "oxygen saturation low",
+      "respiratory compromise"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have respiratory distress as indicated by normal vital signs and no mention of breathing difficulty or increased work of breathing in the vignette."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Continuous beta agonist treatment",
+    "criterion_disposition": "AC Exclusion, PICU Accept (Same as West Campus)",
+    "criterion_keywords": [
+      "continuous neb",
+      "terbutaline drip",
+      "continuous albuterol",
+      "continuous nebulizer",
+      "status asthmaticus",
+      "severe asthma exacerbation",
+      "bronchodilator infusion",
+      "beta-2 agonist infusion",
+      "continuous bronchodilator therapy",
+      "unremitting wheezing requiring continuous treatment",
+      "refractory wheezing needing ongoing beta-agonist",
+      "severe bronchospasm",
+      "constant nebulization"
+    ],
+    "llm_classification": false,
+    "llm_reason": "No continuous beta agonist treatment is mentioned in the vignette."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "CRS Score 4-5",
+    "criterion_disposition": "AC Exclusion, PICU Accept (Same as West Campus)",
+    "criterion_keywords": [
+      "CRS 4",
+      "CRS 5",
+      "clinical respiratory score 4",
+      "clinical respiratory score 5",
+      "pediatric respiratory score",
+      "respiratory distress score",
+      "moderate respiratory distress",
+      "asthma score",
+      "bronchiolitis score",
+      "respiratory assessment score 4-5"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a CRS score of 4-5"
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "CRS Score >=6 (and not improving)",
+    "criterion_disposition": "Community Exclusion (Same as West Campus)",
+    "criterion_keywords": [
+      "CRS 6",
+      "CRS 7",
+      "CRS 8",
+      "CRS 9",
+      "CRS 10",
+      "CRS 11",
+      "CRS 12",
+      "clinical respiratory score 6+",
+      "clinical respiratory score six or greater",
+      "severe respiratory distress",
+      "worsening respiratory status",
+      "pediatric respiratory failure",
+      "impending respiratory failure",
+      "high CRS score",
+      "unresponsive to treatment",
+      "failing respiratory effort"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a CRS score of 6 or greater and is improving."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "HFNC (max flow for cannula size and not improving)",
+    "criterion_disposition": "AC Exclusion, PICU Accept (Same as West Campus)",
+    "criterion_keywords": [
+      "HFNC failure",
+      "high flow nasal cannula failure",
+      "max flow HFNC not improving",
+      "worsening despite max HFNC",
+      "escalating respiratory support post-HFNC",
+      "refractory hypoxemia on HFNC",
+      "persistent respiratory distress on max high flow",
+      "Vapotherm failure",
+      "Optiflow failure",
+      "non-responsive to high flow oxygen therapy",
+      "high flow nasal cannula",
+      "HFNC",
+      "Vapotherm",
+      "Optiflow",
+      "heated humidified high flow",
+      "maximum HFNC settings",
+      "failed high flow support"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have respiratory distress or hypoxemia to warrant HFNC therapy."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Glasgow Coma (non-trauma) Score <9",
+    "criterion_disposition": "AC Exclusion, PICU Accept (Same as West Campus)",
+    "criterion_keywords": [
+      "GCS <9",
+      "Glasgow Coma Scale less than 9",
+      "low GCS",
+      "altered mental status",
+      "AMS",
+      "decreased level of consciousness",
+      "LOC",
+      "unresponsive",
+      "comatose",
+      "stupor",
+      "obtunded",
+      "severe neurological impairment",
+      "non-traumatic brain injury",
+      "medical coma",
+      "GCS 3",
+      "GCS 4",
+      "GCS 5",
+      "GCS 6",
+      "GCS 7",
+      "GCS 8"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a non-traumatic brain injury. The Glasgow Coma Scale score is not provided in the vignette."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Glasgow Coma (non-trauma) Score 10-14",
+    "criterion_disposition": "AC Exclusion, PICU Accept (Same as West Campus)",
+    "criterion_keywords": [
+      "GCS 10",
+      "GCS 11",
+      "GCS 12",
+      "GCS 13",
+      "GCS 14",
+      "Glasgow Coma Scale 10-14",
+      "moderate neurological impairment",
+      "altered mental status",
+      "AMS",
+      "lethargy",
+      "confusion",
+      "drowsiness",
+      "non-traumatic brain injury",
+      "somnolence",
+      "reduced awareness"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient's GCS score of 15 (eyes open to voice) is within normal limits and does not meet the criteria for moderate neurological impairment or altered mental status."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Hourly or q2 hr assessments/treatments without expected imminent improvement (e.g., unstable vital signs requiring frequent checks, complex medication titration, intensive respiratory treatments)",
+    "criterion_disposition": "AC Exclusion, PICU Accept (Same as West Campus)",
+    "criterion_keywords": [
+      "frequent assessments",
+      "q1h assessments",
+      "q2h assessments",
+      "frequent treatments",
+      "q1h treatments",
+      "q2h treatments",
+      "unstable vital signs",
+      "hemodynamic instability",
+      "frequent vital sign checks",
+      "complex medication titration",
+      "vasoactive drips",
+      "insulin drip",
+      "frequent medication adjustments",
+      "intensive respiratory treatments",
+      "frequent nebulizers",
+      "chest physiotherapy",
+      "pulmonary toilet",
+      "no expected improvement",
+      "prolonged instability",
+      "high nursing workload",
+      "intensive monitoring",
+      "continuous observation",
+      "close monitoring needed"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have unstable vital signs requiring frequent checks or complex medication titration. The patient's vital signs are stable and there is no need for intensive respiratory treatments or vasoactive drips."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Aggressive fluid resuscitation (>60 cc/kg)",
+    "criterion_disposition": "AC Exclusion, PICU Accept (Same as West Campus)",
+    "criterion_keywords": [
+      "large volume fluid bolus",
+      "fluid overload risk",
+      "septic shock",
+      "hypovolemic shock",
+      "dehydration with shock",
+      "fluid resuscitation",
+      ">60ml/kg fluids",
+      "aggressive hydration",
+      "shock",
+      "poor perfusion",
+      "capillary refill delayed",
+      "large fluid challenge",
+      "multiple fluid boluses"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have shock or dehydration. Therefore, aggressive fluid resuscitation is not indicated."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Continuous EEG monitoring",
+    "criterion_disposition": "Community Exclusion (Same as West Campus)",
+    "criterion_keywords": [
+      "cEEG",
+      "EEG monitoring",
+      "seizure monitoring",
+      "status epilepticus monitoring",
+      "non-convulsive status epilepticus",
+      "NCSE",
+      "subclinical seizures",
+      "continuous electroencephalogram",
+      "brain wave monitoring",
+      "epilepsy monitoring",
+      "prolonged EEG",
+      "bedside EEG monitoring"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a neurological condition or history of seizures."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Hypothermia (<97F), q1 temp checks, Bare hugger warmer",
+    "criterion_disposition": "Community Exclusion (Same as West Campus)",
+    "criterion_keywords": [
+      "low body temperature",
+      "hypothermic",
+      "temperature <97F",
+      "temperature <36.1C",
+      "frequent temperature checks",
+      "q1h temperature",
+      "active rewarming",
+      "Bair Hugger",
+      "forced-air warmer",
+      "warming blanket",
+      "cold stress",
+      "neonatal hypothermia",
+      "pediatric hypothermia",
+      "temperature instability",
+      "therapeutic hypothermia management (if not for cooling)"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient's temperature is within normal limits (103F)."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "physiologic_parameters_monitoring_needs",
+    "criterion_condition": "Infants weighing <2.5 kg",
+    "criterion_disposition": "Community Exclusion (X+ [cite: 12]). *Discuss with Woodlands NICU Attending*[cite: 9, 28, 29]. WL NICU may accept.",
+    "criterion_keywords": [
+      "infant <2500g",
+      "low birth weight infant",
+      "LBW",
+      "small baby",
+      "neonate <2.5kg",
+      "premature infant",
+      "small for gestational age",
+      "SGA",
+      "weight less than 2.5 kilograms",
+      "very low birth weight",
+      "VLBW",
+      "extremely low birth weight",
+      "ELBW",
+      "Woodlands NICU infant weight"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient's weight is outside the specified range for this criterion."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "obstetric_maternal_care_exclusions",
+    "criterion_condition": "Primary obstetric or maternal care (e.g., labor and delivery, management of pregnancy complications)",
+    "criterion_disposition": "Woodlands Campus Exclusion (Refer to Pavilion for Women or appropriate OB facility)",
+    "criterion_keywords": [
+      "pregnancy Woodlands",
+      "obstetrics Woodlands",
+      "maternal care Woodlands",
+      "labor Woodlands",
+      "delivery Woodlands",
+      "no OB services Woodlands"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient's condition does not match any of the keywords associated with this exclusion criterion."
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "obstetric_maternal_care_exclusions",
+    "criterion_condition": "Patient requiring admission primarily for obstetric reasons",
+    "criterion_disposition": "Woodlands Campus Exclusion (Refer to Pavilion for Women)",
+    "criterion_keywords": [
+      "pregnant patient admission Woodlands",
+      "maternal health admission Woodlands",
+      "OB admission Woodlands"
+    ],
+    "llm_classification": false,
+    "llm_reason": "No obstetric reasons are mentioned in the vignette"
+  },
+  {
+    "criterion_campus": "the_woodlands_campus",
+    "criterion_category": "obstetric_maternal_care_exclusions",
+    "criterion_condition": "Maternal patient with Eclamptic Seizure/Eclampsia or other acute neurological event during pregnancy/postpartum",
+    "criterion_disposition": "Woodlands Campus Exclusion (Refer to Pavilion for Women or appropriate OB/Neuro facility)",
+    "criterion_keywords": [
+      "eclampsia the_woodlands_campus",
+      "eclamptic seizure the_woodlands_campus",
+      "maternal seizure the_woodlands_campus",
+      "pregnancy seizure the_woodlands_campus",
+      "postpartum seizure the_woodlands_campus",
+      "neurology obstetric the_woodlands_campus"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient is male and there is no mention of pregnancy or postpartum period in the vignette."
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "administrative_review_medical_control",
+    "criterion_condition": "Futile diagnosis or condition",
+    "criterion_disposition": "Administrative Exclusion",
+    "criterion_keywords": [
+      "futility",
+      "terminal condition no intervention",
+      "comfort care only consideration"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a terminal condition or comfort care only consideration."
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "administrative_review_medical_control",
+    "criterion_condition": "Greater than 21 years of age, unless current TCH patient",
+    "criterion_disposition": "Administrative Exclusion (Refer to Adult Facility)",
+    "criterion_keywords": [
+      "adult patient",
+      "age >21",
+      "transition to adult care"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient's age is outside the specified range for this criterion."
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "administrative_review_medical_control",
+    "criterion_condition": "No change in level of care or services provided",
+    "criterion_disposition": "Administrative Exclusion (Lateral Transfer - No Escalation)",
+    "criterion_keywords": [
+      "lateral transfer",
+      "no escalation of care",
+      "same services"
+    ],
+    "llm_classification": true,
+    "llm_reason": "The patient's care and services will not change after evaluation at OSH."
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "nicu_exclusions_system_wide",
+    "criterion_condition": "Nasal discharge (clear or purulent) or cough",
+    "criterion_disposition": "NICU Exclusion (Viral Contact/Symptoms)",
+    "criterion_keywords": [
+      "neonate runny nose",
+      "newborn cough",
+      "infant URI symptoms NICU"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient's age is outside the specified range for this criterion."
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "nicu_exclusions_system_wide",
+    "criterion_condition": "Neonate with respiratory distress or apnea with contacts with a viral illness (cough, cold, runny nose, fever)",
+    "criterion_disposition": "NICU Exclusion (Viral Contact/Symptoms with Distress)",
+    "criterion_keywords": [
+      "neonate sick contact resp distress",
+      "newborn apnea viral exposure",
+      "infant respiratory illness contact"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a viral illness contact"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "nicu_exclusions_system_wide",
+    "criterion_condition": "Neonate with severe hypoxemia and lactic acidosis require on-call cardiologist approval prior to accepting",
+    "criterion_disposition": "NICU Exclusion (Cardiology Approval Required for Severe Hypoxemia/Acidosis)",
+    "criterion_keywords": [
+      "neonate critical hypoxemia",
+      "newborn lactic acidosis severe",
+      "infant cardiologist consult hypoxia"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient's age is outside the specified range for this criterion."
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Acute Pulmonary Arterial Hypertension Crisis",
+    "criterion_disposition": "Austin Campus Exclusion (Transfer to Main Campus)",
+    "criterion_keywords": [
+      "PAH crisis",
+      "acute pulmonary hypertension decompensation",
+      "severe PH episode"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a history of acute pulmonary arterial hypertension crisis"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Burn patients >10% or perineal burns, airway burns",
+    "criterion_disposition": "Austin Campus Exclusion (Refer to Burn Center)",
+    "criterion_keywords": [
+      "major burn Austin",
+      "extensive burn Austin",
+      "burn >10% BSA Austin",
+      "perineal burn Austin",
+      "airway burn Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a burn injury."
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Cardiac Surgery patients \u2013 requires on-call cardiologist approval prior to accepting",
+    "criterion_disposition": "Austin Campus Exclusion (Cardiology Approval Required Post-Op)",
+    "criterion_keywords": [
+      "post-op cardiac surgery Austin",
+      "cardiac surgery transfer Austin",
+      "cardiologist approval cardiac surgery"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient has not had cardiac surgery and does not require a cardiologist approval prior to accepting"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Cystic Fibrosis \u2013 acute/chronic complications of CF",
+    "criterion_disposition": "Austin Campus Exclusion (Transfer to Main Campus CF Center)",
+    "criterion_keywords": [
+      "CF exacerbation Austin",
+      "cystic fibrosis complications Austin",
+      "advanced CF care Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a history of cystic fibrosis"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Open Globes",
+    "criterion_disposition": "Austin Campus Exclusion (Ophthalmology Emergency - Transfer)",
+    "criterion_keywords": [
+      "open globe injury Austin",
+      "eye rupture Austin",
+      "penetrating eye trauma Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have an open globe injury"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Maternal patient requiring ICU Level Care",
+    "criterion_disposition": "Austin Campus Exclusion (Refer to Adult ICU/OB High Risk)",
+    "criterion_keywords": [
+      "maternal ICU Austin",
+      "pregnant ICU care Austin",
+      "critical obstetric patient Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient is not pregnant"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Maternal patient with Placenta Accreta",
+    "criterion_disposition": "Austin Campus Exclusion (OB High Risk - Refer)",
+    "criterion_keywords": [
+      "placenta accreta Austin",
+      "high risk delivery accreta Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a maternal history of placenta accreta"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Maternal patient with HELLP Syndrome",
+    "criterion_disposition": "Austin Campus Exclusion (OB High Risk - Refer)",
+    "criterion_keywords": [
+      "HELLP syndrome Austin",
+      "severe preeclampsia HELLP Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a maternal history of HELLP syndrome or severe preeclampsia"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Maternal patient with Eclamptic Seizure/Eclampsia",
+    "criterion_disposition": "Austin Campus Exclusion (OB High Risk - Refer)",
+    "criterion_keywords": [
+      "eclampsia Austin",
+      "eclamptic seizure Austin",
+      "maternal seizure Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a maternal history."
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Maternal patient requiring Mass Transfusion",
+    "criterion_disposition": "Austin Campus Exclusion (OB High Risk/MTP - Refer)",
+    "criterion_keywords": [
+      "massive transfusion protocol maternal Austin",
+      "obstetric hemorrhage MTP Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient's condition does not match any of the keywords associated with this exclusion criterion."
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Maternal patient Post CPR/ROSC",
+    "criterion_disposition": "Austin Campus Exclusion (Post-Cardiac Arrest Care - Refer)",
+    "criterion_keywords": [
+      "maternal cardiac arrest Austin",
+      "ROSC maternal Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a maternal history of cardiac arrest or ROSC"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Maternal patient with Sepsis",
+    "criterion_disposition": "Austin Campus Exclusion (Sepsis Care - Refer)",
+    "criterion_keywords": [
+      "maternal sepsis Austin",
+      "puerperal sepsis Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient does not have a maternal history of sepsis"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Maternal patient requiring Telemetry Monitoring",
+    "criterion_disposition": "Austin Campus Exclusion (Cardiac Monitoring - Refer)",
+    "criterion_keywords": [
+      "maternal telemetry Austin",
+      "cardiac monitoring pregnant Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "The patient is not maternal"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Psychiatric (acute, requiring specialized inpatient psych facility)",
+    "criterion_disposition": "Austin Campus Exclusion (Refer to Psychiatric Facility)",
+    "criterion_keywords": [
+      "acute psychiatric crisis Austin",
+      "inpatient psych needed Austin",
+      "behavioral health emergency Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "No mention of acute psychiatric crisis or need for specialized inpatient psych facility"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Transplant \u2013 rejection or recent surgery (including BMT)",
+    "criterion_disposition": "Austin Campus Exclusion (Transfer to Transplant Center - Main Campus)",
+    "criterion_keywords": [
+      "transplant rejection Austin",
+      "post-transplant complication Austin",
+      "BMT recent Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "No mention of transplant or recent surgery in the vignette"
+  },
+  {
+    "criterion_campus": "TCH_NORTH_AUSTIN",
+    "criterion_category": "austin_campus_specific_exclusions",
+    "criterion_condition": "Sexual Assault requiring SANE Exam \u2013 only coverage Monday 1000-Friday 2300",
+    "criterion_disposition": "Austin Campus Exclusion (Outside SANE Coverage Hours - Refer)",
+    "criterion_keywords": [
+      "SANE exam Austin off hours",
+      "sexual assault exam weekend Austin",
+      "forensic exam unavailable Austin"
+    ],
+    "llm_classification": false,
+    "llm_reason": "This exclusion criterion is not applicable to a pediatric patient."
+  }
+]

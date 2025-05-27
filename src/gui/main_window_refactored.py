@@ -38,7 +38,10 @@ from src.core.models import (
     TransferRequest,
     TransportMode,
     WeatherData,
-    LLMReasoningDetails # Added import
+    LLMReasoningDetails, # Added import
+    BedCensus, # Added BedCensus import
+    CareLevel, # Added CareLevel for completeness, though not directly used in this change
+    Specialty, # Added Specialty for completeness
 )
 from src.gui.widgets.census_data import CensusDataWidget
 from src.gui.widgets.hospital_search_widget import HospitalSearchWidget
@@ -46,6 +49,7 @@ from src.gui.widgets.llm_settings import LLMSettingsWidget
 from src.gui.widgets.patient_info import PatientInfoWidget
 from src.gui.widgets.recommendation_output import RecommendationOutputWidget
 from src.gui.widgets.transport_options import TransportOptionsWidget
+from src.gui.hospital_search import HospitalSearch # Added import
 from src.llm.llm_classifier_refactored import LLMClassifier
 from src.utils.census_updater import update_census
 from src.utils.transport.estimator import TransportTimeEstimator
@@ -75,6 +79,12 @@ class TransferCenterMainWindow(QMainWindow):
         self.llm_classifier = LLMClassifier()
         self.transport_estimator = TransportTimeEstimator()
         self.settings = QSettings("TCH", "TransferCenter")
+
+        # Initialize current_sending_facility_location
+        self.current_sending_facility_location: Optional[Location] = None
+
+        # Initialize the hospital search service
+        self.hospital_search_service = HospitalSearch()
 
         self.last_census_update = self.settings.value(
             "census/last_update", "Never", str
@@ -189,15 +199,21 @@ class TransferCenterMainWindow(QMainWindow):
         self.hospital_search_widget.hospital_selected.connect(
             self._handle_hospital_selection
         )
+        # Connect the new search_requested signal
+        self.hospital_search_widget.search_requested.connect(
+            self._handle_hospital_search_request
+        )
         left_layout.addWidget(self.hospital_search_widget)
 
         self.transport_widget = TransportOptionsWidget()
         left_layout.addWidget(self.transport_widget)
 
         self.census_widget = CensusDataWidget()
-        self.census_widget.census_updated.connect(self._update_census_data)
-        self.census_widget.display_summary.connect(self._display_census_summary)
-        self.census_widget.browse_button.clicked.connect(self._browse_census_file)
+        # Remove connections to signals no longer emitted by the refactored CensusDataWidget
+        # self.census_widget.census_updated.connect(self._update_census_data)
+        # self.census_widget.display_summary.connect(self._display_census_summary)
+        # self.census_widget.browse_button.clicked.connect(self._browse_census_file)
+        # Census data updates will be pushed to this widget by the main window
         left_layout.addWidget(self.census_widget)
 
         self.submit_button = QPushButton("Generate Recommendation")
@@ -230,8 +246,97 @@ class TransferCenterMainWindow(QMainWindow):
         self.setStatusBar(self.statusBar)
         self.statusBar.showMessage("Ready")
 
+    # --- Handler for hospital search requests ---
+    def _handle_hospital_search_request(self, query: str):
+        logger.info(f"Hospital search requested with query: {query}")
+        found_hospitals_data: List[Dict] = self.hospital_search_service.search_hospitals(query)
+        
+        processed_hospitals: List[HospitalCampus] = []
+
+        if found_hospitals_data:
+            for hospital_dict in found_hospitals_data:
+                # The HospitalSearch service returns dicts. We need to convert them to HospitalCampus objects.
+                # BedCensus might not be available from this search, so it can be None.
+                loc = Location(latitude=hospital_dict.get('latitude', 0.0), longitude=hospital_dict.get('longitude', 0.0))
+                # Attempt to get BedCensus if available from a more detailed source later, or if the hospital_dict contains it.
+                # For now, we assume it's not directly available from the basic search result from HospitalSearch.
+                # If the original HospitalSearch loaded census data into its cache, we could use it here.
+                # Let's check if the hospital_dict from HospitalSearch might contain 'bed_census'
+                bed_census_data = hospital_dict.get('bed_census') # This key might not exist
+                bed_census_obj: Optional[BedCensus] = None # Ensure type hint for clarity
+                if isinstance(bed_census_data, dict):
+                     bed_census_obj = BedCensus(
+                        total_beds=bed_census_data.get('total_beds',0),
+                        available_beds=bed_census_data.get('available_beds',0),
+                        icu_beds_total=bed_census_data.get('icu_beds_total',0),
+                        icu_beds_available=bed_census_data.get('icu_beds_available',0),
+                        nicu_beds_total=bed_census_data.get('nicu_beds_total',0),
+                        nicu_beds_available=bed_census_data.get('nicu_beds_available',0),
+                        last_updated=bed_census_data.get('last_updated', datetime.now().isoformat())
+                    )
+                elif isinstance(bed_census_data, BedCensus): # If already an object
+                    bed_census_obj = bed_census_data
+
+                # campus_id is now expected to be non-empty from HospitalSearch service
+                campus_id = hospital_dict.get('campus_id')
+                if not campus_id: # Should not happen, but as a fallback
+                    logger.warning(f"Received hospital data with empty campus_id for {hospital_dict.get('name')}. Generating one.")
+                    campus_id = f"FALLBACK_{hospital_dict.get('name', 'UNKNOWN').replace(' ', '_').upper()[:30]}"
+
+                campus = HospitalCampus(
+                    campus_id=campus_id,
+                    name=hospital_dict.get('name', 'N/A'),
+                    location=loc,
+                    address=hospital_dict.get('address'),
+                    bed_census=bed_census_obj, # This is now Optional[BedCensus]
+                    # other fields will use defaults if not provided in hospital_dict
+                )
+                processed_hospitals.append(campus)
+        elif query: # If primary search failed, try geocoding the query itself as a fallback
+            lat, lon = self.hospital_search_service.geocode_address(query)
+            if lat is not None and lon is not None:
+                logger.info(f"Found location via geocoding fallback: {query} at ({lat}, {lon})")
+                loc = Location(latitude=lat, longitude=lon)
+                # For a geocoded-only result, campus_id might be generic, name could be the query itself
+                campus = HospitalCampus(
+                    campus_id=f"GEO_{query.replace(' ', '_').upper()[:20]}", # Generic ID
+                    name=query, # Use the query as the name for the geocoded point
+                    location=loc,
+                    address=query, # Address is the query itself
+                    bed_census=None, # No census data for a raw geocoded point
+                    care_levels=[],
+                    specialties=[]
+                )
+                processed_hospitals.append(campus)
+
+        self.hospital_search_widget.update_search_results(processed_hospitals)
+
+        if processed_hospitals:
+            self.statusBar.showMessage(f"Found {len(processed_hospitals)} hospital(s)/location(s) for query: '{query}'")
+        else:
+            self.statusBar.showMessage(f"No results found for query: '{query}'")
+
     def _handle_hospital_selection(self, hospital_data):
-        self.statusBar.showMessage(f"Selected hospital: {hospital_data['name']}")
+        # hospital_data is now a HospitalCampus object
+        if isinstance(hospital_data, HospitalCampus):
+            self.statusBar.showMessage(f"Selected hospital: {hospital_data.name}")
+            # Update sending facility location if this widget is used for that purpose
+            # This assumes the hospital_search_widget can be used to set the sending facility
+            # For now, let's assume it updates a 'current_sending_facility' attribute
+            self.current_sending_facility_location = hospital_data.location 
+            logger.info(f"Sending facility location updated to: {hospital_data.location.latitude}, {hospital_data.location.longitude}")
+
+            # Update the census widget with the selected hospital's bed census data
+            if hasattr(hospital_data, 'bed_census') and hospital_data.bed_census:
+                self.census_widget.update_census_data(hospital_data.bed_census, datetime.now().strftime("%H:%M:%S"))
+            else:
+                self.census_widget.clear_display()
+                logger.info(f"No bed census data for selected hospital: {hospital_data.name}")
+        elif isinstance(hospital_data, dict): # Keep compatibility if old data format is somehow passed
+             self.statusBar.showMessage(f"Selected hospital (dict): {hospital_data.get('name', 'N/A')}")
+        else:
+            self.statusBar.showMessage("Hospital selection event with unexpected data type.")
+            logger.warning(f"_handle_hospital_selection received unexpected data type: {type(hospital_data)}")
 
     def _browse_census_file(self):
         file_path, _ = QFileDialog.getOpenFileName(
@@ -271,20 +376,20 @@ class TransferCenterMainWindow(QMainWindow):
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
                 self.last_census_update = timestamp
                 self.settings.setValue("census/last_update", timestamp)
-                self.census_widget.set_last_update(timestamp)
+                # self.census_widget.set_last_update(timestamp) # Removed
 
                 status_html = "<p><b>Census data updated successfully.</b></p>"
                 status_html += f"<p>Updated at: {timestamp}</p>"
                 status_html += f"<p>Updated {len(self.hospitals)} hospitals.</p>"
-                self.census_widget.set_status(status_html)
+                # self.census_widget.set_status(status_html) # Removed
                 self.statusBar.showMessage("Census data updated successfully")
             else:
-                self.census_widget.set_status("<p><b>Error updating census data. Check logs.</b></p>")
+                # self.census_widget.set_status("<p><b>Error updating census data. Check logs.</b></p>") # Removed
                 self.statusBar.showMessage("Error updating census data")
 
         except Exception as e:
             logger.error(f"Error updating census data: {str(e)}")
-            self.census_widget.set_status(f"<p><b>Error:</b> {str(e)}</p>")
+            # self.census_widget.set_status(f"<p><b>Error:</b> {str(e)}</p>") # Removed
             self.statusBar.showMessage("Error updating census data")
 
     def _display_census_summary(self):
@@ -305,7 +410,8 @@ class TransferCenterMainWindow(QMainWindow):
                 summary += f"<td>{bc.icu_beds_available}/{bc.icu_beds_total}</td>"
                 summary += f"<td>{bc.nicu_beds_available}/{bc.nicu_beds_total}</td></tr>"
             summary += "</table>"
-            self.recommendation_widget.set_recommendation({'main': summary}) # Display in main area
+            # self.recommendation_widget.set_recommendation({'main': summary}) # Display in main area # Removed
+            # self.recommendation_widget.set_recommendation(summary) # Removed
 
         except Exception as e:
             logger.error(f"Error displaying census summary: {str(e)}")
@@ -352,8 +458,8 @@ class TransferCenterMainWindow(QMainWindow):
             self.llm_settings_widget.api_url_input.setText(api_url)
             self._refresh_llm_models() 
 
-            self.census_widget.set_last_update(self.last_census_update)
-            self.census_widget.set_file_path(self.census_file_path)
+            # self.census_widget.set_last_update(self.last_census_update) # Removed
+            # self.census_widget.set_file_path(self.census_file_path) # Removed
 
         except Exception as e:
             logger.error(f"Error loading configuration: {str(e)}")
@@ -404,35 +510,52 @@ class TransferCenterMainWindow(QMainWindow):
         import traceback
         from datetime import datetime
         
-        self.recommendation_widget.clear()
+        self.recommendation_widget.clear_display() # Changed from clear()
+
         self.statusBar.showMessage("Preparing recommendation...")
         
         try:
-            patient_form_data = self.patient_widget.get_patient_data()
-            location_data = self.hospital_search_widget.get_location_data()
-            transport_data = self.transport_widget.get_transport_data()
+            # Get PatientData object directly from the refactored widget
+            patient_data_obj: Optional[PatientData] = self.patient_widget.get_patient_data()
             
-            if not patient_form_data.get("clinical_data"):
-                QMessageBox.warning(self, "Missing Data", "Please enter clinical data.")
-                return
-            if not location_data:
-                QMessageBox.warning(self, "Missing Data", "Please select a sending facility location.")
+            # Sending facility location is now set by _handle_hospital_selection
+            # and stored in self.current_sending_facility_location
+            sending_facility_loc: Optional[Location] = getattr(self, 'current_sending_facility_location', None)
+
+            # Transport data - assuming transport_widget.get_transport_data() is still valid
+            # If TransportOptionsWidget was also refactored to take a Recommendation object
+            # then this part might need to change or be removed if transport is decided later.
+            # For now, let's assume it provides some initial preferences.
+            transport_data = self.transport_widget.get_transport_data() if hasattr(self.transport_widget, 'get_transport_data') else {}
+            
+            if not patient_data_obj or not patient_data_obj.clinical_text:
+                QMessageBox.warning(self, "Missing Data", "Please enter clinical data for the patient.")
+                self.statusBar.showMessage("Submission failed: Missing clinical data.")
                 return
             
-            clinical_text = patient_form_data["clinical_data"]
+            if not sending_facility_loc:
+                QMessageBox.warning(self, "Missing Data", "Please select a sending facility from the hospital search.")
+                self.statusBar.showMessage("Submission failed: Missing sending facility location.")
+                return
+            
+            clinical_text = patient_data_obj.clinical_text
             
             # Use rule-based extraction as a base/fallback
-            basic_data_from_rules = self._extract_basic_data({}, clinical_text) # Pass empty dict as patient for this stage
+            # The PatientData object from patient_widget might already have some extracted_data
+            # if the widget itself does some initial parsing. For now, let's assume it's minimal.
+            basic_data_from_rules = self._extract_basic_data(patient_data_obj, clinical_text)
             
-            # Prepare PatientData object
-            patient = PatientData(
-                patient_id=patient_form_data.get("patient_id") or "UNKNOWN",
-                clinical_text=clinical_text,
-                extracted_data=basic_data_from_rules, # Start with rule-based
-                care_needs=basic_data_from_rules.get("keywords", []), # Placeholder, LLM might override
-                care_level=basic_data_from_rules.get("suggested_care_level", "General") # Placeholder
-            )
-            
+            # Update PatientData object with any further rule-based extractions if necessary
+            # or ensure the one from patient_widget is comprehensive enough.
+            # For simplicity, we'll use the patient_data_obj as is, assuming it's populated correctly.
+            # If patient_widget.get_patient_data() doesn't fill extracted_data, care_needs, etc.,
+            # then those would need to be populated here or in _extract_basic_data.
+            patient_data_obj.extracted_data.update(basic_data_from_rules) # Merge if patient_widget already did some
+            if not patient_data_obj.care_needs:
+                patient_data_obj.care_needs = basic_data_from_rules.get("keywords", [])
+            if not patient_data_obj.care_level or patient_data_obj.care_level == "Unknown": # Assuming default
+                 patient_data_obj.care_level = basic_data_from_rules.get("suggested_care_level", "General")
+
             # Scoring results (if applicable, adapt if you have a scoring_widget)
             scoring_results = None
             # if hasattr(self, "scoring_widget") and self.scoring_widget:
@@ -443,26 +566,25 @@ class TransferCenterMainWindow(QMainWindow):
 
             request = TransferRequest(
                 request_id=f"REQ_{datetime.now().strftime('%Y%m%d%H%M%S')}",
-                patient_data=patient, # PatientData object
+                patient_data=patient_data_obj, # Use the PatientData object from the widget
                 clinical_notes=clinical_text, # Keep raw notes too
-                sending_location=Location(
-                    latitude=location_data["latitude"],
-                    longitude=location_data["longitude"],
-                ),
+                sending_location=sending_facility_loc, # Use the Location object from hospital selection
                 requested_datetime=datetime.now(),
+                # transport_mode might be determined later or come from transport_data if still relevant
                 transport_mode=(
-                    TransportMode.GROUND_AMBULANCE if transport_data["transport_mode"] == "Ground"
-                    else TransportMode.HELICOPTER if transport_data["transport_mode"] == "Helicopter"
-                    else TransportMode.FIXED_WING
+                    TransportMode.GROUND_AMBULANCE if transport_data.get("transport_mode") == "Ground"
+                    else TransportMode.HELICOPTER if transport_data.get("transport_mode") == "Helicopter"
+                    else TransportMode.FIXED_WING if transport_data.get("transport_mode") == "Fixed Wing"
+                    else TransportMode.GROUND_AMBULANCE # Default to Ground Ambulance if no match or unknown
                 ),
                 transport_info={
-                    "type": transport_data["transport_type"],
-                    "mode": transport_data["transport_mode"],
-                    "departure_time": transport_data["departure_time"],
+                    "type": transport_data.get("transport_type"),
+                    "mode": transport_data.get("transport_mode"),
+                    "departure_time": transport_data.get("departure_time"),
                     # Store these here since they're not attributes of TransferRequest
                     "clinical_text": clinical_text,
                     "scoring_results": scoring_results,
-                    "human_suggestions": patient_form_data.get("human_suggestions"),
+                    "human_suggestions": patient_data_obj.extracted_data.get("human_suggestions"), # Example if it's part of extracted_data
                 },
             )
             
@@ -486,12 +608,12 @@ class TransferCenterMainWindow(QMainWindow):
         """
         import traceback
         
-        self.recommendation_widget.clear()
+        self.recommendation_widget.clear_display() # Changed from clear()
         self.statusBar.showMessage("Generating recommendation...")
         
         try:
             # Prepare data for LLM processing
-            clinical_text = request.clinical_notes
+            clinical_text = request.clinical_text # Corrected attribute
             human_suggestions = request.human_suggestions
             scoring_results = request.scoring_results
             patient_data_for_llm = request.patient_data # This is already a dict or None
@@ -508,7 +630,9 @@ class TransferCenterMainWindow(QMainWindow):
 
             # hospital_options and census_data are prepared earlier in this method
             logger.info(f"Passing {len(self.hospitals)} available hospitals (hospital_options) to LLMClassifier.process_text")
-            logger.info(f"Passing census_data to LLMClassifier.process_text: {'present' if self.census_widget.census_data else 'absent'}")
+            # Correctly get census_data by calling the method
+            current_census_data = self.census_widget.get_census_data() if self.census_widget else None
+            logger.info(f"Passing census_data to LLMClassifier.process_text: {'present' if current_census_data else 'absent'}")
 
             # Single call to the refactored LLMClassifier.process_text
             llm_data = self.llm_classifier.process_text(
@@ -516,7 +640,7 @@ class TransferCenterMainWindow(QMainWindow):
                 patient_data=patient_data_for_llm,
                 sending_facility_location=sending_facility_location_dict,
                 available_hospitals=self.hospitals, # Use hospital_options directly
-                census_data=self.census_widget.census_data,
+                census_data=current_census_data, # Use the retrieved census data
                 human_suggestions=human_suggestions,
                 scoring_results=scoring_results
             )
@@ -531,21 +655,22 @@ class TransferCenterMainWindow(QMainWindow):
                 # No need to call recommendation_generator.generate_recommendation again.
             else:
                 logger.warning(f"LLM processing failed or returned no recommendation. Error: {llm_error_message}. Falling back to rule-based.")
-                # Fallback logic: Use rule-based recommendation
-                # This part of the fallback might need to be adjusted if it relied on data
-                # that was previously prepared differently.
-                final_recommendation = RecommendationHandler.create_rule_based_recommendation(
-                    request=request,
-                    available_hospitals=self.hospitals, # Use self.hospitals for rule-based
-                    reason=f"LLM processing failed ({llm_error_message if llm_error_message else 'unknown error'}); rule-based fallback used."
-                )
-                if final_recommendation:
-                    logger.info(f"Generated rule-based fallback recommendation: {final_recommendation.recommended_campus_id}")
-                else:
-                    logger.error("Rule-based fallback also failed to generate a recommendation.")
-                    # Handle critical failure - perhaps display an error message to the user
-                    self.update_recommendation_display(None, error_message="Critical error: Could not generate any recommendation.")
-                    return
+                try:
+                    # Fallback to rule-based recommendation
+                    final_recommendation = RecommendationHandler.extract_rule_based_recommendation(
+                        patient_data=request.patient_data,
+                        selected_hospital=request.selected_hospital_campus,
+                        available_hospitals=self.hospitals # Or a more filtered list
+                    )
+                    if not final_recommendation:
+                        raise ValueError("Rule-based recommendation also failed to produce a result.")
+                except Exception as rule_error:
+                    logger.error(f"Error in rule-based fallback: {rule_error}")
+                    # Create a minimal error recommendation object to display
+                    final_recommendation = RecommendationHandler.create_error_recommendation(
+                        request_id=getattr(request, 'request_id', 'unknown'),
+                        error_message=f"Error processing recommendation: {str(rule_error)}"
+                    )
 
             # Augment notes if needed (final_recommendation is now the Recommendation object)
             if final_recommendation:
@@ -556,11 +681,16 @@ class TransferCenterMainWindow(QMainWindow):
                 final_recommendation.notes = current_notes
 
             # Update the display with the final recommendation (either LLM or rule-based)
-            self.update_recommendation_display(final_recommendation)
+            self._display_recommendation(final_recommendation) # Corrected method name
 
         except Exception as e:
             logger.error(f"Error in _process_recommendation: {e}", exc_info=True)
-            self.update_recommendation_display(None, error_message=f"Error processing recommendation: {e}")
+            # Create an error recommendation object to pass to _display_recommendation
+            error_rec = RecommendationHandler.create_error_recommendation(
+                request_id=getattr(request, 'request_id', 'unknown'),
+                error_message=f"Error processing recommendation: {str(e)}"
+            )
+            self._display_recommendation(error_rec) # Corrected method name
 
     def _display_recommendation(self, recommendation: Recommendation) -> None:
         logger.info(f"Displaying recommendation for: {getattr(recommendation, 'recommended_campus_id', 'N/A')}")
@@ -596,6 +726,16 @@ class TransferCenterMainWindow(QMainWindow):
         # Format and set explanation tab
         explanation_html = self._format_explanation_html(recommendation)
         self.recommendation_widget.set_explanation(explanation_html)
+
+        # Update the standalone TransportOptionsWidget
+        self.transport_widget.update_transport_info(recommendation)
+
+        # Refresh PatientInfoWidget if recommendation contains updated patient data
+        # (e.g., if LLM added extracted entities or care needs to the patient_data within recommendation)
+        if hasattr(recommendation, 'patient_data') and isinstance(recommendation.patient_data, PatientData):
+            self.patient_widget.set_patient_data(recommendation.patient_data)
+        
+        self.statusBar.showMessage("Recommendation generated and displayed.")
 
         # Optionally set raw data if your Recommendation object or handler provides it
         # raw_data_html = self._format_raw_data_html(recommendation) # Example

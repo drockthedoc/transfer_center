@@ -1,7 +1,217 @@
-Patient #1 (PICU candidate): 3-year-old male with acute respiratory distress. History of asthma, now with severe wheezing, tachypnea. RR 50, HR 140, O2 sats 85% on non-rebreather. Patient is tiring. Located at 123 Peartree Lane, Spring, TX. Needs immediate PICU evaluation. BP 90/60.
+	1.	
 
-Patient #2 (NICU candidate): 1-week-old premature infant (born 32 weeks) with apneic episodes and bradycardia. HR drops to 60. Currently on CPAP. Temp 36.0C. From North Austin Regional Clinic, 123 Wellness Rd, Austin, TX. Requires NICU Level III care.
+8 yo male without significant PMH presents with a left humerus fracture
+Fell off a rockwall onto side
+Seen at UC and transferred to OSH
+XR shows a proximal humerus fracture, mild displacement
+NV intact, no penetrating skin trauma
+No other injuries sustained
+Splinted for comfort
+Recommendations: Typically managed conservatively with coaptation splint and outpatient follow up. Please discuss with family that no other interventions may be necessary after our eval.
+103/63 111 22 99%
+Coming ground EMS from Houston Methodist Cypress
+	2.	
 
-Patient #3 (General Peds): 5-year-old female with fever (39.5C) and sore throat for 2 days. Complaining of abdominal pain. Suspected strep throat or early appendicitis. Vitals stable. HR 110, RR 24, BP 100/65. Patient at home, 45 Teddy Bear Close, Katy, TX.
+17 month old female without significant PMH presents with R eye injury from hitting it on the corner of a table
+Initial injury two days ago, progressive swelling since
+CT orbits shows linear fracture of superior orbital wall fracture
+Concern for extraconal hematoma on imaging
+External exam challenging due to swelling but without obvious findings
+Discussed with ophtho, recommended ophtho consult at MC
+Pt otherwise without other injuries, not in acute distress
+Coming ground EMS from TCH WL
+	3.	
 
-Patient #4 (Complex, possible PICU): 2-month-old female with complex congenital heart defect, now presenting with poor feeding and cyanosis. O2 sats 70%. HR 170. History of cardiac surgery consult at TCH Main. Current location: Local ER at 789 Childrens Way, The Woodlands, TX. BP difficult to obtain.
+14 yo female with PMH significant bipolar, depression, anxiety
+Presents with complaint of inability to move or feel lower extremities
+Occurred spontaneously without known inciting event
+No trauma, no recent illness or fever
+Denies pain
+No loss of bowel/bladder, no loss of sensation, reflexes normal
+Seen in past by neurologists for similar issues
+Inconsistent exam and weird behaviors, found with her legs crossed but said her mom moved her legs that way, mom seemed caught off guard but then agreed with patient
+CT head negative
+CXR negative
+CBC/CMP/tox panel all unremarkable
+Discussion: OSH provider has understandable concern for functional vs neurological process, would benefit from placement on Neuro service per PHM agreement, but MC is on full capacity, will discuss with administrator.
+Update: Administrator on call has declined the patient due to unavailable services
+	4.	
+
+15 yo male without significant PMH presents with displaced ankle fx
+Twisted his ankle while playing soccer
+Displaced oblique fracture of the distal tibia with articular extension
+Closed fracture and NV intact
+No other injuries sustained
+Splinted and pain meds
+Appropriate for level 3 trauma center, can go to the Woodlands campus
+Coming ground EMS from freestanding EC in Spring
+	5.	
+
+14 yo male without significant PMH presents with hip injury
+Fell down stairs, landed on hip
+XR shows appearance described as a “traumatic SCFE”
+Closed injury, NV intact distally
+No other injuries sustained
+85 14 125/75 99% RA
+Coming ground EMS from CHI St Luke’s Sugarland
+	6.	
+
+11 yo female without significant PMH presents with proximal left humerus fracture
+Flipped backwards onto left outstretched arm
+XR shows mildly displaced proximal humerus fracture
+Closed fracture, NV intact distally
+No other injuries sustained
+Recommendations: Advised that this injury is typically treated with splinting and outpatient management. OSH provider requested ortho discussion, will page them to consult, dispo pending their recs
+Update: After discussion with ortho, OSH provider will splint and arrange outpatient follow up, transfer cancelled
+	7.	
+
+19 day old ex 36 wkr female without significant PMH presents with BRUE
+Presents with brief period of LOC
+Suddenly went limp for around 3 minutes, reports color change, possible apnea
+Eventually responsive to vigorous stimulation
+Reports this is the second such event
+No fever or infectious symptoms
+ECG unremarkable
+Exam normal to provider, no signs of trauma
+No other workup so far, OSH would prefer to transfer without further evaluations
+70/37 125 35 97%
+Coming ground EMS from Ben Taub
+	8.	
+
+9 yo female with flu B myositis and leg pain
+CK 5000
+Creatinine normal, tolerating PO
+Can ambulate by OSH provider reports pain is limiting activity
+Has just received ibuprofen
+Recommendation: Advised treatment in such cases is mainly supportive with pain control and may not require admission, recommend bringing private transport
+120/82 96 20 98%
+Coming ground EMS from freestanding EC in Houston
+	9.	
+
+3 yo male without significant PMH presents with concern for sexual by mom’s ex-boyfriend
+Last potential contact was May 18 at 7pm but no specifics
+Patient has outcry of physical contact in GU area by boyfriend
+SW has started report
+External exam normal, medically cleared otherwise
+Coming to MC for full forensic exam
+Coming ground EMS from TCH WC
+	10.	
+
+2 month old with about a month of proptosis
+Seen by ophtho in WC who recommends MRI and eval by oculoplastics
+Likely require admission for coordination of care
+Stable otherwise, intraocular pressures normal
+Coming POV from WC
+	11.	
+
+13 yo male with PMH significant for depression (off his meds) presenting with benadryl ingestion
+Vomiting in bathroom, mom came in and noted seizure-like activity, called EMS
+EMS found empty benadryl bottle, potential max of ~2000mg benadryl ingested
+Completely altered and hallucinating in the OSH EC, tachycardic to 160s
+Initial QTC 548, widened QRS to 140
+Received 2L NS, 1 amp bicarb with improvement of QRS to 104
+Requiring ongoing benzos for agitation
+Remainder of tox panel negative - salicylates, tylenol, ETOH
+No urine for UDS
+No runs of vtach noted, maintaining airway
+133 36 134/95 100%
+Coming Kcrew from HCA Healthcare SE in Houston
+	12.	
+
+3 yo male with PMH significant for nonverbal autism presents with V/D for past 3 days
+Intermittent crying, dec oral intake
+Viral panel and strep negative
+Hgb 8, MCV low
+Bicarb 12
+S/p 30cc/kg NS
+S/p zofran and no longer vomiting but refusing oral intake
+Otherwise unremarkable exam
+CT Abdomen with gas-distended loops of bowel, no acute surgical pathology
+Transfer for failed PO challenge and IV hydration
+139 26 99.0 100%
+Coming ground EMS from Houston Methodist Baytown
+	13.	
+
+14 yo male with PMH significant for morbid obesity, chronic diarrhea and IBS
+Seen in TCH GI clinic for chronic diarrhea, normal GI path panel and neg stool calprotectin
+Reports diarrhea becoming more bloody since yesterday
+No abdominal pain or vomiting, taking PO
+CBC unremarkable, no anemia or thrombocytopenia
+Creatinine normal at 0.7
+Inflammatory markers not ordered
+CT Abdomen/Pelvis shows nonspecific colitis
+Stool studies pending
+S/p fluid resus and flagyl
+Stable appearance and exam
+Has appt with GI in 2 days, but parent does not wish to wait - requests transfer to TCH
+116/70 70 15 98.3
+Coming ground EMS from Baptist Hospital of SE Texas in Beaumont
+	14.	
+
+16 yo male without significant PMH presents with one week of worsening back pain
+Attributed to weight lifting as it started a few hours after working out but denies specific injury or trauma
+Pain located primarily to lower back
+Also with HA that worsens with being upright, improves with lying down
+Fever 101.7 today, no URI s/s or overt systemic signs of infection
+No focal neuro deficits, no overt meningeal signs
+CBC/CMP unremarkable
+CT Lumbar Spine with contrast does not identify acute pathology
+S/p tylenol, 1 L NS and muscle relaxer
+Recommendations: Redirect to MC in case of epidural abscess or other process requiring NSGY
+120/79 98.2 74 18
+Coming ground EMS from Katy freestanding EC
+	15.	
+
+16 yo male without significant PMH presents with spontaneous pneumothorax
+R sided chest pain for a month, worse today
+Tall, lanky phenotype
+H/o frequent vaping
+Small apical pneumothorax about 3.5cm
+No resp distress or hypoxia
+Placed on NRB for washout
+68 16 99% RA
+Coming ground EMS from Houston Methodist Spring
+	16.	
+
+9 yo female without significant PMH presents with findings c/w HSP
+Rash on Saturday
+Polyarthralgias today
+Exam shows purpura on bilateral lower extremities
+CBC normal
+Creatinine normal
+UA pending
+No abd pain
+Improved with tylenol, fluids and toradol
+No fever, well-appearing
+Recommendations: Advised that treatment is typically supportive if no kidney involvement, may be discharged from the EC, bring private transport
+108/70 105 16 99%
+Coming ground EMS from Memorial Hermann WL freestanding
+	17.	
+
+16 yo female with PMH significant for depression/anxiety and past suicide attempts presents with intentional ingestion
+Ingested 7 tablets at home, reports that it was benadryl, occurred after a fight with her mom but states that it was just “so she could sleep”
+Stable appearance, asymptomatic, got psych clearance labs
+Initial glucose of 41
+Gave oral food items, no response, still in 40s
+Gave D50 IV
+Worked briefly, came up to 80s
+Seen by their psych, recommended inpatient due to past attempts and unreliable patient
+Checked glucose prior to transfer, in the 40s again
+Required another D50, started on D5NS
+Has not been overtly symptomatic during EC stay
+Discussed with family, GF who lives in home takes diabetes medications but parent feels very strongly that patient could not have obtained them
+CBC, CMP, salicylates, tylenol, ETOH, thyroid panel all unremarkable
+UDS positive for THC, ongoing use by patient
+Recommendations: Agree clinical picture is very suspicious for exogenous insulin, please consider obtaining insulin level, C-peptide, BOHB, cortisol if possible. Labs are accessible via CareEverywhere.
+129/58 65 16 99% RA 97.6
+Coming ground EMS from Houston Methodist Baytown
+	18.	
+
+10 yo male without significant PMH presents with a new symptomatic inguinal testicle
+Both testicles previously descended, not a pre-existing undescended testicle
+No known trauma or other inciting event
+US does show current blood flow
+Pt still with significant pain
+OSH urologist concerned about risk for torsion
+125/80 79 24 97%
+Coming ground EMS from CHI St Joseph in Bryan

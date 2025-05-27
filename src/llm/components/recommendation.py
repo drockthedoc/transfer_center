@@ -93,7 +93,7 @@ class RecommendationGenerator:
         if available_hospitals:
             logger.info(f"Using {len(available_hospitals)} hospitals for recommendation")
             # Log hospital names for debugging
-            hospital_names = [h.get('name', 'Unknown') for h in available_hospitals]
+            hospital_names = [h.name if h and hasattr(h, 'name') else 'Unknown Hospital' for h in available_hospitals]
             logger.info(f"Available hospitals: {hospital_names}")
         else:
             logger.warning("No available hospitals provided - recommendation may be inaccurate")
@@ -839,7 +839,12 @@ Do not include any text before or after the JSON. Only return a valid JSON objec
         else:
             logger.warning("Sending facility location not found or not in expected format in extracted_entities.")
 
-        if available_hospitals and isinstance(available_hospitals, list) and len(available_hospitals) > 0:
+        if available_hospitals:
+            logger.info(f"Using {len(available_hospitals)} hospitals for recommendation")
+            # Log hospital names for debugging
+            hospital_names = [h.name if h and hasattr(h, 'name') else 'Unknown Hospital' for h in available_hospitals]
+            logger.info(f"Available hospitals: {hospital_names}")
+            
             hospitals_info = "Available hospitals/campuses:\n"
             for i, hospital in enumerate(available_hospitals):
                 name = hospital.get('name', 'Unknown Hospital')

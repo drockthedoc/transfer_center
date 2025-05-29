@@ -1,24 +1,23 @@
 import os
 import sys
 import logging
-from dotenv import load_dotenv
 from pathlib import Path
 from typing import Optional
 
 from llama_index.core import ServiceContext, Settings
 from llama_index.core.query_engine import BaseQueryEngine
 from llama_index.llms.openai_like import OpenAILike
-from llama_index.core.vector_stores import MetadataFilters, ExactMatchFilter # Added imports
+from llama_index.core.vector_stores import MetadataFilters, ExactMatchFilter
 
-# Adjust sys.path to include the project root directory to find medical_rag_agent.src
-project_root_for_imports = Path(__file__).resolve().parent.parent
-if str(project_root_for_imports) not in sys.path:
-    sys.path.insert(0, str(project_root_for_imports))
+# Import configuration system
+from config import initialize_medical_rag_config
 
-from src.indexing import get_embedding_model, load_vector_index
+# Initialize configuration (this handles all path setup, logging, and env loading)
+config = initialize_medical_rag_config()
+logger = logging.getLogger(__name__)
 
-# Configure basic logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Import modules using the configured paths
+from indexing import get_embedding_model, load_vector_index
 
 def create_query_engine(
     index_storage_dir: str,
@@ -26,7 +25,7 @@ def create_query_engine(
     llm_api_base: Optional[str] = None,
     llm_api_key: Optional[str] = "not-needed",
     llm_model_name: Optional[str] = "local-model",
-    filters: Optional[MetadataFilters] = None # New parameter
+    filters: Optional[MetadataFilters] = None
 ) -> Optional[BaseQueryEngine]:
     """
     Creates and returns a query engine from a persisted LlamaIndex.
@@ -41,17 +40,26 @@ def create_query_engine(
 
     Returns:
         Optional[BaseQueryEngine]: The query engine, or None if index loading fails.
+
+    Raises:
+        FileNotFoundError: If the index directory or FAISS file is missing.
     """
     logging.info(f"Initializing query engine with index from: {index_storage_dir}")
+    try:
+        embed_model = get_embedding_model(embed_model_name)
+        logging.info(f"Embedding model '{embed_model_name}' loaded.")
 
-    embed_model = get_embedding_model(embed_model_name)
-    logging.info(f"Embedding model '{embed_model_name}' loaded.")
-
-    index = load_vector_index(storage_persist_dir=index_storage_dir, embed_model=embed_model)
-    if index is None:
-        logging.error(f"Failed to load index from {index_storage_dir}. Query engine creation aborted.")
+        index = load_vector_index(storage_persist_dir=index_storage_dir, embed_model=embed_model)
+        if index is None:
+            logging.error(f"Failed to load index from {index_storage_dir}. Query engine creation aborted.")
+            return None
+        logging.info("Vector index loaded successfully.")
+    except FileNotFoundError as e:
+        logging.error(str(e))
         return None
-    logging.info("Vector index loaded successfully.")
+    except Exception as e:
+        logging.error(f"Unexpected error loading index: {e}")
+        return None
 
     llm = None
     if llm_api_base:
@@ -77,28 +85,20 @@ def create_query_engine(
     return query_engine
 
 if __name__ == '__main__':
-    project_root = Path(__file__).resolve().parent.parent
-    dotenv_path = project_root / ".env"
-    
-    if dotenv_path.exists():
-        load_dotenv(dotenv_path=dotenv_path)
-        logging.info(f".env file loaded from {dotenv_path}")
-    else:
-        logging.warning(f".env file not found at {dotenv_path}. Proceeding with environment variables if set.")
-
-    notebook_index_dir = project_root / "vector_store_notebook"
+    # Configuration is already initialized at module level via initialize_medical_rag_config()
+    notebook_index_dir = config['paths']['vector_store_dir']
 
     if not notebook_index_dir.exists() or not (notebook_index_dir / "vector_store.faiss").exists():
-        logging.error(f"Index directory or 'vector_store.faiss' not found at: {notebook_index_dir}")
-        logging.error("Please ensure you have run the '1_Document_Ingestion_and_Indexing.ipynb' notebook ")
-        logging.error("to generate the vector index before running this script.")
+        logger.error(f"Index directory or 'vector_store.faiss' not found at: {notebook_index_dir}")
+        logger.error("Please ensure you have run the '1_Document_Ingestion_and_Indexing.ipynb' notebook ")
+        logger.error("to generate the vector index before running this script.")
         sys.exit(1)
 
-    llm_api_base_from_env = os.getenv("OPENAI_API_BASE")
+    llm_api_base_from_env = config['llm_api_base']
     llm_api_key_from_env = os.getenv("OPENAI_API_KEY", "not-needed")
     
     if not llm_api_base_from_env:
-        logging.warning("OPENAI_API_BASE not found in environment. LLM will not be configured for querying.")
+        logger.warning("OPENAI_API_BASE not found in environment. LLM will not be configured for querying.")
 
     query_text = "What are RAG basics?" # Define query_text
     
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     )
 
     if query_engine_filtered:
-        logging.info(f"Querying with filter: {specific_section_filter.to_dict()}")
+        logger.info(f"Querying with filter: {specific_section_filter.to_dict()}")
         try:
             filtered_response = query_engine_filtered.query(query_text)
             print("Filtered Response:")
@@ -140,11 +140,11 @@ if __name__ == '__main__':
                 print("  No source nodes found for the filtered query.")
 
         except Exception as e:
-            logging.error(f"Error during filtered query: {e}")
+            logger.error(f"Error during filtered query: {e}")
             if "Connection error" in str(e) or isinstance(e, ConnectionError): # More robust check
-                 logging.error("This is likely due to the local LLM server not running. The query was attempted with filters.")
+                 logger.error("This is likely due to the local LLM server not running. The query was attempted with filters.")
     else:
-        logging.error("Could not create filtered query engine.")
+        logger.error("Could not create filtered query engine.")
     
     # Original unfiltered query for comparison (optional, can be uncommented)
     # print("\nAttempting original unfiltered query...")
@@ -154,16 +154,16 @@ if __name__ == '__main__':
     #     llm_api_key=llm_api_key_from_env
     # )
     # if query_engine_unfiltered:
-    #     logging.info(f"Performing sample query (unfiltered): '{query_text}'")
+    #     logger.info(f"Performing sample query (unfiltered): '{query_text}'")
     #     try:
     #         response_unfiltered = query_engine_unfiltered.query(query_text)
     #         if hasattr(response_unfiltered, 'response'):
-    #             logging.info(f"Unfiltered Query Response: {response_unfiltered.response}")
+    #             logger.info(f"Unfiltered Query Response: {response_unfiltered.response}")
     #         else:
-    #             logging.info(f"Unfiltered Query Response (raw): {response_unfiltered}")
+    #             logger.info(f"Unfiltered Query Response (raw): {response_unfiltered}")
     #     except Exception as e:
-    #         logging.error(f"Error during unfiltered query: {e}")
+    #         logger.error(f"Error during unfiltered query: {e}")
     # else:
-    #     logging.error("Unfiltered query engine could not be created.")
+    #     logger.error("Unfiltered query engine could not be created.")
 
-    logging.info("Query engine script finished.")
+    logger.info("Query engine script finished.")

@@ -1,30 +1,33 @@
 import argparse
-import os
-import sys
 import logging
 from pathlib import Path
+import sys
 
-# Configure basic logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Add the project root to sys.path to import config
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+# Import configuration system
+from src.config import initialize_medical_rag_config
 
 def main():
-    # Path Setup
-    # Assuming this script is in 'medical_rag_agent/scripts/'
-    SCRIPT_DIR = Path(__file__).resolve().parent
-    PROJECT_ROOT = SCRIPT_DIR.parent  # This should be 'medical_rag_agent/'
-
-    # Add project root to sys.path to allow 'from src...' style imports
-    if str(PROJECT_ROOT) not in sys.path:
-        sys.path.insert(0, str(PROJECT_ROOT))
-        logging.info(f"Added {PROJECT_ROOT} to sys.path")
-
+    """
+    CLI entrypoint for building a vector index from PDF documents.
+    Uses centralized configuration management.
+    """
+    # Initialize configuration (handles .env loading, logging, and paths)
+    config = initialize_medical_rag_config()
+    logger = logging.getLogger(__name__)
+    
+    # Import modules after configuration is set up
     try:
         from src.document_processor import load_pdfs_from_folder, chunk_documents
         from src.indexing import get_embedding_model, build_vector_index
     except ImportError as e:
-        logging.error(f"Failed to import necessary modules from src: {e}. Ensure PYTHONPATH is set correctly or the script is run from a context where 'src' is discoverable.")
-        print(f"[FATAL ERROR] Could not import modules from 'src'. Please check project structure and PYTHONPATH. Error: {e}")
-        sys.exit(1)
+        logger.error(f"Failed to import necessary modules: {e}")
+        return
 
     parser = argparse.ArgumentParser(description="Build a vector index from PDF documents.")
     parser.add_argument(
@@ -60,83 +63,74 @@ def main():
     
     args = parser.parse_args()
 
-    # Resolve relative paths for data_folder and vector_store_path to be absolute or relative to CWD
-    # It's often better to make them absolute if the script might be called from various locations,
-    # or clearly define they are relative to where the script is run.
-    # For simplicity, we'll assume paths are correctly passed (e.g., relative to CWD or absolute).
-    # Path(args.data_folder).resolve()
-    # Path(args.vector_store_path).resolve()
-
+    # Resolve paths to absolute paths for robustness
+    data_folder_path = Path(args.data_folder).resolve()
+    vector_store_path = Path(args.vector_store_path).resolve()
+    
     logging.info("Starting the indexing process...")
-    print(f"Starting indexing process. Data folder: '{args.data_folder}', Vector store path: '{args.vector_store_path}'")
+    logging.info(f"Data folder: {data_folder_path}")
+    logging.info(f"Vector store path: {vector_store_path}")
+    
+    # Validate paths
+    if not data_folder_path.exists():
+        logging.error(f"Data folder does not exist: {data_folder_path}")
+        return
+    if not data_folder_path.is_dir():
+        logging.error(f"Data folder is not a directory: {data_folder_path}")
+        return
 
     # 1. Load PDFs
-    logging.info(f"Loading PDF documents from: {args.data_folder}")
+    logging.info(f"Loading PDF documents from: {data_folder_path}")
     try:
-        documents = load_pdfs_from_folder(args.data_folder)
+        documents = load_pdfs_from_folder(str(data_folder_path))
         if not documents:
-            logging.warning(f"No documents found in {args.data_folder}. Exiting.")
-            print(f"No PDF documents found in '{args.data_folder}'. Please check the path.")
+            logging.warning(f"No documents found in {data_folder_path}. Exiting.")
             return
         logging.info(f"Loaded {len(documents)} document(s).")
-        print(f"Successfully loaded {len(documents)} document(s).")
     except Exception as e:
         logging.error(f"Failed to load documents: {e}", exc_info=True)
-        print(f"Error loading documents from '{args.data_folder}': {e}")
         return
 
     # 2. Chunk Documents
     logging.info("Chunking documents...")
-    print("Chunking documents...")
     try:
         nodes = chunk_documents(
             documents,
             default_chunk_size=args.chunk_size,
             default_chunk_overlap=args.chunk_overlap,
-            max_chars_per_section_chunk=args.max_chars_per_section # Passed to the correct parameter in chunk_documents
+            max_chars_per_section_chunk=args.max_chars_per_section
         )
         if not nodes:
             logging.warning("No nodes were created after chunking. Exiting.")
-            print("Document chunking resulted in no nodes. Please check document content and chunking parameters.")
             return
         logging.info(f"Chunked documents into {len(nodes)} nodes.")
-        print(f"Successfully chunked documents into {len(nodes)} nodes.")
     except Exception as e:
         logging.error(f"Failed to chunk documents: {e}", exc_info=True)
-        print(f"Error chunking documents: {e}")
         return
 
     # 3. Get Embedding Model
     logging.info("Initializing embedding model...")
-    print("Initializing embedding model...")
     try:
-        embed_model = get_embedding_model() # Using default model
+        embed_model = get_embedding_model()
         logging.info(f"Embedding model '{embed_model.model_name}' initialized.")
-        print(f"Embedding model '{embed_model.model_name}' initialized.")
     except Exception as e:
         logging.error(f"Failed to initialize embedding model: {e}", exc_info=True)
-        print(f"Error initializing embedding model: {e}")
         return
 
     # 4. Build Vector Index
-    logging.info(f"Building vector index and persisting to: {args.vector_store_path}")
-    print(f"Building vector index. This may take some time. Output directory: '{args.vector_store_path}'")
+    logging.info(f"Building vector index and persisting to: {vector_store_path}")
     try:
-        index = build_vector_index(nodes, embed_model, storage_persist_dir=args.vector_store_path)
+        index = build_vector_index(nodes, embed_model, storage_persist_dir=str(vector_store_path))
         if index:
-            logging.info(f"Successfully built and persisted vector index at: {args.vector_store_path}")
-            print(f"\nSuccessfully built and persisted vector index at: {Path(args.vector_store_path).resolve()}")
+            logging.info(f"Successfully built and persisted vector index at: {vector_store_path}")
         else:
-            logging.error(f"Failed to build vector index. build_vector_index returned None.")
-            print(f"Failed to build vector index. Please check logs for details.")
+            logging.error("Failed to build vector index. build_vector_index returned None.")
             return
     except Exception as e:
         logging.error(f"Failed to build vector index: {e}", exc_info=True)
-        print(f"Error building vector index: {e}")
         return
     
-    logging.info("Indexing process completed.")
-    print("Indexing process completed.")
+    logging.info("Indexing process completed successfully.")
 
 if __name__ == "__main__":
     main()

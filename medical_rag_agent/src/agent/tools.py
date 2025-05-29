@@ -1,114 +1,102 @@
-import os
-import sys
 import logging
 from typing import Optional, List
-from dotenv import load_dotenv
+from pathlib import Path
+
 from langchain.tools import Tool
 from llama_index.core.query_engine import BaseQueryEngine
 from llama_index.core.vector_stores import MetadataFilters, ExactMatchFilter
-from pathlib import Path
 
-# Configure basic logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Import configuration system
+from config import initialize_medical_rag_config
 
-# Adjust sys.path for local imports when script is run directly or for modules
-# This assumes 'tools.py' is in 'medical_rag_agent/src/agent/'
-# We want to add 'medical_rag_agent/src/' to the path for 'from src.query_engine import ...'
-# For imports like `from medical_rag_agent.src.query_engine...` to work,
-# 'medical_rag_agent' (the project root) must be in sys.path.
-# Let's adjust based on common project structures.
-SCRIPT_DIR = Path(__file__).resolve().parent
-SRC_ROOT = SCRIPT_DIR.parent # This is medical_rag_agent/src/
-PROJECT_ROOT_FOR_MODULES = SRC_ROOT.parent # This is medical_rag_agent/
+# Initialize configuration (this handles all path setup, logging, and env loading)
+config = initialize_medical_rag_config()
+logger = logging.getLogger(__name__)
 
-if str(SRC_ROOT) not in sys.path:
-    sys.path.insert(0, str(SRC_ROOT)) # For `from query_engine import ...` if query_engine is in src/
-if str(PROJECT_ROOT_FOR_MODULES) not in sys.path:
-     sys.path.insert(0, str(PROJECT_ROOT_FOR_MODULES)) # For `from medical_rag_agent.src.query_engine ...`
-
-# Now, try to import assuming 'src' is a package or 'medical_rag_agent.src' is accessible
+# Import modules using the configured paths
 try:
-    from query_engine import create_query_engine # if query_engine.py is directly in src/
+    from query_engine import create_query_engine
 except ImportError:
-    logging.warning("Could not import create_query_engine directly from query_engine. Trying medical_rag_agent.src.query_engine")
+    logger.warning("Could not import create_query_engine directly. Trying alternative import.")
     try:
         from medical_rag_agent.src.query_engine import create_query_engine
     except ImportError as e:
-        logging.error(f"Failed to import create_query_engine: {e}. Ensure PYTHONPATH is set correctly or script structure is as expected.")
-        # As a fallback for __main__ execution if imports are tricky:
-        if __name__ == '__main__':
-            # This is a more direct way for __main__ but not ideal for library use
-            # If the above sys.path adjustments are correct for your environment, this shouldn't be needed.
-            # For robust library use, ensure your package structure and PYTHONPATH are correctly configured.
-            pass # Let it fail later if create_query_engine is not found
+        logger.error(f"Failed to import create_query_engine: {e}")
+        create_query_engine = None  # Will be handled in the function
 
 
 def query_medical_rag(query: str, section_filter: Optional[str] = None) -> str:
     """
     Queries the medical RAG system.
+    
+    Args:
+        query (str): The user query.
+        section_filter (Optional[str]): Optional section filter for metadata.
+        
+    Returns:
+        str: Formatted response from the RAG system or error message.
     """
-    # Get project root assuming this script is in medical_rag_agent/src/agent/
-    PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent 
-    dotenv_path = PROJECT_ROOT / ".env"
-    if dotenv_path.exists():
-        load_dotenv(dotenv_path=dotenv_path)
-        # logging.info(f".env loaded by query_medical_rag from {dotenv_path}")
-    else:
-        logging.warning(f".env file not found at {dotenv_path} for query_medical_rag.")
-
-    openai_api_base = os.getenv("OPENAI_API_BASE")
-    index_storage_dir = str(PROJECT_ROOT / "vector_store_notebook")
-    logging.info(f"RAG Tool: Using index from: {index_storage_dir}")
-    logging.info(f"RAG Tool: Query: '{query}', Section Filter: '{section_filter}'")
+    if create_query_engine is None:
+        return "RAG Tool Error: Query engine module could not be imported. Please check the project setup."
+    
+    # Use configuration for paths and settings
+    index_storage_dir = config['vector_store_path']
+    openai_api_base = config['llm_api_base']
+    
+    logger.info(f"RAG Tool: Using index from: {index_storage_dir}")
+    logger.info(f"RAG Tool: Query: '{query}', Section Filter: '{section_filter}'")
 
     filters = None
     if section_filter:
         filters = MetadataFilters(filters=[ExactMatchFilter(key="section", value=section_filter)])
-        logging.info(f"RAG Tool: Applying metadata filter: section = '{section_filter}'")
+        logger.info(f"RAG Tool: Applying metadata filter: section = '{section_filter}'")
 
     try:
-        if not Path(index_storage_dir).exists() or not (Path(index_storage_dir) / "vector_store.faiss").exists():
+        index_path = Path(index_storage_dir)
+        if not index_path.exists() or not (index_path / "vector_store.faiss").exists():
             error_msg = f"RAG Tool Error: Index directory or 'vector_store.faiss' not found at: {index_storage_dir}. Please ensure the index is built."
-            logging.error(error_msg)
+            logger.error(error_msg)
             return error_msg
-
+            
         rag_query_engine = create_query_engine(
             index_storage_dir=index_storage_dir,
-            llm_api_base=openai_api_base, # Can be None if not set, create_query_engine handles it
+            llm_api_base=openai_api_base,
             filters=filters
         )
+        
         if rag_query_engine is None:
             return "RAG Tool Error: Failed to create query engine. Index might be corrupted or inaccessible."
-
+            
         response = rag_query_engine.query(query)
         
+        # Format response
         formatted_response = ""
         if hasattr(response, 'response') and response.response:
             formatted_response += f"Response: {response.response}\n\nSources:\n"
         else:
             formatted_response += "No direct textual response from LLM (or LLM not configured). Relevant sources found:\n"
-
-        if response.source_nodes:
+            
+        if hasattr(response, 'source_nodes') and response.source_nodes:
             for i, source_node in enumerate(response.source_nodes):
                 file_name = source_node.metadata.get('file_name', 'N/A')
                 section = source_node.metadata.get('section', 'N/A')
                 formatted_response += (
                     f"  Source {i+1}: \n"
                     f"    ID: {source_node.id_}\n"
-                    f"    Score: {source_node.score:.4f}\n"
+                    f"    Score: {getattr(source_node, 'score', 0):.4f}\n"
                     f"    File: {file_name}\n"
                     f"    Section: {section}\n"
-                    f"    Text: {source_node.text[:200].strip()}...\n\n" # Displaying a snippet
+                    f"    Text: {getattr(source_node, 'text', '')[:200].strip()}...\n\n"
                 )
         else:
             formatted_response += "No source documents found for this query."
             if filters:
-                 formatted_response += f" (Filters applied: {filters.to_dict()})"
-        
+                formatted_response += f" (Filters applied: {filters.to_dict()})"
+                
         return formatted_response.strip()
-
+        
     except Exception as e:
-        logging.error(f"RAG Tool Error: Exception during query: {e}", exc_info=True)
+        logger.error(f"RAG Tool Error: Exception during query: {e}", exc_info=True)
         error_detail = str(e)
         if "Connection error" in error_detail or "refused" in error_detail.lower():
             return f"RAG Tool Error: Could not connect to LLM. Please ensure local LLM server is running. Details: {error_detail}"

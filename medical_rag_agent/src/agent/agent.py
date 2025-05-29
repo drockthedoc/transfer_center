@@ -1,38 +1,41 @@
-import sys
-import os
 import logging
-from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI # Though get_langchain_llm returns this, explicit import for clarity if needed
-from langchain.agents import AgentExecutor, create_openai_tools_agent
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pathlib import Path
 
-# Configure basic logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+from langchain_openai import ChatOpenAI
+from langchain.agents import AgentExecutor, create_openai_tools_agent
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-# Adjust sys.path for local imports:
-# This script (agent.py) is in medical_rag_agent/src/agent/
-# We need 'medical_rag_agent/' (project root) in sys.path for imports like 'from medical_rag_agent.src...'
-# And 'medical_rag_agent/src/' in sys.path for direct imports like 'from llm_services...' if modules are structured that way.
+# Import configuration system  
+from config import initialize_medical_rag_config
 
-SCRIPT_DIR_AGENT = Path(__file__).resolve().parent
-SRC_ROOT_AGENT = SCRIPT_DIR_AGENT.parent  # medical_rag_agent/src/
-PROJECT_ROOT_AGENT = SRC_ROOT_AGENT.parent  # medical_rag_agent/
+# Initialize configuration
+config = initialize_medical_rag_config()
+logger = logging.getLogger(__name__)
 
-if str(PROJECT_ROOT_AGENT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT_AGENT))
-if str(SRC_ROOT_AGENT) not in sys.path: # To handle both `from src.module` and `from module` if module is in src
-    sys.path.insert(0, str(SRC_ROOT_AGENT))
-
-# These imports should now work given the sys.path adjustments
-from medical_rag_agent.src.llm_services import get_langchain_llm
-from medical_rag_agent.src.agent.tools import all_tools
-from medical_rag_agent.src.agent.prompts import MEDICAL_AGENT_SYSTEM_PROMPT
+# Import modules using configured paths
+try:
+    from medical_rag_agent.src.llm_services import get_langchain_llm
+    from medical_rag_agent.src.agent.tools import all_tools
+    from medical_rag_agent.src.agent.prompts import MEDICAL_AGENT_SYSTEM_PROMPT
+except ImportError as e:
+    logger.error(f"Failed to import required modules: {e}")
+    # Try alternative import paths
+    try:
+        from llm_services import get_langchain_llm
+        from agent.tools import all_tools
+        from agent.prompts import MEDICAL_AGENT_SYSTEM_PROMPT
+    except ImportError as e2:
+        logger.error(f"Alternative imports also failed: {e2}")
+        raise ImportError(f"Could not import required modules: {e}, {e2}")
 
 
 def create_medical_agent() -> AgentExecutor:
     """
     Creates and returns a medical agent executor.
+    Returns:
+        AgentExecutor: The agent executor instance.
+    Raises:
+        Exception: If LLM or tools cannot be initialized.
     """
     # Load .env from the project root (medical_rag_agent/)
     # get_langchain_llm also does this, but good practice to ensure it's loaded early
@@ -45,7 +48,11 @@ def create_medical_agent() -> AgentExecutor:
         logging.info(f"Agent: .env file not found at {env_path}. Relying on pre-loaded env vars or tool-specific loading.")
 
     logging.info("Initializing LLM for the agent...")
-    llm = get_langchain_llm() # This function already handles .env loading and defaults
+    try:
+        llm = get_langchain_llm() # This function already handles .env loading and defaults
+    except Exception as e:
+        logging.error(f"Failed to initialize LLM: {e}")
+        raise
     logging.info("LLM initialized.")
 
     logging.info("Defining agent prompt...")
@@ -74,8 +81,7 @@ def create_medical_agent() -> AgentExecutor:
     return agent_executor
 
 if __name__ == '__main__':
-    # sys.path adjustments are handled at the top of the script for global effect.
-    # This ensures that when this script is run directly, the imports for custom modules work.
+    # Only for demonstration/testing, not for production use
     print("--- Medical Agent Test ---")
     
     medical_agent_executor = create_medical_agent()

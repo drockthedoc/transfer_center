@@ -22,10 +22,6 @@ def get_embedding_model(model_name: str = "sentence-transformers/all-MiniLM-L6-v
     Returns:
         HuggingFaceEmbedding: The embedding model instance.
     """
-    # Set up global settings (newer LlamaIndex way)
-    # Settings.embed_model = HuggingFaceEmbedding(model_name=model_name)
-    # return Settings.embed_model
-    # Or return directly if only used locally in functions
     return HuggingFaceEmbedding(model_name=model_name)
 
 def build_vector_index(
@@ -43,10 +39,15 @@ def build_vector_index(
 
     Returns:
         VectorStoreIndex: The constructed VectorStoreIndex.
+
+    Raises:
+        FileNotFoundError: If the storage directory cannot be created.
     """
     if not os.path.exists(storage_persist_dir):
-        os.makedirs(storage_persist_dir)
-        print(f"Created storage directory: {storage_persist_dir}")
+        try:
+            os.makedirs(storage_persist_dir)
+        except Exception as e:
+            raise FileNotFoundError(f"Could not create storage directory: {storage_persist_dir}. Error: {e}")
 
     # Define path for the FAISS index file
     faiss_path = os.path.join(storage_persist_dir, "vector_store.faiss")
@@ -143,10 +144,12 @@ def load_vector_index(
 
     Returns:
         VectorStoreIndex: The loaded VectorStoreIndex.
+
+    Raises:
+        FileNotFoundError: If the storage directory or FAISS file is missing.
     """
     if not os.path.exists(storage_persist_dir):
-        print(f"Error: Storage directory {storage_persist_dir} not found.")
-        return None
+        raise FileNotFoundError(f"Storage directory {storage_persist_dir} not found.")
     
     faiss_path = os.path.join(storage_persist_dir, "vector_store.faiss")
     if not os.path.exists(faiss_path):
@@ -196,7 +199,7 @@ def load_vector_index(
     return index
 
 if __name__ == '__main__':
-    # Example Usage:
+    # Example usage for testing only
     from document_processor import load_pdfs_from_folder, chunk_documents # Assuming in the same directory or PYTHONPATH
     import shutil
 

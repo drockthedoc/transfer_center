@@ -1,0 +1,23 @@
+llama-index
+llama-index-core
+llama-index-readers-file
+llama-index-embeddings-huggingface
+llama-index-llms-openai-like
+llama-index-vector-stores-faiss
+langchain
+langchain-core
+langchain-openai
+langchain-community # For various LangChain components
+pypdf2
+python-dotenv
+transformers
+torch # For PyTorch. Install the appropriate version for your hardware (CPU/GPU). For CPU-only: pip install torch --index-url https://download.pytorch.org/whl/cpu
+faiss-cpu # For CPU-based FAISS indexing. For GPU, consider faiss-gpu.
+sentence-transformers # For HuggingFaceEmbedding
+ipykernel # For running Jupyter notebooks
+reportlab # For PDF generation in examples/tests, good for users to have for full functionality.
+# Ensure any other specific dependencies for tools or agent logic are included if not covered by the above.
+# For example, if specific OpenAI agent features are used directly from LlamaIndex beyond the core agent:
+# llama-index-agent-openai
+# llama-index-program-openai
+# For now, keeping it to the specified list and common additions.

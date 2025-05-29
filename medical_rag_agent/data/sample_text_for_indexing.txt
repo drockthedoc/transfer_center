@@ -1,0 +1,1 @@
+Clinical decision support systems help doctors make informed choices. Retrieval Augmented Generation can enhance these systems by providing up-to-date information from medical texts. This system will use a local LLM for reasoning.

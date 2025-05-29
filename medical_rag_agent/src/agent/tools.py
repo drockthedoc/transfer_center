@@ -1,17 +1,63 @@
 import logging
+import sys
 from typing import Optional, List
 from pathlib import Path
 
-from langchain.tools import Tool
-from llama_index.core.query_engine import BaseQueryEngine
-from llama_index.core.vector_stores import MetadataFilters, ExactMatchFilter
+# Add the project root to sys.path for imports
+current_dir = Path(__file__).parent
+project_root = current_dir.parent.parent
+sys.path.insert(0, str(project_root))
+
+try:
+    from langchain.tools import Tool
+    LANGCHAIN_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"Could not import langchain Tool: {e}")
+    LANGCHAIN_AVAILABLE = False
+    # Create a fallback Tool class if langchain is not available
+    class Tool:
+        def __init__(self, name, description, func):
+            self.name = name
+            self.description = description
+            self.func = func
+        
+        def run(self, *args, **kwargs):
+            return self.func(*args, **kwargs)
+
+try:
+    from llama_index.core.query_engine import BaseQueryEngine
+    from llama_index.core.vector_stores import MetadataFilters, ExactMatchFilter
+    LLAMA_INDEX_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"Could not import llama_index components: {e}")
+    LLAMA_INDEX_AVAILABLE = False
+    # Create fallback classes
+    class BaseQueryEngine:
+        pass
+    class MetadataFilters:
+        def __init__(self, filters=None):
+            self.filters = filters or []
+        def to_dict(self):
+            return {"filters": [{"key": f.key, "value": f.value} for f in self.filters]}
+    class ExactMatchFilter:
+        def __init__(self, key, value):
+            self.key = key
+            self.value = value
+
+logger = logging.getLogger(__name__)
 
 # Import configuration system
-from config import initialize_medical_rag_config
-
-# Initialize configuration (this handles all path setup, logging, and env loading)
-config = initialize_medical_rag_config()
-logger = logging.getLogger(__name__)
+try:
+    from config import initialize_medical_rag_config
+    config = initialize_medical_rag_config()
+except ImportError as e:
+    logger.warning(f"Could not import config: {e}. Using fallback configuration.")
+    # Fallback configuration
+    config = {
+        'paths': {'project_root': project_root},
+        'vector_store_path': str(project_root / 'vector_store_notebook'),
+        'llm_api_base': 'http://localhost:1234/v1'
+    }
 
 # Import modules using the configured paths
 try:
@@ -36,6 +82,9 @@ def query_medical_rag(query: str, section_filter: Optional[str] = None) -> str:
     Returns:
         str: Formatted response from the RAG system or error message.
     """
+    if not LLAMA_INDEX_AVAILABLE:
+        return f"RAG Tool Error: LlamaIndex not available. Please install it with: pip install llama-index llama-index-core"
+    
     if create_query_engine is None:
         return "RAG Tool Error: Query engine module could not be imported. Please check the project setup."
     
@@ -90,7 +139,7 @@ def query_medical_rag(query: str, section_filter: Optional[str] = None) -> str:
                 )
         else:
             formatted_response += "No source documents found for this query."
-            if filters:
+            if filters and hasattr(filters, 'to_dict'):
                 formatted_response += f" (Filters applied: {filters.to_dict()})"
                 
         return formatted_response.strip()

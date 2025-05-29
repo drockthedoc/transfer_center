@@ -1,5 +1,32 @@
 # Medical RAG + Agent System
 
+## Quick Start & Setup Verification
+
+### Prerequisites
+- Python 3.8+ (tested with Python 3.13)
+- Virtual environment recommended
+
+### Setup Verification
+Before using the system, run the setup verification script:
+```bash
+cd medical_rag_agent
+python setup_check.py
+```
+
+This will check:
+- Python version compatibility
+- Required dependencies
+- Basic module imports
+- Package structure integrity
+
+### Installation
+If dependencies are missing:
+```bash
+pip install -r requirements.txt
+```
+
+For detailed setup information and troubleshooting, see [FIXES_SUMMARY.md](FIXES_SUMMARY.md).
+
 ## Overview
 
 This project implements a Retrieval Augmented Generation (RAG) system combined with an intelligent agent designed for medical decision support, particularly in the context of patient transfers. It leverages local, open-source language models (LLMs) and vector databases to provide healthcare professionals with quick access to relevant information from medical documents and simulated real-time contextual data.

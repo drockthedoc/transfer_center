@@ -1,0 +1,36 @@
+{
+  "medcat_dummy_medcat_model_path": {
+    "Vignette_1": [
+      {
+        "text": "dummy_MedcatHandler",
+        "label": "DUMMY",
+        "start": 0,
+        "end": 33
+      }
+    ],
+    "Vignette_2": [
+      {
+        "text": "dummy_MedcatHandler",
+        "label": "DUMMY",
+        "start": 0,
+        "end": 33
+      }
+    ],
+    "Vignette_3": [
+      {
+        "text": "dummy_MedcatHandler",
+        "label": "DUMMY",
+        "start": 0,
+        "end": 33
+      }
+    ],
+    "Vignette_4": [
+      {
+        "text": "dummy_MedcatHandler",
+        "label": "DUMMY",
+        "start": 0,
+        "end": 33
+      }
+    ]
+  }
+}

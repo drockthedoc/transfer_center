@@ -1,0 +1,17 @@
+# Core NLP library for the initial SpacyHandler
+spacy>=3.0.0,<4.0.0
+
+# scispaCy is not a direct pip install for all models,
+# models are often installed via URL.
+# Add a note here for users if they want to use scispaCy models.
+# e.g. # pip install https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.3/en_core_sci_sm-0.5.3.tar.gz
+
+# Other libraries for NER tools (MedCAT, Spark NLP, Flair/HunFlair, etc.)
+# should be installed by the user if they intend to fully implement and use those handlers.
+# Example:
+# medcat>=1.0.0
+# spark-nlp>=5.0.0 (Note: Spark NLP for Healthcare has specific licensing)
+# flair>=0.12.0
+# fds.medner (if available on PyPI, or link to source)
+
+# Add any other general utility if we find one later, but for now this is minimal.
